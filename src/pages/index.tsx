@@ -84,9 +84,9 @@ export default class IndexPage extends React.Component<PageProps> {
               <HomepageContent>
                 <Collapsible trigger="About Me" open={true}>
                   <p>
-                    I have been testing software since 2007 and I started learning to write software in 2011. To feed my continual thirst
-                    for knowledge, I regularly take online courses on Coursera and buy/read relevant books. There's almost always some sort
-                    of side project that I'm developing to flex my software muscles.
+                    I have been testing software since 2007 and I started learning to write code in 2011. To feed my continual thirst for
+                    knowledge, I regularly take online courses on Coursera and buy/read relevant books. There's almost always some sort of
+                    side project that I'm developing to flex my software muscles.
                   </p>
                   <p>
                     I love sepending time with my family and traveling. I am comfortable hiking outdoors, or inside playing video games.
