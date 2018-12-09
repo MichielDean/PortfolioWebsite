@@ -1,0 +1,2 @@
+# Redirect default Netlify subdomain to primary domain
+https://confident-wozniak-2ccf61.netlify.com/* https://www.michielbugher.com/:splat 301!
