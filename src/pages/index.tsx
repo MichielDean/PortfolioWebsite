@@ -69,13 +69,13 @@ export default class IndexPage extends React.Component<PageProps> {
                 <img src={config.siteLogo} className="logo-image round-image-edges" />
                 <h1>Hello. I'm Michiel Bugher.</h1>
                 <p>A software developer with a passion for quality code.</p>
-                <a href="https://www.linkedin.com/in/michielbugher" target="_blank">
+                <a href="https://www.linkedin.com/in/michielbugher">
                   <img className="contact-logo" src={config.linkedInLogo} alt="Linked In" />
                 </a>
-                <a href="https://github.com/MichielDean" target="_blank">
+                <a href="https://github.com/MichielDean">
                   <img className="contact-logo" src={config.gitHubLogo} alt="Github" />
                 </a>
-                <a href="mailto:miyike@gmail.com" target="_blank">
+                <a href="mailto:miyike@gmail.com">
                   <img className="contact-logo round-image-edges" src={config.emailLogo} alt="Github" />
                 </a>
               </HomepageContent>
