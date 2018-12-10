@@ -98,7 +98,8 @@ export default class IndexPage extends React.Component<PageProps> {
                   <div>
                     <p>c#</p>
                     <p>Javascript (React, Angular, Protractor)</p>
-                    <p>Python</p>
+                    <p>Typescript</p>
+                    <p>SQL</p>
                     <p>Selenium</p>
                     <p>Test Automation</p>
                   </div>
