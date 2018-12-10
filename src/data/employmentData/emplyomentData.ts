@@ -38,7 +38,8 @@ export class ScentsyEmploymentData implements IEmploymentData {
       `We also added analytics and triage tools for the testing team.`,
     `When given the opportunity, I would pick up defects that happened to make it to production and fix them, as well as add unit/integration tests so they wouldn't happen again`,
     `I was an integral part of a team that oversaw the migration of our databases to the latest version of SQL server and helped implement clustering and failover functionality.`,
-    `Worked closely with architecture to identify performance bottlenecks using New Relic and Dynatrace. This involved reproducing issues with load testing and writing detailed bug reports that called out specific lines of code to be fixed.`,
+    `Worked closely with architecture to identify performance bottlenecks using New Relic and Dynatrace. This involved reproducing issues with load testing and writing detailed bug reports that called out specific lines of code to be fixed. ` +
+      `This allowed us to increase the amount of traffic we could handle during flash sales, which drastically improved the earnings potential.`,
   ];
 }
 
