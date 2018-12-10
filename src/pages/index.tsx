@@ -53,7 +53,7 @@ const GridRow: any = styled.div`
 `;
 
 const HomepageContent: any = styled.div`
-  max-width: 30rem;
+  max-width: 50rem;
   text-align: ${(props: any) => (props.center ? 'center' : 'left')};
 `;
 
