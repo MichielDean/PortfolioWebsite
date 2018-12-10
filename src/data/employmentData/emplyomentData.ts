@@ -3,6 +3,7 @@ export interface IEmploymentData {
   title: string;
   employmentStart: string;
   employmentEnd: string;
+  location: string;
   details: string[];
 }
 
@@ -11,6 +12,7 @@ export class LionBridgeEmploymentData implements IEmploymentData {
   title: string = 'Test Engineer';
   employmentStart: string = 'April 2007';
   employmentEnd: string = 'May 2011';
+  location: string = 'Boise, Idaho';
   details: string[] = [
     `In my time at Lionbridge, I was able to show competence and work my way into becoming a full time employee (FTE). ` +
       `This may not seem like a great feat, but there were very few FTE hired within the company and it was very difficult to become one.`,
@@ -26,6 +28,7 @@ export class ScentsyEmploymentData implements IEmploymentData {
   title: string = 'SDET III';
   employmentStart: string = 'May 2011';
   employmentEnd: string = 'April 2017';
+  location: string = 'Boise, Idaho';
   details: string[] = [
     `When I started at Scentsy, I was a manual tester. I immediately began my journey to become and SDET and moved into the role rather quickly. ` +
       `What really shined was my ability to learn quickly and my unrelenting work ethic.`,
@@ -43,7 +46,8 @@ export class RpsEmploymentData implements IEmploymentData {
   employer: string = 'Risk Placement Services';
   title: string = 'Senior SDET';
   employmentStart: string = 'April 2017';
-  employmentEnd: string = 'PRESENT (Remote Position)';
+  employmentEnd: string = 'PRESENT';
+  location: string = 'Remote Position';
   details: string[] = [
     `When I started at RPS, there was very little in the way of automated testing. Within my first month, I had established an automation framework and set it up within the delivery pipeline. ` +
       `This process gave management much more confidence and I pushed for automatic deployments out to staging. This was a big deal because before this time, everything required user interaction and I am a champion for automation throughout the entire life cycle.`,

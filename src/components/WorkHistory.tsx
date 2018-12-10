@@ -30,7 +30,7 @@ export class WorkHistory extends React.PureComponent<Props> {
       <div>
         <Employer>{this.props.employmentData.employer}</Employer>
         <p>
-          {this.props.employmentData.employmentStart} - {this.props.employmentData.employmentEnd}
+          {this.props.employmentData.employmentStart} - {this.props.employmentData.employmentEnd} ({this.props.employmentData.location})
         </p>
         <EmploymentDetails>{this.employmentDetails}</EmploymentDetails>
       </div>
