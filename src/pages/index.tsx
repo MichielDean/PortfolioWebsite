@@ -88,9 +88,7 @@ export default class IndexPage extends React.Component<PageProps> {
                     knowledge, I regularly take online courses on Coursera and buy/read relevant books. There's almost always some sort of
                     side project that I'm developing to flex my software muscles.
                   </p>
-                  <p>
-                    I love sepending time with my family and traveling. I am comfortable hiking outdoors, or inside playing video games.
-                  </p>
+                  <p>I love spending time with my family and traveling. I am comfortable hiking outdoors, or inside playing video games.</p>
                 </Collapsible>
                 <Collapsible trigger="Employment History" lazyRender={true} overflowWhenOpen="auto">
                   <WorkHistory employmentData={new RpsEmploymentData()} />
