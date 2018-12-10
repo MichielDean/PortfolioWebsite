@@ -112,7 +112,7 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const Footer = styled.footer`
-  text-align: center;
+  text-align: left;
   padding: 1rem 0;
   span {
     font-size: 0.75rem;
