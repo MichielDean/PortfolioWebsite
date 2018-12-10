@@ -97,7 +97,7 @@ const GlobalStyle = createGlobalStyle`
     padding: 10px;
     border: 1px solid ${theme.colors.primary};
     border-top: 0;
-    max-height:350px;
+    max-height:450px;
     overflow:auto;
 
     p {
