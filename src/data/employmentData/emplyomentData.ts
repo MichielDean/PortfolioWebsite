@@ -39,7 +39,7 @@ export class ScentsyEmploymentData implements IEmploymentData {
     `When given the opportunity, I would pick up defects that happened to make it to production and fix them, as well as add unit/integration tests so they wouldn't happen again`,
     `I was an integral part of a team that oversaw the migration of our databases to the latest version of SQL server and helped implement clustering and failover functionality.`,
     `Worked closely with architecture to identify performance bottlenecks using New Relic and Dynatrace. This involved reproducing issues with load testing and writing detailed bug reports that called out specific lines of code to be fixed. ` +
-      `This allowed us to increase the amount of traffic we could handle during flash sales, which drastically improved the earnings potential.`,
+      `Fixing these bottlenecks allowed us to increase the amount of traffic we could handle during flash sales, which drastically improved the earnings potential.`,
   ];
 }
 
@@ -51,13 +51,13 @@ export class RpsEmploymentData implements IEmploymentData {
   location: string = 'Remote Position';
   details: string[] = [
     `When I started at RPS, there was very little in the way of automated testing. Within my first month, I had established an automation framework and set it up within the delivery pipeline. ` +
-      `This process gave management much more confidence and I pushed for automatic deployments out to staging. This was a big deal because before this time, everything required user interaction and I am a champion for automation throughout the entire life cycle.`,
-    `Drastically increased the quality of the websites that we offer by pushing testing into the entire delivery process. This also increased time to production for our projects and made production deployments less frightening to the team.`,
-    `Standardized templates for projects inside of TeamCity. This initiative also transformed repositories so they are all structured the same. When you open an API, you can always expect to see the same thing. ` +
-      `This simplifies development and helps increase productivity of the development team. This also simplified what it takes to setup a new project with TeamCity itself. What used to take hours to complete is now a few minute process.`,
-    `I also standardized deployments in Octopus by type of application. This means that setting up deployments for a new micro service takes minutes instead of hours. Since we create a lot of services, this has sped up development time drastically, which has increased the time to market for all projects.`,
+      `With more confidence in the quality of code, I pushed for automatic deployments out to staging. This was a big deal because before this time, everything required user interaction and I am a champion for automation throughout the entire life cycle.`,
+    `Drastically increased the quality of the websites that we offer by pushing testing into the entire delivery process. With these in place, the team was able to decrease time to production for our projects and make production deployments less of an event and more of a joy.`,
+    `Standardized templates for projects inside of TeamCity. Part of this initiative was also to transform repositories so they are all structured the same. When you open a repository for an API, you can always expect to see the same patterns. ` +
+      `The simplified process within TeamCity also changed from taking multiple hours to complete into a few minute process. With simplified setup, we saw a productivity increase within the project and release life cycle.`,
+    `I also standardized deployments in Octopus by type of application. There were drastic decreases in the time required to set up deployments for a new micro service. Again, went from taking multiple hours to complete to just a few minutes. Since we create a lot of services, this has sped up development time drastically, which has increased the time to market for all projects.`,
     `There was traditionally very little done for the new hire process, but I was determined to change that. I authored a powershell script using Chocolatey that installed all of the software dependencies that a new developer would need. ` +
-      `This means that new developers can now hit the ground running when they start and not spend the first few days installing the necessary software. It can also be run to update existing software, which reduces developer downtime while enabling them to keep their software up to date.`,
+      `What this means for new developers, is that they can now hit the ground running when they start and not spend the first few days installing the necessary software. It can also be run to update existing software, which reduces developer downtime while enabling them to keep their software up to date.`,
     `In my time here, I have also been promoting scrum best practices. I have championed for many iterative changes that have drastically changed the landscape of our development process. We have switched from sprints to kanban and have seen a very large increase in productivity. ` +
       `Stakeholders have commented that they feel like the department is much more responsive to their needs and are more engaged with the development process. The IT department doesn't have the best reputation and I am working hard to help improve that image and repair relationships.`,
     `To keep my other skills sharp, I also practice by taking tickets from the top of the backlog to work as a developer. I believe it is important to step out of your comfort zone periodically as it is the best way to personally grow.`,
