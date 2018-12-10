@@ -11,6 +11,7 @@ import lighten from 'polished/lib/color/lighten';
 import Collapsible from 'react-collapsible';
 import { WorkHistory } from '../components/WorkHistory';
 import { LionBridgeEmploymentData, ScentsyEmploymentData, RpsEmploymentData } from '../data/employmentData/emplyomentData';
+import { EmailLink } from '../components/EmailLink';
 
 const Homepage = styled.main`
   display: flex;
@@ -75,9 +76,7 @@ export default class IndexPage extends React.Component<PageProps> {
                 <a href="https://github.com/MichielDean">
                   <img className="contact-logo" src={config.gitHubLogo} alt="Github" />
                 </a>
-                <a href="mailto:miyike@gmail.com">
-                  <img className="contact-logo round-image-edges" src={config.emailLogo} alt="Github" />
-                </a>
+                <EmailLink />
               </HomepageContent>
             </GridRow>
             <GridRow>
