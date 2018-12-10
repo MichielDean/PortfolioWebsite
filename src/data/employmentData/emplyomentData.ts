@@ -12,8 +12,8 @@ export class LionBridgeEmploymentData implements IEmploymentData {
   employmentStart: string = 'April 2007';
   employmentEnd: string = 'May 2011';
   details: string[] = [
-    `In my time at Lionbridge, I was able to show competence and work my way into becoming a full time employee(FTE). ` +
-      `This may not seem like a great feat, but there were very few FTEs in the company and it was very difficult to become one.`,
+    `In my time at Lionbridge, I was able to show competence and work my way into becoming a full time employee (FTE). ` +
+      `This may not seem like a great feat, but there were very few FTE hired within the company and it was very difficult to become one.`,
     `During one contract in particular, we had a team of developers assigned to a project and I was assigned to a separate contract by myself, testing their software. ` +
       `The manager at the company liked my work so much, he kept my contract much longer than expected, even after cancelling the other development project.`,
     `Manual testing on a wide variety of products including mobile, web, hardware specifications, translations, etc.`,
