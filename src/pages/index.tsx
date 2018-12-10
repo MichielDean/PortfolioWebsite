@@ -106,10 +106,6 @@ export default class IndexPage extends React.Component<PageProps> {
                     <p>Test Automation</p>
                   </div>
                 </Collapsible>
-                <Collapsible trigger="Education">
-                  <p>Middleton High School — High School Diploma (1999 - 2003)</p>
-                  <p>Programming: Self-taught</p>
-                </Collapsible>
               </HomepageContent>
             </GridRow>
           </Homepage>
