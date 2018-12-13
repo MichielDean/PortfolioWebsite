@@ -30,7 +30,7 @@ export class ScentsyEmploymentData implements IEmploymentData {
   employmentEnd: string = 'April 2017';
   location: string = 'Boise, Idaho';
   details: string[] = [
-    `When I started at Scentsy, I was a manual tester. I immediately began my journey to become and SDET and moved into the role rather quickly. ` +
+    `When I started at Scentsy, I was a manual tester. I immediately began my journey to become an SDET and moved into the role rather quickly. ` +
       `What really shined was my ability to learn quickly and my unrelenting work ethic.`,
     `In time, I became the lead SDET for the IT department and ran many, very successful projects that increased quality across the organization. ` +
       `My favorite project was building a test dashboard using .net core and D3.js. I had no experience with these technologies when I started, but we ended the project with massive success. ` +
