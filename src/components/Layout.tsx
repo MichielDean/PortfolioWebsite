@@ -109,6 +109,10 @@ const GlobalStyle = createGlobalStyle`
       }
     }
   }
+  .formstackForm {
+    width: 100%;
+    height: 390px;
+  }
 `;
 
 const Footer = styled.footer`
