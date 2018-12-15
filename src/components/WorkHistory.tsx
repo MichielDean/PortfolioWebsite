@@ -1,5 +1,5 @@
 import React from 'react';
-import { IEmploymentData } from '../data/employmentData/emplyomentData';
+import { IEmploymentData } from '../data/employmentData/employmentData';
 import styled from 'styled-components';
 
 interface Props {
