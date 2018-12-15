@@ -10,7 +10,7 @@ import darken from 'polished/lib/color/darken';
 import lighten from 'polished/lib/color/lighten';
 import Collapsible from 'react-collapsible';
 import { WorkHistory } from '../components/WorkHistory';
-import { LionBridgeEmploymentData, ScentsyEmploymentData, RpsEmploymentData } from '../data/employmentData/emplyomentData';
+import { LionBridgeEmploymentData, ScentsyEmploymentData, RpsEmploymentData } from '../data/employmentData/employmentData';
 import { EmailLink } from '../components/EmailLink';
 
 const Homepage = styled.main`
