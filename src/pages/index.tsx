@@ -104,6 +104,9 @@ export default class IndexPage extends React.Component<PageProps> {
                     <p>Test Automation</p>
                   </div>
                 </Collapsible>
+                <Collapsible trigger="Report A Bug">
+                  <iframe className="formstackForm" src="https://michielbugher.formstack.com/forms/michielbugher" title="Bug Report" />
+                </Collapsible>
               </HomepageContent>
             </GridRow>
           </Homepage>
