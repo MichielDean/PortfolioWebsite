@@ -14,6 +14,8 @@ export default {
   linkedInLogo: '/assets/linkedInLogo.png',
   gitHubLogo: '/assets/githubLogo.png',
   emailLogo: '/assets/emailLogo.png',
+  cvLogo: '/assets/cv.png',
+  resumePdf: '/assets/MichielBugherResume.pdf',
 
   // Manifest and Progress color
   // See: https://developers.google.com/web/fundamentals/web-app-manifest/
