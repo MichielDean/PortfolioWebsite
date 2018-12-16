@@ -76,6 +76,9 @@ export default class IndexPage extends React.Component<PageProps> {
                 <a href="https://github.com/MichielDean">
                   <img className="contact-logo" src={config.gitHubLogo} alt="Github" />
                 </a>
+                <a href={config.resumePdf} download="MichielBugherResume.pdf">
+                  <img className="contact-logo" src={config.cvLogo} alt="CV" />
+                </a>
                 <EmailLink />
               </HomepageContent>
             </GridRow>
