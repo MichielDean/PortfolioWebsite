@@ -53,7 +53,7 @@ const GridRow: any = styled.div`
 `;
 
 const HomepageContent: any = styled.div`
-  max-width: 50rem;
+  max-width: 45rem;
   text-align: ${(props: any) => (props.center ? 'center' : 'left')};
 `;
 
@@ -106,9 +106,6 @@ export default class IndexPage extends React.Component<PageProps> {
                     <p>Selenium</p>
                     <p>Test Automation</p>
                   </div>
-                </Collapsible>
-                <Collapsible trigger="Report a Bug / Request a Feature">
-                  <iframe className="formstackForm" src="https://michielbugher.formstack.com/forms/michielbugher" title="Bug Report" />
                 </Collapsible>
               </HomepageContent>
             </GridRow>
