@@ -72,17 +72,15 @@ const GlobalStyle = createGlobalStyle`
   }
   .name-tooltip {
     position: relative;
-    display: inline-block;
   }
   .name-tooltip .name-tooltip-text {
     visibility: hidden;
     width: 130px;
     height: 35px;
-    background-color: black;
-    color: #fff;
+    background-color: transparent;
     position: absolute;
     top: -35px;
-    left: 55%;
+    left: 60%;
   }
   .name-tooltip:hover .name-tooltip-text {
     visibility: visible;
