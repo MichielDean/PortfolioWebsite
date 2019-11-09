@@ -10,7 +10,12 @@ import darken from 'polished/lib/color/darken';
 import lighten from 'polished/lib/color/lighten';
 import Collapsible from 'react-collapsible';
 import { WorkHistory } from '../components/WorkHistory';
-import { LionBridgeEmploymentData, ScentsyEmploymentData, RpsEmploymentData } from '../data/employmentData/employmentData';
+import {
+  LionBridgeEmploymentData,
+  ScentsyEmploymentData,
+  RpsEmploymentData,
+  JelliEmploymentData,
+} from '../data/employmentData/employmentData';
 import { EmailLink } from '../components/EmailLink';
 
 const Homepage = styled.main`
@@ -93,6 +98,7 @@ export default class IndexPage extends React.Component<PageProps> {
                   <p>I love spending time with my family and traveling. I am comfortable hiking outdoors, or inside playing video games.</p>
                 </Collapsible>
                 <Collapsible trigger="Employment History" lazyRender={true} overflowWhenOpen="auto">
+                  <WorkHistory employmentData={new JelliEmploymentData()} />
                   <WorkHistory employmentData={new RpsEmploymentData()} />
                   <WorkHistory employmentData={new ScentsyEmploymentData()} />
                   <WorkHistory employmentData={new LionBridgeEmploymentData()} />
@@ -100,6 +106,7 @@ export default class IndexPage extends React.Component<PageProps> {
                 <Collapsible trigger="Technology / Skills">
                   <div>
                     <p>c#</p>
+                    <p>Java</p>
                     <p>Javascript (React, Angular, Protractor)</p>
                     <p>Typescript</p>
                     <p>SQL</p>

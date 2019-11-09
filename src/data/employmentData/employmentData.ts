@@ -47,7 +47,7 @@ export class RpsEmploymentData implements IEmploymentData {
   employer: string = 'Risk Placement Services';
   title: string = 'Senior SDET';
   employmentStart: string = 'April 2017';
-  employmentEnd: string = 'PRESENT';
+  employmentEnd: string = 'March 2018';
   location: string = 'Remote Position';
   details: string[] = [
     `When I started at RPS, there was very little in the way of automated testing. Within my first month, I had established an automation framework and set it up within the delivery pipeline. ` +
@@ -61,5 +61,18 @@ export class RpsEmploymentData implements IEmploymentData {
     `In my time here, I have also been promoting scrum best practices. I have championed for many iterative changes that have drastically changed the landscape of our development process. We have switched from sprints to kanban and have seen a very large increase in productivity. ` +
       `Stakeholders have commented that they feel like the department is much more responsive to their needs and are more engaged with the development process. The IT department doesn't have the best reputation and I am working hard to help improve that image and repair relationships.`,
     `To keep my other skills sharp, I also practice by taking tickets from the top of the backlog to work as a developer. I believe it is important to step out of your comfort zone periodically as it is the best way to personally grow.`,
+  ];
+}
+
+export class JelliEmploymentData implements IEmploymentData {
+  employer: string = 'Jelli';
+  title: string = 'Software Engineering Manager, QA';
+  employmentStart: string = 'March 2018';
+  employmentEnd: string = 'PRESENT';
+  location: string = 'Boise, Idaho';
+  details: string[] = [
+    `Started as a Senior SDET, but was promoted to manager very quickly. My main responsibilities are hiring/recruiting and managing a small team of 4-6 QA members.`,
+    `I am still responsible for being an individual contributor, so I write mostly framework level code to help SDETs work more efficiently.`,
+    `Simplifying environments and cleaning up the CI platform to make releasing a non-event.`,
   ];
 }
