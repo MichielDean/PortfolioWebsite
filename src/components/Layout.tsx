@@ -70,6 +70,23 @@ const GlobalStyle = createGlobalStyle`
     width: auto;
     height: 34px;
   }
+  .name-tooltip {
+    position: relative;
+    display: inline-block;
+  }
+  .name-tooltip .name-tooltip-text {
+    visibility: hidden;
+    width: 130px;
+    height: 35px;
+    background-color: black;
+    color: #fff;
+    position: absolute;
+    top: -35px;
+    left: 55%;
+  }
+  .name-tooltip:hover .name-tooltip-text {
+    visibility: visible;
+  }
   .Collapsible__trigger {
     display: block;
     position: relative;
