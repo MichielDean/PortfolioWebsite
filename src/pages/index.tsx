@@ -73,7 +73,10 @@ export default class IndexPage extends React.Component<PageProps> {
             <GridRow background={true}>
               <HomepageContent center={true}>
                 <img src={config.siteLogo} className="logo-image round-image-edges" />
-                <h1>Hello. I'm Michiel Bugher.</h1>
+                <div className="name-tooltip">
+                  <h1>Hello. I'm Michiel Bugher.</h1>
+                  <p className="name-tooltip-text">maɪkəl Booyer</p>
+                </div>
                 <p>A software developer with a passion for quality code.</p>
                 <a href="https://www.linkedin.com/in/michielbugher">
                   <img className="contact-logo" src={config.linkedInLogo} alt="Linked In" />
