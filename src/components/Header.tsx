@@ -48,7 +48,7 @@ const Content = styled.div`
 `;
 
 interface Props {
-  children: any;
+  children?: any;
   banner?: string;
 }
 

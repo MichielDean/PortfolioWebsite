@@ -90,8 +90,11 @@ const GlobalStyle = createGlobalStyle`
     position: relative;
     background: ${theme.colors.primary};
     padding: 10px;
-    color: ${theme.colors.white}
-    text-align: center
+    color: ${theme.colors.white};
+    text-align: center;
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
 
     &:after {
       font-family: 'FontAwesome';
@@ -124,6 +127,29 @@ const GlobalStyle = createGlobalStyle`
       }
     }
   }
+  @media print {
+    html, body { 
+      height: auto; 
+    }
+    .noPrint, .Collapsible__trigger::after {
+      display: none !important;
+    }
+    .Collapsible__contentOuter {
+      height: auto !important;
+      overflow: initial !important;
+    }
+    .Collapsible__contentInner {
+      max-height: initial !important;
+      border: initial !important;
+    }
+    .Collapsible__trigger {
+      font-size: 20px !important;
+    }
+    .pageBreak {
+      clear: both;
+      page-break-after: always !important; 
+    }
+  }
 `;
 
 const Footer = styled.footer`
@@ -152,10 +178,10 @@ export class Layout extends React.PureComponent<{}> {
             <React.Fragment>
               <GlobalStyle />
               {children}
-              <Footer>
+              <Footer className="noPrint">
                 &copy; {split(data.site.buildTime, '.')[2]} Michiel Bugher. All rights reserved. <br />
                 <a href="https://github.com/MichielDean/PortfolioWebsite">GitHub Repository</a> <br />
-                <span>Last build: {data.site.buildTime}</span>
+                <span>Last build date: {data.site.buildTime}</span>
               </Footer>
             </React.Fragment>
           </ThemeProvider>

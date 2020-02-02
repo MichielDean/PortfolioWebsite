@@ -17,6 +17,9 @@ import {
   JelliEmploymentData,
 } from '../data/employmentData/employmentData';
 import { EmailLink } from '../components/EmailLink';
+import { AboutMeData } from '../data/aboutMe/aboutMeData';
+import { TechnologySkillsData } from '../data/technologySkills/technologySkillsData';
+import { BulletedListData } from '../components/BulletListDetails';
 
 const Homepage = styled.main`
   display: flex;
@@ -75,16 +78,16 @@ export default class IndexPage extends React.Component<PageProps> {
                 <img src={config.siteLogo} className="logo-image round-image-edges" />
                 <div className="name-tooltip round-image-edges">
                   <h1>Hello. I'm Michiel Bugher.</h1>
-                  <p className="name-tooltip-text">maɪkəl Booyer</p>
+                  <p className="name-tooltip-text noPrint">maɪkəl Booyer</p>
                 </div>
                 <p>A software developer with a passion for quality code.</p>
-                <a href="https://www.linkedin.com/in/michielbugher">
+                <a href="https://www.linkedin.com/in/michielbugher" className="noPrint">
                   <img className="contact-logo" src={config.linkedInLogo} alt="Linked In" />
                 </a>
-                <a href="https://github.com/MichielDean">
+                <a href="https://github.com/MichielDean" className="noPrint">
                   <img className="contact-logo" src={config.gitHubLogo} alt="Github" />
                 </a>
-                <a href={config.resumePdf} download="MichielBugherResume.pdf">
+                <a href={config.resumePdf} download="MichielBugherResume.pdf" className="noPrint">
                   <img className="contact-logo" src={config.cvLogo} alt="CV" />
                 </a>
                 <EmailLink />
@@ -93,29 +96,16 @@ export default class IndexPage extends React.Component<PageProps> {
             <GridRow>
               <HomepageContent>
                 <Collapsible trigger="About Me" open={true}>
-                  <p>
-                    I have been testing software since 2007 and I started learning to write code in 2011. To feed my continual thirst for
-                    knowledge, I regularly take online courses on Coursera and buy/read relevant books. There's almost always some sort of
-                    side project that I'm developing to flex my software muscles.
-                  </p>
-                  <p>I love spending time with my family and traveling. I am comfortable hiking outdoors, or inside playing video games.</p>
+                  <BulletedListData bulletedListData={new AboutMeData()} />
                 </Collapsible>
-                <Collapsible trigger="Employment History" lazyRender={true} overflowWhenOpen="auto">
+                <Collapsible trigger="Employment History" lazyRender={false} overflowWhenOpen="auto">
                   <WorkHistory employmentData={new JelliEmploymentData()} />
                   <WorkHistory employmentData={new RpsEmploymentData()} />
                   <WorkHistory employmentData={new ScentsyEmploymentData()} />
                   <WorkHistory employmentData={new LionBridgeEmploymentData()} />
                 </Collapsible>
                 <Collapsible trigger="Technology / Skills">
-                  <div>
-                    <p>c#</p>
-                    <p>Java</p>
-                    <p>Javascript (React, Angular, Protractor)</p>
-                    <p>Typescript</p>
-                    <p>SQL</p>
-                    <p>Selenium</p>
-                    <p>Test Automation</p>
-                  </div>
+                  <BulletedListData bulletedListData={new TechnologySkillsData()} />
                 </Collapsible>
               </HomepageContent>
             </GridRow>

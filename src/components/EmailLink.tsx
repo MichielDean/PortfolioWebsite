@@ -9,7 +9,7 @@ export class EmailLink extends React.Component {
   render() {
     return (
       <a href="#" onClick={this.handleClick}>
-        <img className="contact-logo round-image-edges" src={config.emailLogo} alt="Github" />
+        <img className="contact-logo round-image-edges noPrint" src={config.emailLogo} alt="Github" />
       </a>
     );
   }

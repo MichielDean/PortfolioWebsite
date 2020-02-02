@@ -1,6 +1,7 @@
 import React from 'react';
 import { IEmploymentData } from '../data/employmentData/employmentData';
 import styled from 'styled-components';
+import { BulletedListData } from './BulletListDetails';
 
 interface Props {
   employmentData: IEmploymentData;
@@ -19,12 +20,6 @@ export const EmploymentDetails: any = styled.ul`
 `;
 
 export class WorkHistory extends React.PureComponent<Props> {
-  employmentDetails = this.props.employmentData.details.map((detail, index) => (
-    <li key={index}>
-      <p>{detail}</p>
-    </li>
-  ));
-
   public render() {
     return (
       <div>
@@ -32,7 +27,7 @@ export class WorkHistory extends React.PureComponent<Props> {
         <p>
           {this.props.employmentData.employmentStart} - {this.props.employmentData.employmentEnd} ({this.props.employmentData.location})
         </p>
-        <EmploymentDetails>{this.employmentDetails}</EmploymentDetails>
+        <BulletedListData bulletedListData={this.props.employmentData} />
       </div>
     );
   }

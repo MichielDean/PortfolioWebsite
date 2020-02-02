@@ -1,10 +1,11 @@
-export interface IEmploymentData {
+import { IBulletedListData } from '../bulletedListData';
+
+export interface IEmploymentData extends IBulletedListData {
   employer: string;
   title: string;
   employmentStart: string;
   employmentEnd: string;
   location: string;
-  details: string[];
 }
 
 export class LionBridgeEmploymentData implements IEmploymentData {
@@ -71,8 +72,12 @@ export class JelliEmploymentData implements IEmploymentData {
   employmentEnd: string = 'PRESENT';
   location: string = 'Boise, Idaho';
   details: string[] = [
-    `Started as a Senior SDET, but was promoted to manager very quickly. My main responsibilities are hiring/recruiting and managing a small team of 4-6 QA members.`,
-    `I am still responsible for being an individual contributor, so I write mostly framework level code to help SDETs work more efficiently.`,
-    `Simplifying environments and cleaning up the CI platform to make releasing a non-event.`,
+    `I started my career at Jelli as a Senior SDET, but was promoted to manager very quickly. When the opportunity was presented, I rose to the challenge to take on a new path for my career. The QA team had very low morale and was not writing much test automation. In my time, I have focused on increasing team happiness, productivity, and knowledge. We now have a very functional team that is properly embedded into scrum teams and writing effective test automation for each sprint.`,
+    `I am still have passion for writing code and test architecture, so I have been authoring mostly framework level code to help my team work more efficiently.`,
+    `We have not stopped recruiting since I joined Jelli, with the 2020 goal of doubling our engineering team size. We are using recruiters to source candidates for our open Software Developer in Test positions, but I am responsible for all screening and hiring decisions. I have had great success in hiring multiple, talented engineers to help grow our test team.`,
+    `I am very passionate about CI/CD, so I created a project to consolidate our non-production environments. When I started, no one could list the environments and their purpose. I created a proposal for the operations team and presented it to them. I have been working closely with them to ensure a successful transition to the newly consolidated environments. This simplified process is saving the company money and frustration. With fewer, well focused environments, deployment decisions are fast and easy.`,
+    `We currently use Jenkins for our Continuous Integration platform. The implementation within our Jenkins instance is very old and outdated, so I am also leading a project to modernize our implementation by using Jenkinsfiles. This approach of infrastructure as code has introduced more people in the company to the CI pipeline. There is no more need for QA (the smallest team) to completely own or maintain this piece if infrastructure. It has empowered developers to take charge of how their code is packaged and released. A positive side effect of this is that we also have more deterministic builds, with fewer flaky results.`,
+    `Versioning was a very large issue at Jelli that I also wanted to tackle. I gave multiple presentations to the teams, educating them and encouraging them to move to semantic versioning. I created multiple wiki pages on how to properly manage versioning for each of our tech stacks. I started with our QA codebases as a proof of concept to show the team how it is more effective. This is in the process of rolling out to all of our codebases.`,
+    `Shifting left with our testing efforts was an early goal of mine. On my first major project, I created a build process that uses docker and embedded tomcat to spin up a local environment. This allows us to write API level integration tests on a local machine, without a deployment to an environment. This also allows us to run our unit and integration tests during the build process. The result is that the developers have feedback much earlier in the process, if they break an endpoint and has increased productivity overall. The API endpoints on this project are virtually bug free.`,
   ];
 }
