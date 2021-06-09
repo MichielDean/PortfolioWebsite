@@ -1,72 +1,41 @@
-require('source-map-support').install();
-require('ts-node').register({
-  compilerOptions: {
-    module: 'commonjs',
-    target: 'es2017',
-  },
-});
-
-const config = require('./config/SiteConfig').default;
-const pathPrefix = config.pathPrefix === '/' ? '' : config.pathPrefix;
+const config = require("./data/siteConfig");
 
 module.exports = {
-  pathPrefix: config.pathPrefix,
   siteMetadata: {
-    siteUrl: config.siteUrl + pathPrefix,
+    title: config.siteTitle,
+    description: config.siteDescription,
+    author: config.authorName,
+    ...config
   },
+  pathPrefix: config.pathPrefix,
   plugins: [
-    'gatsby-plugin-react-helmet',
-    'gatsby-plugin-styled-components',
-    'gatsby-plugin-offline',
-    'gatsby-plugin-typescript',
-    'gatsby-plugin-sass',
-    'gatsby-plugin-manifest',
-    'gatsby-plugin-catch-links',
-    'gatsby-plugin-sitemap',
-    'gatsby-plugin-lodash',
+    `gatsby-plugin-react-helmet`,
+    `gatsby-transformer-sharp`,
+    `gatsby-plugin-sharp`,
     {
-      resolve: `gatsby-plugin-google-tagmanager`,
+      resolve: `gatsby-plugin-manifest`,
       options: {
-        id: config.Google_Tag_Manager_ID,
-        // Include GTM in development.
-        // Defaults to false meaning GTM will only be loaded in production.
-        includeInDevelopment: true,
+        name: config.siteTitle,
+        short_name: config.siteTitle,
+        start_url: config.pathPrefix,
+        background_color: config.background_color,
+        theme_color: config.theme_color,
+        display: config.display,
+        icon: config.icon,
       },
     },
+    `gatsby-plugin-styled-components`,
     {
-      resolve: 'gatsby-transformer-remark',
+      resolve: `gatsby-plugin-google-gtag`,
       options: {
-        plugins: [
-          {
-            resolve: 'gatsby-remark-external-links',
-            options: {
-              target: '_blank',
-              rel: 'nofollow noopener noreferrer',
-            },
-          },
-          'gatsby-remark-prismjs',
-          'gatsby-remark-autolink-headers',
+        // You can add multiple tracking ids and a pageview event will be fired for all of them.
+        trackingIds: [
+          config.googleAnalyticsId // Google Analytics / GA
         ],
       },
     },
-    {
-      resolve: 'gatsby-plugin-typography',
-      options: {
-        pathToConfigModule: 'src/utils/typography.ts',
-      },
-    },
-    {
-      resolve: 'gatsby-plugin-manifest',
-      options: {
-        name: config.siteTitle,
-        short_name: config.siteTitleAlt,
-        description: config.siteDescription,
-        start_url: config.pathPrefix,
-        background_color: config.backgroundColor,
-        theme_color: config.themeColor,
-        display: 'standalone',
-        icon: config.favicon,
-      },
-    },
-  ]
-};
+    // this (optional) plugin enables Progressive Web App + Offline functionality
+    // To learn more, visit: https://gatsby.app/offline
+    // 'gatsby-plugin-offline',
+  ],
+}
