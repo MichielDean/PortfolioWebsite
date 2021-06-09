@@ -1,7 +1,7 @@
 module.exports = {
   siteTitle: `Hello. I'm Michiel Bugher.`,
-  siteDescription: `Create your online curriculum in just a few minutes with this starter`,
-  keyWords: ['gatsbyjs', 'react', 'curriculum'],
+  siteDescription: `Portfolio Website`,
+  keyWords: ['gatsbyjs', 'react', 'portfolio'],
   authorName: 'Michiel Bugher',
   githubUsername: 'MichielDean',
   authorAvatar: '/images/me.png',
@@ -113,5 +113,5 @@ module.exports = {
   fontColor: "#000000cc",
   enableDarkmode: true, // If true, enables dark mode switch
   display: 'minimal-ui',
-  icon: 'src/assets/gatsby-icon.png'
+  icon: 'src/assets/favicon.png'
 }
