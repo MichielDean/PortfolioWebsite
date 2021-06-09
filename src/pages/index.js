@@ -38,6 +38,7 @@ const Home = ({ className, location }) => {
       <SEO
         title={title}
         keywords={keywords}
+        description={siteConfig.description}
       />
 
       <Wrapper className={className} >
