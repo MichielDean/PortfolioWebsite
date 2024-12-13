@@ -1,27 +1,30 @@
-import React from 'react';
+import * as React from 'react';
 import { useTheme } from '../context/ThemeContext';
+import { useWindowSize } from '../hooks/useWindowSize';
 import { ThemeMode } from '../types/themeTypes';
 
 const ThemeToggle: React.FC = () => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, colors } = useTheme();
+  const { isMobile } = useWindowSize();
 
   return (
-    <button 
-      onClick={toggleTheme} 
+    <button
+      onClick={toggleTheme}
       style={{
         position: 'absolute',
-        top: window.innerWidth <= 768 ? '0.5rem' : '1rem',
-        right: window.innerWidth <= 768 ? '0.5rem' : '1rem',
-        padding: window.innerWidth <= 768 ? '0.3rem 0.8rem' : '0.5rem 1rem',
+        top: isMobile ? '0.5rem' : '1rem',
+        right: isMobile ? '0.5rem' : '1rem',
+        padding: isMobile ? '0.3rem 0.8rem' : '0.5rem 1rem',
         borderRadius: '20px',
+        backgroundColor: colors.accent,
+        color: '#ffffff',
         border: 'none',
-        backgroundColor: theme === ThemeMode.Light ? '#63b3ed' : '#2d3748',
-        color: '#fff',
         cursor: 'pointer',
-        transition: 'background-color 0.3s ease'
+        transition: 'all 0.3s ease',
+        fontSize: isMobile ? '0.8rem' : '1rem',
       }}
     >
-      {theme === ThemeMode.Light ? '🌞 Light Mode' : '🌜 Dark Mode'}
+      {theme === ThemeMode.Dark ? '☀️ Light' : '🌙 Dark'}
     </button>
   );
 };
