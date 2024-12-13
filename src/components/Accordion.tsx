@@ -3,6 +3,7 @@ import { WorkHistory } from './profile';
 import { getWorkExperienceStyles } from '../styles/pageStyles';
 import { useTheme } from '../context/ThemeContext';
 import { calculateYears, formatDuration, calculateCompanyTotalYears } from '../utils/dateUtils';
+import { useWindowSize } from '../hooks/useWindowSize';
 
 interface AccordionProps {
   workHistory: WorkHistory[];
@@ -10,6 +11,7 @@ interface AccordionProps {
 
 const Accordion: React.FC<AccordionProps> = ({ workHistory }) => {
   const { colors } = useTheme();
+  const { isMobile } = useWindowSize();
   const workExperienceStyles = getWorkExperienceStyles(colors);
   const [expandedIndices, setExpandedIndices] = useState<number[]>([]); // Changed from [0] to []
 
@@ -31,8 +33,14 @@ const Accordion: React.FC<AccordionProps> = ({ workHistory }) => {
     return acc;
   }, [] as { company: string; positions: WorkHistory[] }[]);
 
+  const containerStyles = {
+    padding: isMobile ? "1rem" : "1.5rem",
+    backgroundColor: colors.containerBg,
+    transition: "all 0.2s ease",
+  };
+
   return (
-    <div>
+    <div style={containerStyles}>
       {groupedWorkHistory.map((group, groupIndex) => (
         <div
           key={group.company}
@@ -81,6 +89,7 @@ const Accordion: React.FC<AccordionProps> = ({ workHistory }) => {
                 <div
                   style={{
                     ...workExperienceStyles.workContainer,
+                    padding: isMobile ? "1rem" : "1.5rem",
                     borderRadius: 0,
                     paddingLeft: '2rem',
                     display: 'flex',
