@@ -1,15 +1,4 @@
 {
-    "cSpell.words": [
-        "Bugher",
-        "Dynatrace",
-        "Jelli",
-        "Jenkinsfiles",
-        "Kanban",
-        "Linkedin",
-        "Lionbridge",
-        "Michiel",
-        "SDET",
-        "Scentsy",
-        "gatsbyjs"
-    ]
+    "files.autoSave": "afterDelay",
+    "prettier.experimentalTernaries": true
 }
