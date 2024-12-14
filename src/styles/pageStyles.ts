@@ -83,8 +83,8 @@ export const getWorkExperienceStyles = (colors: Theme) => ({
     bottom: 0,
     left: 0,
     right: 0,
-    height: '50px',
-    background: `linear-gradient(to bottom, transparent, ${colors.containerBg})`,
+    height: '120px',
+    background: `linear-gradient(to bottom, transparent 0%, ${colors.containerBg} 60%)`,
     pointerEvents: 'none'
   }
 });

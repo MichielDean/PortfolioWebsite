@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { WorkHistory } from './profile';
 import { getWorkExperienceStyles } from '../styles/pageStyles';
 import { useTheme } from '../context/ThemeContext';
@@ -13,7 +13,16 @@ const Accordion: React.FC<AccordionProps> = ({ workHistory }) => {
   const { colors } = useTheme();
   const { isMobile } = useWindowSize();
   const workExperienceStyles = getWorkExperienceStyles(colors);
-  const [expandedIndices, setExpandedIndices] = useState<number[]>([]); // Changed from [0] to []
+  const [expandedIndices, setExpandedIndices] = useState<number[]>([0]); // Changed from [] to [0]
+  const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [hasOverflow, setHasOverflow] = useState<boolean[]>([]);
+
+  useEffect(() => {
+    const newHasOverflow = contentRefs.current.map(
+      (ref) => ref ? ref.scrollHeight > 200 : false
+    );
+    setHasOverflow(newHasOverflow);
+  }, [workHistory]);
 
   const toggleExpand = (index: number) => {
     setExpandedIndices((prev) =>
@@ -103,29 +112,24 @@ const Accordion: React.FC<AccordionProps> = ({ workHistory }) => {
                       {position.duration} • {formatDuration(calculateYears(position.duration))}
                     </div>
                   </div>
-                  <div style={{
-                    color: colors.accent,
-                    fontSize: '0.9rem',
-                    fontStyle: 'italic',
-                    marginLeft: '1rem',
-                  }}>
-                    {isExpanded ? 'Click to show less ↑' : 'Click to show more ↓'}
-                  </div>
                 </div>
                 <div style={{
                   position: 'relative',
                   paddingLeft: '2.5rem',
                 }}>
-                  <div style={{
-                    ...(isExpanded ? workExperienceStyles.expandedContent : workExperienceStyles.previewContent),
-                    opacity: 1,
-                    maxHeight: isExpanded ? 'none' : '150px',
-                  }}>
+                  <div 
+                    ref={el => contentRefs.current[fullIndex] = el}
+                    style={{
+                      ...(isExpanded ? workExperienceStyles.expandedContent : workExperienceStyles.previewContent),
+                      opacity: 1,
+                      maxHeight: isExpanded ? 'none' : '200px',
+                    }}
+                  >
                     <ul style={workExperienceStyles.description}>
                       {position.description.map((item, i) => (
                         <li key={i} style={workExperienceStyles.descriptionItem}>
                           {item.description}
-                          {isExpanded && item.moreInfo && (
+                          {item.moreInfo && (
                             <ul>
                               {item.moreInfo.map((info, j) => (
                                 <li key={j} style={workExperienceStyles.subDescriptionItem}>
@@ -138,7 +142,40 @@ const Accordion: React.FC<AccordionProps> = ({ workHistory }) => {
                       ))}
                     </ul>
                   </div>
-                  {!isExpanded && <div style={workExperienceStyles.gradientOverlay} />}
+                  {!isExpanded && hasOverflow[fullIndex] && (
+                    <>
+                      <div style={workExperienceStyles.gradientOverlay} />
+                      <div style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        textAlign: 'center',
+                        padding: '2rem 0 1rem 0',
+                        color: colors.accent,
+                        fontSize: '0.9rem',
+                        fontStyle: 'italic',
+                        cursor: 'pointer',
+                        background: 'transparent',
+                        pointerEvents: 'none',
+                      }}>
+                        Show more ↓
+                      </div>
+                    </>
+                  )}
+                  {isExpanded && hasOverflow[fullIndex] && (
+                    <div style={{
+                      textAlign: 'center',
+                      marginTop: '2rem',
+                      marginBottom: '1rem',
+                      color: colors.accent,
+                      fontSize: '0.9rem',
+                      fontStyle: 'italic',
+                      cursor: 'pointer',
+                    }}>
+                      Show less ↑
+                    </div>
+                  )}
                 </div>
               </div>
             );
