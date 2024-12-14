@@ -4,9 +4,6 @@ const config: GatsbyConfig = {
   siteMetadata: {
     siteUrl: `https://www.michielbugher.com`,
   },
-  // More easily incorporate content into your pages through automatic TypeScript type generation and better GraphQL IntelliSense.
-  // If you use VSCode you can also use the GraphQL plugin
-  // Learn more at: https://gatsby.dev/graphql-typegen
   graphqlTypegen: true,
   plugins: [
     'gatsby-plugin-image',
@@ -22,14 +19,38 @@ const config: GatsbyConfig = {
     {
       resolve: `gatsby-plugin-netlify`,
       options: {
-        headers: {}, // option to add more headers. `Link` headers are transformed by the below criteria
-        allPageHeaders: [], // option to add headers for all pages. `Link` headers are transformed by the below criteria
-        mergeSecurityHeaders: true, // boolean to turn off the default security headers
-        mergeCachingHeaders: true, // boolean to turn off the default caching headers
-        transformHeaders: (headers: any, path: any) => headers, // optional transform for manipulating headers under each path (e.g.sorting), etc.
-        generateMatchPathRewrites: true, // boolean to turn off automatic creation of redirect rules for client only paths
+        headers: {},
+        allPageHeaders: [],
+        mergeSecurityHeaders: true,
+        mergeCachingHeaders: true,
+        transformHeaders: (headers: any, path: any) => headers,
+        generateMatchPathRewrites: true,
         excludeDatastoreFromEngineFunction: false,
         imageCDN: false
+      },
+    },
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `Michiel Bugher Portfolio`,
+        short_name: `MB Portfolio`,
+        start_url: `/`,
+        background_color: `#ffffff`,
+        theme_color: `#663399`,
+        display: `minimal-ui`,
+        icon: `src/images/favicon.png`, // Must be square, min 512x512px
+        icons: [
+          {
+            src: `src/images/favicon.png`,
+            sizes: `192x192`,
+            type: `image/png`,
+          },
+          {
+            src: `src/images/favicon.png`,
+            sizes: `512x512`,
+            type: `image/png`,
+          },
+        ],
       },
     }
   ]
