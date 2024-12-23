@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@netlify/headers-parser": "^7.3.0",
-    "gatsby": "^5.14.0",
+    "gatsby": "^5.14.1",
     "gatsby-plugin-image": "^3.14.0",
     "gatsby-plugin-netlify": "^5.1.1",
     "gatsby-plugin-sharp": "^5.14.0",
