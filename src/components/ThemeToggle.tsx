@@ -1,30 +1,21 @@
 import * as React from 'react';
 import { useTheme } from '../context/ThemeContext';
-import { useWindowSize } from '../hooks/useWindowSize';
 import { ThemeMode } from '../types/themeTypes';
+import * as styles from './ThemeToggle.module.css';
 
 const ThemeToggle: React.FC = () => {
-  const { theme, toggleTheme, colors } = useTheme();
-  const { isMobile } = useWindowSize();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <button
       onClick={toggleTheme}
-      style={{
-        position: 'absolute',
-        top: isMobile ? '0.5rem' : '1rem',
-        right: isMobile ? '0.5rem' : '1rem',
-        padding: isMobile ? '0.3rem 0.8rem' : '0.5rem 1rem',
-        borderRadius: '20px',
-        backgroundColor: colors.accent,
-        color: '#ffffff',
-        border: 'none',
-        cursor: 'pointer',
-        transition: 'all 0.3s ease',
-        fontSize: isMobile ? '0.8rem' : '1rem',
-      }}
+      className={styles.button}
+      aria-label={`Switch to ${theme === ThemeMode.Dark ? 'light' : 'dark'} mode`}
     >
-      {theme === ThemeMode.Dark ? '☀️ Light' : '🌙 Dark'}
+      <span className={styles.icon}>
+        {theme === ThemeMode.Dark ? '☀️' : '🌙'}
+      </span>
+      <span>{theme === ThemeMode.Dark ? 'Light' : 'Dark'}</span>
     </button>
   );
 };
