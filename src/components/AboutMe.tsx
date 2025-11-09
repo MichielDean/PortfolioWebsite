@@ -1,8 +1,10 @@
 import { profileData } from "../data/profileData";
+import { calculateYearsInIndustry } from "../utils/dateUtils";
 import * as styles from './AboutMe.module.css';
 import profileImage from '../images/me.png';
 
 const AboutMe = () => {
+  const yearsOfExperience = calculateYearsInIndustry(profileData.workHistory);
   const ProfileImage = (
     <div className={styles.profileImage}>
       <img
@@ -45,7 +47,7 @@ const AboutMe = () => {
         <h3 className={styles.sectionTitle}>About Me</h3>
         <div className={styles.content}>
           <p>
-            Hello! I'm Michiel Bugher (pronounced "Michael Boo-yer"), a seasoned software engineering leader with over 17 years of expertise in Quality Assurance and Test Automation. My career journey began as a Software Test Engineer, and I have since advanced to the role of Director of Software Engineering. I am passionate about building high-performing QA teams, implementing robust automation strategies, and fostering a culture centered on quality.
+            Hello! I'm Michiel Bugher (pronounced "Michael Boo-yer"), a seasoned software engineering leader with over {yearsOfExperience} years of expertise in Quality Assurance and Test Automation. My career journey began as a Software Test Engineer, and I have since advanced to the role of Director of Software Engineering. I am passionate about building high-performing QA teams, implementing robust automation strategies, and fostering a culture centered on quality.
           </p>
           <p>
             I have been immersed in the world of software testing since 2007, and my journey into coding began in 2011. My career trajectory has been shaped by a strong foundation in technical expertise and a passion for innovation. In early 2019, I embraced my first management role, driven by my inherent leadership skills and a commitment to guiding teams towards excellence.
