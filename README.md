@@ -1,14 +1,16 @@
 
 # Portfolio Site
 
-A personal portfolio website built with Gatsby and TypeScript showcasing my professional experience and skills in software engineering and quality assurance.
+A personal portfolio website built with Vite, React, and TypeScript showcasing my professional experience and skills in software engineering and quality assurance.
 
 ## 🛠 Technologies
 
-- Gatsby
+- Vite
+- React 18
 - TypeScript
-- React
-- CSS-in-JS
+- React Router
+- React Helmet Async
+- CSS Modules
 - Responsive Design
 - Theme Switching (Dark/Light Mode)
 - Netlify Hosting
@@ -22,7 +24,7 @@ npm install
 
 2. **Start Development Server**
 ```sh
-npm run develop
+npm run dev
 ```
 
 The site will be running at `http://localhost:8000`
@@ -34,5 +36,31 @@ npm run build
 
 4. **Preview Production Build**
 ```sh
-npm run serve
+npm run preview
 ```
+
+## 🧪 Testing
+
+Run tests with:
+```sh
+npm test
+```
+
+Watch mode:
+```sh
+npm test:watch
+```
+
+Coverage report:
+```sh
+npm test:coverage
+```
+
+## 📦 Deployment
+
+The site is configured for Netlify deployment:
+- Build command: `npm run build`
+- Publish directory: `dist`
+- Node version: 20
+
+The build automatically runs tests before creating the production bundle.

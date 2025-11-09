@@ -1,46 +1,79 @@
-import { Profile } from "../components/profile";
+export interface WorkHistory {
+  company: string;
+  role: string;
+  duration: string;
+  description: Description[];
+}
+
+export interface Description {
+  description: string;
+  moreInfo: string[];
+}
+
+export interface Project {
+  name: string;
+  description: string;
+  link: string;
+}
+
+export interface Profile {
+  name: string;
+  title: string;
+  description: string;
+  linkedin: string;
+  github: string;
+  stackOverflow: string;
+  projects: Project[];
+  workHistory: WorkHistory[];
+}
 
 export const profileData: Profile = {
         "workHistory": [
           {
-            "role": "Director of Software Engineering [QA]",
+            "role": "Director of Software Engineering",
             "company": "Triton Digital",
             "duration": "Mar 2022 - Present",
             "description": [
               {
-                "description": "Cross-Functional Leadership",
+                "description": "Multi-Team Leadership",
                 "moreInfo": [
-                  "Directed a team of SDETs across the Triton Advertising stack, overseeing five scrum teams and managing seven direct reports to ensure seamless collaboration and efficient delivery of high-quality software products.",
-                  "Collaborated with cross-functional teams, including product management, development, and operations, to align QA efforts with broader business objectives.",
-                  "Served as a key liaison between QA and executive leadership, providing insights and recommendations to drive strategic decision-making.",
+                  "Direct three engineering teams across the Triton Advertising stack: two development teams and the organization-wide QA team, overseeing five scrum teams and managing multiple direct reports to ensure seamless collaboration and efficient delivery of high-quality software products.",
+                  "Lead technical strategy and architecture decisions across assigned development teams and quality assurance, aligning engineering efforts with product vision and business objectives.",
+                  "Served as a key liaison between engineering teams and executive leadership, providing insights and recommendations to drive strategic decision-making.",
                   "Held responsible for the overall success of five scrum teams, driving the adoption of best practices, agile methodologies, and innovative solutions to achieve project goals and deliverables."
                 ]
               },
               {
-                "description": "Test Architecture",
+                "description": "Cross-Functional Collaboration",
                 "moreInfo": [
-                  "Defined and implemented an end-to-end test architecture that is reusable across all teams, significantly improving the efficiency and effectiveness of testing processes and reducing redundancy."
+                  "Fostered a unified engineering culture across development and QA teams, promoting shared ownership of quality, open communication, and collaborative problem-solving.",
+                  "Collaborated with cross-functional teams, including product management, operations, and stakeholders, to align team efforts with broader business objectives.",
+                  "Broke down silos between development and QA within assigned teams, creating integrated workflows that improved product outcomes, velocity, and team morale."
                 ]
               },
               {
-                "description": "Mentoring and Team Development",
+                "description": "Test Architecture & Engineering Excellence",
                 "moreInfo": [
-                  "Conducted bi-weekly one-on-one meetings with all direct reports to provide personalized guidance, performance feedback, and professional development support, fostering a culture of continuous improvement.",
-                  "Mentored and coached junior team members, fostering their professional growth and enhancing overall team capabilities.",
-                  "Conducted regular training sessions on QA best practices, tools, and methodologies to keep the team up-to-date with industry advancements."
+                  "Defined and implemented an end-to-end test architecture that is reusable across all teams in the organization, significantly improving the efficiency and effectiveness of testing processes and reducing redundancy.",
+                  "Established quality standards and engineering best practices adopted across managed development and QA teams.",
+                  "Championed shift-left testing practices, integrating quality early in the development lifecycle."
                 ]
               },
               {
-                "description": "Team Collaboration",
+                "description": "Team Development & Mentorship",
                 "moreInfo": [
-                  "Fostered a collaborative culture between development and test teams, promoting open communication, teamwork, and shared ownership of quality, resulting in improved product outcomes and team morale."
+                  "Conducted bi-weekly one-on-one meetings with all direct reports across development and QA to provide personalized guidance, performance feedback, and professional development support, fostering a culture of continuous improvement.",
+                  "Mentored and coached engineers at all levels, fostering their professional growth and enhancing overall team capabilities across multiple disciplines.",
+                  "Conducted regular training sessions on engineering best practices, tools, and methodologies to keep teams up-to-date with industry advancements.",
+                  "Built career development paths for team members, resulting in internal promotions and increased retention."
                 ]
               },
               {
-                "description": "Strategic QA Planning",
+                "description": "Strategic Planning & Innovation",
                 "moreInfo": [
-                  "Developed and executed strategic QA plans to support the organization’s long-term goals, ensuring that QA strategies align with business objectives and product roadmaps.",
-                  "Implemented data-driven approaches to QA, leveraging metrics and analytics to identify areas for improvement and drive continuous enhancement of QA processes."
+                  "Developed and executed strategic plans for assigned teams to support the organization's long-term goals, ensuring that technical strategies align with business objectives and product roadmaps.",
+                  "Implemented data-driven approaches to engineering, leveraging metrics and analytics to identify areas for improvement and drive continuous enhancement of processes.",
+                  "Led technical innovation initiatives within managed teams, evaluating and adopting new tools and technologies to improve team efficiency and product quality."
                 ]
               }
             ]

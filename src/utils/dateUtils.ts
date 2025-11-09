@@ -1,4 +1,4 @@
-import { WorkHistory } from "../components/profile";
+import { WorkHistory } from "../data/profileData";
 
 export const calculateYears = (durationString: string): number => {
   const [startDate, endDate] = durationString.split(' - ');
