@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { WorkHistory } from '../data/profileData';
-import { calculateYears, formatDuration, calculateCompanyTotalYears } from '../utils/dateUtils';
+import { calculateYears, formatDuration, calculateCompanyTotalYears, calculateYearsInIndustry } from '../utils/dateUtils';
 import { profileData } from '../data/profileData';
 import * as styles from './ScrollExperience.module.css';
 
@@ -279,8 +279,8 @@ const ScrollExperience: React.FC<ScrollExperienceProps> = ({ workHistory }) => {
                     <div className={styles.endIcon}>✨</div>
                     <h2 className={styles.endTitle}>That's My Journey</h2>
                     <p className={styles.endText}>
-                        {workHistory.length} positions across {groupedWorkHistory.length} companies,
-                        building innovative solutions and leading teams to success.
+                        {calculateYearsInIndustry(workHistory)}+ years evolving from hands-on testing through automation architecture
+                        to engineering leadership, driving quality excellence and team success.
                     </p>
                 </div>
             </div>

@@ -39,3 +39,19 @@ export const calculateCompanyTotalYears = (positions: WorkHistory[]): string => 
   
   return formatDuration(roundToHalf(totalYears));
 };
+
+export const calculateYearsInIndustry = (workHistory: WorkHistory[]): number => {
+  if (workHistory.length === 0) return 0;
+  
+  // Find the earliest start date
+  const earliestStart = workHistory.reduce((earliest, work) => {
+    const startDate = new Date(work.duration.split(' - ')[0]);
+    return startDate < earliest ? startDate : earliest;
+  }, new Date(workHistory[0].duration.split(' - ')[0]));
+  
+  const now = new Date();
+  const diffTime = now.getTime() - earliestStart.getTime();
+  const years = diffTime / (1000 * 60 * 60 * 24 * 365.25);
+  
+  return Math.floor(years);
+};
