@@ -82,7 +82,18 @@ export class LLMValidator {
 
       // Ensure issues and warnings are string arrays
       const issues = Array.isArray(parsed.issues) 
-        ? parsed.issues.map((issue: any) => typeof issue === 'string' ? issue : JSON.stringify(issue))
+        ? parsed.issues.map((issue: any) => {
+            if (typeof issue === 'string') {
+              return issue;
+            } else if (typeof issue === 'object' && issue !== null) {
+              // Extract meaningful error from object
+              if (issue.issue) {
+                return `${issue.company || 'Unknown'} - ${issue.role || 'Unknown role'}: ${issue.issue}`;
+              }
+              return JSON.stringify(issue);
+            }
+            return String(issue);
+          }).filter((issue: string) => issue && !issue.includes('No issues found'))
         : [];
       
       const warnings = Array.isArray(parsed.warnings)
@@ -90,7 +101,7 @@ export class LLMValidator {
         : [];
 
       return {
-        isValid: parsed.isValid !== false, // Default to true if unclear
+        isValid: issues.length === 0 && parsed.isValid !== false, // Valid if no real issues
         issues,
         warnings,
         confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 50

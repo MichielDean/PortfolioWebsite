@@ -1,6 +1,6 @@
 # Resume Tailor Tool
 
-AI-powered resume tailoring with LLM-first architecture, RAG learning, and anti-fabrication safeguards. All processing happens locally via Ollama.
+AI-powered resume and cover letter generation with LLM-first architecture, RAG learning, and anti-fabrication safeguards. All processing happens locally via Ollama.
 
 ## Quick Start
 
@@ -8,7 +8,7 @@ AI-powered resume tailoring with LLM-first architecture, RAG learning, and anti-
 # 1. Install Ollama from https://ollama.ai
 # 2. Pull a large model: ollama pull gpt-oss:120b
 # 3. Update your data: src/data/profileData.ts
-# 4. Generate resume:
+# 4. Generate resume & cover letter:
 .\scripts\tailor-resume.ps1 -JobFile job.txt -JobTitle "Job Title" -Company "Company"
 ```
 
@@ -17,11 +17,20 @@ AI-powered resume tailoring with LLM-first architecture, RAG learning, and anti-
 🤖 **Local AI** - Private, offline processing with Ollama  
 🎯 **LLM-First** - Intelligent content selection, not keyword matching  
 🛡️ **Anti-Fabrication** - Auto-correction prevents company/role hallucination  
+📝 **Cover Letters** - Personalized letters highlighting skill matches & growth opportunities  
 � **Single Source** - Data maintained only in profileData.ts  
 🧠 **RAG Learning** - Learns from past successful applications  
 📊 **Match Scoring** - LLM-based resume-job fit percentage  
 📄 **ATS-Compliant** - Clean HTML output  
 ✅ **Truthful** - Maps all LLM output to actual profile data
+
+## What's New: Cover Letter Generation
+
+The tool now automatically generates personalized cover letters that:
+- **Highlight Skill Matches**: Identifies your top 3-5 matching skills with concrete examples
+- **Show Growth Opportunities**: Explains what excites you about learning new technologies/domains
+- **Demonstrate Company Fit**: Expresses why you're specifically interested in this company
+- **Maintain Authenticity**: Uses only real experiences from your profile
 
 ## Architecture
 
@@ -29,9 +38,11 @@ AI-powered resume tailoring with LLM-first architecture, RAG learning, and anti-
 - `src/data/profileData.ts` - **Single source of truth** for work experience
 - `src/resume/data/resumeData.ts` - Skills list with keywords (contact info deprecated)
 - `src/resume/cli/resumeTailor.ts` - Main CLI
-- `src/resume/services/resumeTailoringEngine.ts` - LLM-first tailoring
+- `src/resume/services/resumeTailoringEngine.ts` - LLM-first resume tailoring
+- `src/resume/services/coverLetterEngine.ts` - **NEW**: LLM-first cover letter generation
 - `src/resume/services/llmValidator.ts` - LLM-based fact-checking
 - `src/resume/services/profileDataAdapter.ts` - Converts profileData to resume format
+- `src/resume/services/promptLibrary.ts` - RAG prompt templates (includes cover letter prompts)
 
 ### How It Works
 1. **Load Profile** - Reads from profileData.ts as single source
@@ -39,45 +50,100 @@ AI-powered resume tailoring with LLM-first architecture, RAG learning, and anti-
 3. **Auto-Correction** - Maps LLM output back to actual profile data
 4. **Validation** - LLM verifies no fabrication occurred
 5. **HTML Generation** - Creates clean, ATS-friendly resume
+6. **Cover Letter** - AI generates personalized cover letter with skill matches and growth areas
 
 ## Usage
 
 ### Recommended: PowerShell Script (Windows)
 ```powershell
+# Generate both resume and cover letter
 .\scripts\tailor-resume.ps1 -JobFile "C:\path\to\job.txt" -JobTitle "Senior Engineer" -Company "Acme Corp"
+
+# Generate only cover letter
+.\scripts\tailor-resume.ps1 -JobFile "C:\path\to\job.txt" -JobTitle "Senior Engineer" -Company "Acme Corp" -CoverLetterOnly
+
+# Skip cover letter generation
+.\scripts\tailor-resume.ps1 -JobFile "C:\path\to\job.txt" -JobTitle "Senior Engineer" -Company "Acme Corp" -NoCoverLetter
 ```
 
 ### Alternative: Direct Node Command
 ```bash
 # First build
-npm run resume:build
+npm run build
 
-# Then run
+# Generate both resume and cover letter
 node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Senior Engineer" --company "Acme Corp"
-```
 
-### Basic
-```bash
-node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Senior Engineer" --company "Acme Corp"
-```
+# Generate only cover letter
+node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Senior Engineer" --company "Acme Corp" --cover-letter-only
 
-### Direct Invocation
-```bash
-node dist/resume-cli/resume/cli/resumeTailor.js \
-  --job-file examples/job.txt \
-  --job-title "Director of QA" \
-  --company "Bestow" \
-  --output resume.html
+# Skip cover letter (resume only)
+node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Senior Engineer" --company "Acme Corp" --no-cover-letter
+
+# Customize cover letter tone
+node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Senior Engineer" --company "Acme Corp" --tone enthusiastic
 ```
 
 ### Options
 ```
---job-file, -j <file>     Job posting file
---job-title, -t <title>   Job title
---company, -c <name>      Company name
---output, -o <file>       Output (default: generated/resume.html)
+--job-file, -j <file>     Job posting file (required)
+--job-title, -t <title>   Job title (required)
+--company, -c <name>      Company name (required)
+--output, -o <file>       Resume output (default: generated/resume.html)
+--cover-letter-only       Generate only cover letter (no resume)
+--no-cover-letter         Skip cover letter generation
+--tone <tone>             Cover letter tone: professional, enthusiastic, conversational (default: professional)
 --help, -h                Show help
 ```
+
+### Generated Files
+
+By default, all files are saved to the `generated/` folder:
+- `resume.html` - Formatted HTML resume
+- `resume.pdf` - PDF version of resume
+- `cover-letter.html` - Formatted HTML cover letter
+- `cover-letter.pdf` - PDF version of cover letter
+- `cover-letter.txt` - Plain text version of cover letter
+
+## Cover Letter Structure
+
+The generated cover letter includes:
+
+### 1. Opening Paragraph
+Strong statement of interest and immediate value proposition. The LLM analyzes your background and the role to create an authentic, compelling opening.
+
+### 2. Skill Matches (3-5 key skills)
+Each skill match includes:
+- **Skill name**: Specific technical or leadership skill
+- **Experience examples**: Concrete examples from your work history demonstrating this skill
+- **Relevance rating**: How well this skill matches the job requirements (1-10)
+
+Example:
+```
+**Test Infrastructure & CI/CD**: Led the implementation of comprehensive test infrastructure 
+supporting 50+ engineers across multiple teams, integrating with GitHub Actions and cloud 
+platforms for continuous testing at scale.
+```
+
+### 3. Growth Opportunities (2-3 areas)
+Demonstrates your learning mindset by highlighting:
+- **Area**: What you're excited to learn or grow into
+- **Current experience**: Foundation you already have
+- **Desired growth**: What you want to achieve
+- **Why excited**: Authentic explanation of your interest
+
+Example:
+```
+**Platform Engineering at Scale**: Building on my experience architecting test infrastructure, 
+I'm eager to expand into broader platform engineering challenges, particularly around 
+infrastructure as code and developer experience tooling.
+```
+
+### 4. Company Alignment
+Shows you've researched the company and explains why you're specifically interested in working there (based on job posting and any additional research provided).
+
+### 5. Closing Paragraph
+Enthusiastic statement of interest with a clear call to action, expressing eagerness for next steps.
 
 ### Track Results
 ```bash
