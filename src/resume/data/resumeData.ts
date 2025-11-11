@@ -3,21 +3,11 @@ import contactJson from '../../../contact.json' with { type: 'json' };
 import { profileData } from '../../data/profileData.js';
 
 /**
- * ═══════════════════════════════════════════════════════════════════════════════
- * RESUME DATA - DEPRECATED (Mostly)
- * ═══════════════════════════════════════════════════════════════════════════════
+ * Resume Data for CLI Resume Tailoring
  * 
- * IMPORTANT: This file is mostly deprecated in favor of the LLM-first architecture!
- * 
- * SINGLE SOURCE OF TRUTH: src/data/profileData.ts
- * - Work experience and achievements are now ONLY maintained in profileData.ts
- * - The new simplified resume system uses profileData.ts directly
- * 
- * WHAT'S STILL USED HERE:
- * - skills: The expanded skills list with keywords (actively used)
- * - contactInfo: Sources from contact.json with validation
- * 
- * ═══════════════════════════════════════════════════════════════════════════════
+ * Contact Info: Sourced from contact.json (validated)
+ * Skills: Expanded list with keywords for job matching
+ * Work History: Use profileData.ts (src/data/profileData.ts)
  */
 
 // Validate contact.json exists and has required fields
