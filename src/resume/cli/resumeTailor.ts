@@ -9,6 +9,7 @@ import { getProfileForResume } from '../services/profileDataAdapter.js';
 import { OllamaService } from '../services/ollamaService.js';
 import { ResumeTailoringEngine } from '../services/resumeTailoringEngine.js';
 import { LLMValidator } from '../services/llmValidator.js';
+import { CoverLetterEngine } from '../services/coverLetterEngine.js';
 
 // ANSI colors
 const colors = {
@@ -26,17 +27,22 @@ interface CLIOptions {
   jobTitle?: string;
   company?: string;
   output?: string;
+  coverLetterOnly?: boolean;
+  noCoverLetter?: boolean;
+  tone?: 'professional' | 'enthusiastic' | 'conversational';
 }
 
 class ResumeCLI {
   private ollama: OllamaService;
   private tailoring: ResumeTailoringEngine;
   private validator: LLMValidator;
+  private coverLetter: CoverLetterEngine;
 
   constructor() {
     this.ollama = new OllamaService();
     this.tailoring = new ResumeTailoringEngine(this.ollama);
     this.validator = new LLMValidator(this.ollama);
+    this.coverLetter = new CoverLetterEngine(this.ollama);
   }
 
   async run(args: string[]): Promise<void> {
@@ -87,6 +93,15 @@ class ResumeCLI {
         case '-o':
           options.output = args[++i];
           break;
+        case '--cover-letter-only':
+          options.coverLetterOnly = true;
+          break;
+        case '--no-cover-letter':
+          options.noCoverLetter = true;
+          break;
+        case '--tone':
+          options.tone = args[++i] as any;
+          break;
         case '--help':
         case '-h':
           this.printHelp();
@@ -115,6 +130,12 @@ class ResumeCLI {
       // Read job posting
       console.log(`${colors.cyan}→ Reading job posting...${colors.reset}`);
       const jobPosting = fs.readFileSync(options.jobFile!, 'utf-8');
+
+      // Handle cover letter only mode
+      if (options.coverLetterOnly) {
+        await this.generateCoverLetterOnly(profile, jobPosting, options);
+        return;
+      }
 
       // Tailor resume using LLM
       console.log(`${colors.cyan}→ Tailoring resume with LLM...${colors.reset}`);
@@ -163,18 +184,112 @@ class ResumeCLI {
       const pdfFile = outputFile.replace('.html', '.pdf');
       await this.generatePDF(html, pdfFile);
 
-      console.log(`\n${colors.green}${colors.bright}✓ Success!${colors.reset}\n`);
+      console.log(`\n${colors.green}${colors.bright}✓ Resume Generated!${colors.reset}\n`);
       console.log(`Resume Details:`);
       console.log(`  Job Match Score: ${tailored.matchScore}%`);
       console.log(`  Skills Matched: ${tailored.relevantSkills.length}`);
       console.log(`  Experiences: ${tailored.selectedExperiences.length}`);
       console.log(`  HTML Output: ${outputFile}`);
       console.log(`  PDF Output:  ${pdfFile}\n`);
+
+      // Generate cover letter (unless disabled)
+      if (!options.noCoverLetter) {
+        console.log(`${colors.cyan}→ Generating cover letter...${colors.reset}`);
+        await this.generateAndSaveCoverLetter(profile, jobPosting, options);
+      }
       
     } catch (error) {
       console.error(`${colors.red}Error: ${error}${colors.reset}`);
       process.exit(1);
     }
+  }
+
+  private async generateCoverLetterOnly(profile: any, jobPosting: string, options: CLIOptions): Promise<void> {
+    console.log(`${colors.cyan}→ Generating cover letter...${colors.reset}`);
+    
+    const coverLetterResult = await this.coverLetter.generateCoverLetter(
+      profile,
+      jobPosting,
+      options.jobTitle!,
+      options.company!,
+      { 
+        tone: options.tone || 'professional',
+        maxLength: 400
+      }
+    );
+
+    // Save cover letter HTML
+    const coverLetterHTML = this.coverLetter.exportToHTML(
+      coverLetterResult,
+      profile.name,
+      profile.email,
+      profile.phone,
+      options.company!,
+      options.jobTitle!
+    );
+
+    const htmlFile = './generated/cover-letter.html';
+    fs.writeFileSync(htmlFile, coverLetterHTML);
+
+    // Generate PDF
+    const pdfFile = './generated/cover-letter.pdf';
+    await this.generatePDF(coverLetterHTML, pdfFile);
+
+    // Save text version
+    const textFile = './generated/cover-letter.txt';
+    fs.writeFileSync(textFile, coverLetterResult.fullLetter);
+
+    console.log(`\n${colors.green}${colors.bright}✓ Cover Letter Generated!${colors.reset}\n`);
+    console.log(`Cover Letter Details:`);
+    console.log(`  Tone: ${coverLetterResult.tone}`);
+    console.log(`  Skill Matches: ${coverLetterResult.skillMatches.length}`);
+    console.log(`  Growth Areas: ${coverLetterResult.growthOpportunities.length}`);
+    console.log(`  HTML Output: ${htmlFile}`);
+    console.log(`  PDF Output:  ${pdfFile}`);
+    console.log(`  Text Output: ${textFile}\n`);
+  }
+
+  private async generateAndSaveCoverLetter(profile: any, jobPosting: string, options: CLIOptions): Promise<void> {
+    const coverLetterResult = await this.coverLetter.generateCoverLetter(
+      profile,
+      jobPosting,
+      options.jobTitle!,
+      options.company!,
+      { 
+        tone: options.tone || 'professional',
+        maxLength: 400
+      }
+    );
+
+    // Save cover letter HTML
+    const coverLetterHTML = this.coverLetter.exportToHTML(
+      coverLetterResult,
+      profile.name,
+      profile.email,
+      profile.phone,
+      options.company!,
+      options.jobTitle!
+    );
+
+    const htmlFile = './generated/cover-letter.html';
+    fs.writeFileSync(htmlFile, coverLetterHTML);
+
+    // Generate PDF
+    const pdfFile = './generated/cover-letter.pdf';
+    await this.generatePDF(coverLetterHTML, pdfFile);
+
+    // Save text version
+    const textFile = './generated/cover-letter.txt';
+    fs.writeFileSync(textFile, coverLetterResult.fullLetter);
+
+    console.log(`\n${colors.green}${colors.bright}✓ Cover Letter Generated!${colors.reset}\n`);
+    console.log(`Cover Letter Details:`);
+    console.log(`  Tone: ${coverLetterResult.tone}`);
+    console.log(`  Skill Matches: ${coverLetterResult.skillMatches.length}`);
+    console.log(`  Growth Areas: ${coverLetterResult.growthOpportunities.length}`);
+    console.log(`  HTML Output: ${htmlFile}`);
+    console.log(`  PDF Output:  ${pdfFile}`);
+    console.log(`  Text Output: ${textFile}\n`);
   }
 
   private async generatePDF(html: string, outputPath: string): Promise<void> {
@@ -331,13 +446,27 @@ ${colors.bright}Options:${colors.reset}
   -t, --job-title <title>   Job title (required)
   -c, --company <name>      Company name (required)
   -o, --output <file>       Output filename (default: generated/resume.html)
+  --cover-letter-only       Generate only a cover letter (no resume)
+  --no-cover-letter         Skip cover letter generation
+  --tone <tone>             Cover letter tone: professional, enthusiastic, conversational (default: professional)
   -h, --help                Show this help message
 
-${colors.bright}Example:${colors.reset}
-  ${colors.cyan}node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Director of QA" --company "Bestow"${colors.reset}
+${colors.bright}Examples:${colors.reset}
+  ${colors.cyan}# Generate both resume and cover letter${colors.reset}
+  node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Staff Engineer" --company "ClickUp"
+
+  ${colors.cyan}# Generate only cover letter${colors.reset}
+  node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Staff Engineer" --company "ClickUp" --cover-letter-only
+
+  ${colors.cyan}# Generate resume without cover letter${colors.reset}
+  node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Staff Engineer" --company "ClickUp" --no-cover-letter
+
+  ${colors.cyan}# Generate with enthusiastic tone${colors.reset}
+  node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Staff Engineer" --company "ClickUp" --tone enthusiastic
 
 ${colors.bright}Note:${colors.reset}
   All generated files are saved to the ${colors.cyan}generated/${colors.reset} folder.
+  Generated files: resume.html, resume.pdf, cover-letter.html, cover-letter.pdf, cover-letter.txt
 `);
   }
 }

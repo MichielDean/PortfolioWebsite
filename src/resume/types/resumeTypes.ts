@@ -99,3 +99,37 @@ export interface ResumeTailoringOptions {
   summaryStyle?: 'concise' | 'detailed' | 'keyword-focused';
   atsOptimization?: boolean; // Enable ATS-specific formatting
 }
+
+/**
+ * Cover Letter Types
+ */
+
+export interface SkillMatch {
+  skill: string;
+  experienceExamples: string[]; // Brief examples from work history demonstrating this skill
+  relevanceRating: number; // 1-10, how relevant this skill is to the role
+}
+
+export interface GrowthOpportunity {
+  area: string; // Area of growth (e.g., "Test Infrastructure Architecture")
+  currentExperience: string; // What you've done that relates to this
+  desiredGrowth: string; // What you're excited to learn/do
+  whyExcited: string; // Why this opportunity excites you
+}
+
+export interface CoverLetterResult {
+  opening: string; // Strong opening paragraph expressing interest
+  skillMatches: SkillMatch[]; // Top 3-5 matching skills with examples
+  growthOpportunities: GrowthOpportunity[]; // 2-3 areas for growth/excitement
+  companyAlignment: string; // Why you're interested in this specific company
+  closing: string; // Strong closing paragraph
+  tone: 'professional' | 'enthusiastic' | 'conversational';
+  fullLetter: string; // Complete formatted cover letter text
+}
+
+export interface CoverLetterOptions {
+  tone?: 'professional' | 'enthusiastic' | 'conversational';
+  maxLength?: number; // Maximum word count
+  focusAreas?: ('technical-depth' | 'leadership' | 'innovation' | 'collaboration')[]; // What to emphasize
+  companyResearch?: string; // Optional additional context about the company
+}

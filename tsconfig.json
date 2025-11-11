@@ -2,6 +2,6 @@
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
-    { "path": "./src/resume" }
+    { "path": "./src/resume/tsconfig.json" }
   ]
 }
