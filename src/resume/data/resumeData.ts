@@ -15,18 +15,7 @@ import { profileData } from '../../data/profileData.js';
  * 
  * WHAT'S STILL USED HERE:
  * - skills: The expanded skills list with keywords (actively used)
- * - contactInfo: Kept for backward compatibility with old tools
- * - professionalSummary: Kept for backward compatibility with old tools
- * 
- * WHAT'S DEPRECATED:
- * - experience: Empty - use profileData.ts instead
- * - education: Empty - add to profileData.ts if needed
- * 
- * TO UPDATE YOUR RESUME:
- * 1. Edit work history in: src/data/profileData.ts
- * 2. Add/update skills below in the skills array
- * 3. Run: npm run resume:build
- * 4. Generate resume: node dist/resume-cli/resume/cli/simplifiedResumeTailor.js
+ * - contactInfo: Sources from contact.json with validation
  * 
  * ═══════════════════════════════════════════════════════════════════════════════
  */
@@ -60,8 +49,6 @@ export const contactInfo: ContactInfo = {
   github: (profileData as any)?.github || (contactJson as any)?.github || '',
   website: (contactJson as any).website
 };
-
-export const professionalSummary = `Accomplished Director of Software Engineering with 15+ years of experience leading high-performing engineering teams and driving technical excellence. Proven track record of implementing test automation frameworks, establishing quality standards, and fostering engineering cultures that deliver exceptional software products. Expert in both development and QA leadership, with deep expertise in agile methodologies, CI/CD, and cross-functional collaboration.`;
 
 export const skills: Skill[] = [
   // Leadership & Management
