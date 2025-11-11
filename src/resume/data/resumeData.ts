@@ -1,44 +1,84 @@
 import { ContactInfo, Skill } from '../types/resumeTypes.js';
-import contactJson from '../../../contact.json' with { type: 'json' };
 import { profileData } from '../../data/profileData.js';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
 /**
  * Resume Data for CLI Resume Tailoring
  * 
- * Contact Info: Sourced from contact.json (validated)
+ * Contact Info: Sourced from contact.json (validated) - loaded at runtime only
  * Skills: Expanded list with keywords for job matching
  * Work History: Use profileData.ts (src/data/profileData.ts)
  */
 
-// Validate contact.json exists and has required fields
-if (!contactJson || typeof contactJson !== 'object') {
-  throw new Error(
-    'contact.json not found or invalid. Please create contact.json in the project root with your contact information.\n' +
-    'Required fields: name, email, phone, location, website'
-  );
+/**
+ * Lazy-load contact.json at runtime (not compile time).
+ * This allows the build to succeed even when contact.json is not present (gitignored).
+ * Will only fail when the resume CLI is actually used.
+ */
+function loadContactInfo(): ContactInfo {
+  try {
+    const contactJsonPath = resolve(process.cwd(), 'contact.json');
+    const contactJsonContent = readFileSync(contactJsonPath, 'utf-8');
+    const contactJson = JSON.parse(contactJsonContent);
+
+    // Validate contact.json exists and has required fields
+    if (!contactJson || typeof contactJson !== 'object') {
+      throw new Error(
+        'contact.json not found or invalid. Please create contact.json in the project root with your contact information.\n' +
+        'Required fields: name, email, phone, location, website'
+      );
+    }
+
+    const requiredFields = ['name', 'email', 'phone', 'location', 'website'];
+    const missingFields = requiredFields.filter(field => !contactJson[field]);
+
+    if (missingFields.length > 0) {
+      throw new Error(
+        `contact.json is missing required fields: ${missingFields.join(', ')}\n` +
+        'Please ensure all required contact information is provided in contact.json'
+      );
+    }
+
+    // Prefer contact.json as the single source of truth for contact info.
+    // Fallback to profileData for social links if not present in contact.json.
+    return {
+      name: contactJson.name,
+      email: contactJson.email,
+      phone: contactJson.phone,
+      location: contactJson.location,
+      linkedin: (profileData as any)?.linkedin || contactJson?.linkedin || '',
+      github: (profileData as any)?.github || contactJson?.github || '',
+      website: contactJson.website
+    };
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      throw new Error(
+        'contact.json not found. Please create contact.json in the project root with your contact information.\n' +
+        'Required fields: name, email, phone, location, website\n\n' +
+        'This file is required for the resume CLI but is gitignored for privacy.'
+      );
+    }
+    throw error;
+  }
 }
 
-const requiredFields = ['name', 'email', 'phone', 'location', 'website'];
-const missingFields = requiredFields.filter(field => !(contactJson as any)[field]);
+// Export as a getter function to ensure lazy loading
+let cachedContactInfo: ContactInfo | null = null;
 
-if (missingFields.length > 0) {
-  throw new Error(
-    `contact.json is missing required fields: ${missingFields.join(', ')}\n` +
-    'Please ensure all required contact information is provided in contact.json'
-  );
+export function getContactInfo(): ContactInfo {
+  if (!cachedContactInfo) {
+    cachedContactInfo = loadContactInfo();
+  }
+  return cachedContactInfo;
 }
 
-// Prefer contact.json as the single source of truth for contact info.
-// Fallback to profileData for social links if not present in contact.json.
-export const contactInfo: ContactInfo = {
-  name: (contactJson as any).name,
-  email: (contactJson as any).email,
-  phone: (contactJson as any).phone,
-  location: (contactJson as any).location,
-  linkedin: (profileData as any)?.linkedin || (contactJson as any)?.linkedin || '',
-  github: (profileData as any)?.github || (contactJson as any)?.github || '',
-  website: (contactJson as any).website
-};
+// For backward compatibility, export a getter property
+export const contactInfo: ContactInfo = new Proxy({} as ContactInfo, {
+  get(_target, prop) {
+    return getContactInfo()[prop as keyof ContactInfo];
+  }
+});
 
 export const skills: Skill[] = [
   // Leadership & Management
