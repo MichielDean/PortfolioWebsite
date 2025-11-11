@@ -1,0 +1,13 @@
+# Generated Files Folder
+
+All resume CLI output files are saved here to keep the project root clean.
+
+## Files You'll Find Here:
+- `resume.html` - Your tailored resume (default output)
+- `discovered-skills.json` - Skills discovered from job postings
+- `prompt-templates.json` - Exported prompt templates (optional)
+- Any custom output files you specify with `--output`
+
+## Note:
+This folder is in `.gitignore` - only this README is tracked in git.
+All generated content is local to your machine.

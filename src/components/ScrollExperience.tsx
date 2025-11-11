@@ -147,10 +147,6 @@ const ScrollExperience: React.FC<ScrollExperienceProps> = ({ workHistory }) => {
                                 opacity: isVisible ? 1 : 0,
                             }}
                         >
-                            <div className={styles.sectionNumber}>
-                                {String(index + 1).padStart(2, '0')}
-                            </div>
-
                             <div className={styles.experienceContent}>
                                 <div className={styles.experienceHeader}>
                                     <div className={styles.companyBadge}>
