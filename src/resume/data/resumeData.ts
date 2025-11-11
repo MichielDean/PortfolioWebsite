@@ -1,5 +1,5 @@
-import { ResumeData, ContactInfo, Skill, Experience, Education } from '../types/resumeTypes.js';
-import contactJson from '../../../contact.json';
+import { ContactInfo, Skill } from '../types/resumeTypes.js';
+import contactJson from '../../../contact.json' with { type: 'json' };
 import { profileData } from '../../data/profileData.js';
 
 /**
@@ -31,16 +31,34 @@ import { profileData } from '../../data/profileData.js';
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
+// Validate contact.json exists and has required fields
+if (!contactJson || typeof contactJson !== 'object') {
+  throw new Error(
+    'contact.json not found or invalid. Please create contact.json in the project root with your contact information.\n' +
+    'Required fields: name, email, phone, location, website'
+  );
+}
+
+const requiredFields = ['name', 'email', 'phone', 'location', 'website'];
+const missingFields = requiredFields.filter(field => !(contactJson as any)[field]);
+
+if (missingFields.length > 0) {
+  throw new Error(
+    `contact.json is missing required fields: ${missingFields.join(', ')}\n` +
+    'Please ensure all required contact information is provided in contact.json'
+  );
+}
+
 // Prefer contact.json as the single source of truth for contact info.
 // Fallback to profileData for social links if not present in contact.json.
 export const contactInfo: ContactInfo = {
-  name: (contactJson as any)?.name || (profileData as any)?.name || 'Michiel Bugher',
-  email: (contactJson as any)?.email || '',
-  phone: (contactJson as any)?.phone || '',
-  location: (contactJson as any)?.location || '',
+  name: (contactJson as any).name,
+  email: (contactJson as any).email,
+  phone: (contactJson as any).phone,
+  location: (contactJson as any).location,
   linkedin: (profileData as any)?.linkedin || (contactJson as any)?.linkedin || '',
   github: (profileData as any)?.github || (contactJson as any)?.github || '',
-  website: (contactJson as any)?.website || (profileData as any)?.website || ''
+  website: (contactJson as any).website
 };
 
 export const professionalSummary = `Accomplished Director of Software Engineering with 15+ years of experience leading high-performing engineering teams and driving technical excellence. Proven track record of implementing test automation frameworks, establishing quality standards, and fostering engineering cultures that deliver exceptional software products. Expert in both development and QA leadership, with deep expertise in agile methodologies, CI/CD, and cross-functional collaboration.`;
@@ -89,46 +107,3 @@ export const skills: Skill[] = [
   { name: 'React', category: 'framework', keywords: ['react', 'reactjs', 'react.js'], proficiency: 'advanced' },
   { name: 'D3.js', category: 'framework', keywords: ['d3', 'd3.js', 'data visualization'], proficiency: 'intermediate' },
 ];
-
-/**
- * DEPRECATED: Experience data has been moved to src/data/profileData.ts
- * The new LLM-first architecture uses profileData.ts as the single source of truth.
- * This array is kept empty for compatibility with legacy code that might import it.
- * 
- * To update experience data, edit: src/data/profileData.ts
- */
-export const experience: Experience[] = [];
-
-export const education: Education[] = [
-  // TODO: Update with your actual education
-  // Uncomment and fill in your education details:
-  // {
-  //   id: 'edu-1',
-  //   institution: 'Your University Name',
-  //   degree: 'Bachelor of Science',
-  //   field: 'Computer Science',
-  //   location: 'City, State',
-  //   graduationDate: '2007-05',
-  //   gpa: '3.5',
-  //   honors: ['Dean\'s List', 'Cum Laude'],
-  //   relevantCourses: ['Software Engineering', 'Algorithms', 'Database Systems']
-  // }
-];
-
-export const resumeData: ResumeData = {
-  contact: contactInfo,
-  summary: professionalSummary,
-  skills,
-  experience,
-  education,
-  certifications: [
-    // Add your certifications here
-    // {
-    //   id: 'cert-1',
-    //   name: 'AWS Certified Solutions Architect',
-    //   issuer: 'Amazon Web Services',
-    //   date: '2023-01',
-    //   keywords: ['aws', 'cloud', 'architecture']
-    // }
-  ]
-};
