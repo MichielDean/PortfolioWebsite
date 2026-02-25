@@ -365,6 +365,132 @@ exports[`ScrollExperience snapshot matches snapshot at desktop viewport 1`] = `
               </li>
             </ul>
           </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.5s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              AI Tool Rollout & Adoption
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Piloted and rolled out GitHub Copilot across engineering teams, driving adoption from initial evaluation to active daily use across development and QA.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Evaluated and adopted Model Context Protocol (MCP) for developer tooling, enabling richer LLM integration into engineering workflows.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Introduced LLM-assisted code review into the development workflow, surfacing issues earlier and reducing review cycle time.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Led evaluation of AI tools prior to org-wide adoption, conducting security reviews, IP assessments, and data privacy analysis to ensure responsible adoption.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.6s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              AI-Augmented Development Workflows
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Leveraged AI tools to accelerate development team velocity across all aspects of the software development lifecycle.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Implemented LLM-assisted documentation generation for codebases and APIs, reducing documentation debt and improving onboarding.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Established an AI-augmented PR review process to surface defects earlier in the development cycle.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Incorporated AI tools into sprint planning and ticket refinement, improving estimation accuracy and reducing ambiguity before work begins.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.7000000000000001s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              AI Governance & Policy
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Established org-wide AI usage policies covering acceptable use, data classification, and IP ownership.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Defined standards for responsible AI tool use within engineering teams, balancing velocity gains with risk management.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Created guidelines specifying when AI-generated code requires additional human review, ensuring oversight of critical code paths.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.8s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              AI Enablement & Advocacy
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Created internal playbooks and prompting guides to help engineering teams use AI tools effectively and consistently.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Coached engineers on effective prompting techniques and AI-assisted development workflows.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Advocated for AI adoption with executive leadership and peer engineering organizations, building organizational alignment around responsible AI use.
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       <div
@@ -1675,6 +1801,132 @@ exports[`ScrollExperience snapshot matches snapshot at mobile viewport (Pixel 6 
                 class="achievementItem"
               >
                 Led technical innovation initiatives within managed teams, evaluating and adopting new tools and technologies to improve team efficiency and product quality.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.5s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              AI Tool Rollout & Adoption
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Piloted and rolled out GitHub Copilot across engineering teams, driving adoption from initial evaluation to active daily use across development and QA.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Evaluated and adopted Model Context Protocol (MCP) for developer tooling, enabling richer LLM integration into engineering workflows.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Introduced LLM-assisted code review into the development workflow, surfacing issues earlier and reducing review cycle time.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Led evaluation of AI tools prior to org-wide adoption, conducting security reviews, IP assessments, and data privacy analysis to ensure responsible adoption.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.6000000000000001s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              AI-Augmented Development Workflows
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Leveraged AI tools to accelerate development team velocity across all aspects of the software development lifecycle.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Implemented LLM-assisted documentation generation for codebases and APIs, reducing documentation debt and improving onboarding.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Established an AI-augmented PR review process to surface defects earlier in the development cycle.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Incorporated AI tools into sprint planning and ticket refinement, improving estimation accuracy and reducing ambiguity before work begins.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.7000000000000001s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              AI Governance & Policy
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Established org-wide AI usage policies covering acceptable use, data classification, and IP ownership.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Defined standards for responsible AI tool use within engineering teams, balancing velocity gains with risk management.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Created guidelines specifying when AI-generated code requires additional human review, ensuring oversight of critical code paths.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.8s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              AI Enablement & Advocacy
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Created internal playbooks and prompting guides to help engineering teams use AI tools effectively and consistently.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Coached engineers on effective prompting techniques and AI-assisted development workflows.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Advocated for AI adoption with executive leadership and peer engineering organizations, building organizational alignment around responsible AI use.
               </li>
             </ul>
           </div>

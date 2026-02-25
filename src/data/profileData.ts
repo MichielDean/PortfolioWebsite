@@ -75,6 +75,40 @@ export const profileData: Profile = {
                   "Implemented data-driven approaches to engineering, leveraging metrics and analytics to identify areas for improvement and drive continuous enhancement of processes.",
                   "Led technical innovation initiatives within managed teams, evaluating and adopting new tools and technologies to improve team efficiency and product quality."
                 ]
+              },
+              {
+                "description": "AI Tool Rollout & Adoption",
+                "moreInfo": [
+                  "Piloted and rolled out GitHub Copilot across engineering teams, driving adoption from initial evaluation to active daily use across development and QA.",
+                  "Evaluated and adopted Model Context Protocol (MCP) for developer tooling, enabling richer LLM integration into engineering workflows.",
+                  "Introduced LLM-assisted code review into the development workflow, surfacing issues earlier and reducing review cycle time.",
+                  "Led evaluation of AI tools prior to org-wide adoption, conducting security reviews, IP assessments, and data privacy analysis to ensure responsible adoption."
+                ]
+              },
+              {
+                "description": "AI-Augmented Development Workflows",
+                "moreInfo": [
+                  "Leveraged AI tools to accelerate development team velocity across all aspects of the software development lifecycle.",
+                  "Implemented LLM-assisted documentation generation for codebases and APIs, reducing documentation debt and improving onboarding.",
+                  "Established an AI-augmented PR review process to surface defects earlier in the development cycle.",
+                  "Incorporated AI tools into sprint planning and ticket refinement, improving estimation accuracy and reducing ambiguity before work begins."
+                ]
+              },
+              {
+                "description": "AI Governance & Policy",
+                "moreInfo": [
+                  "Established org-wide AI usage policies covering acceptable use, data classification, and IP ownership.",
+                  "Defined standards for responsible AI tool use within engineering teams, balancing velocity gains with risk management.",
+                  "Created guidelines specifying when AI-generated code requires additional human review, ensuring oversight of critical code paths."
+                ]
+              },
+              {
+                "description": "AI Enablement & Advocacy",
+                "moreInfo": [
+                  "Created internal playbooks and prompting guides to help engineering teams use AI tools effectively and consistently.",
+                  "Coached engineers on effective prompting techniques and AI-assisted development workflows.",
+                  "Advocated for AI adoption with executive leadership and peer engineering organizations, building organizational alignment around responsible AI use."
+                ]
               }
             ]
           },

@@ -47,10 +47,10 @@ const AboutMe = () => {
         <h3 className={styles.sectionTitle}>About Me</h3>
         <div className={styles.content}>
           <p>
-            Hello! I'm Michiel Bugher (pronounced "Michael Boo-yer"), a seasoned software engineering leader with over {yearsOfExperience} years of expertise in Quality Assurance and Test Automation. My career journey began as a Software Test Engineer, and I have since advanced to the role of Director of Software Engineering. I am passionate about building high-performing QA teams, implementing robust automation strategies, and fostering a culture centered on quality.
+            Hello! I'm Michiel Bugher (pronounced "Michael Boo-yer"), a software engineering leader with over {yearsOfExperience} years of experience spanning quality engineering, test automation, and full engineering team leadership. I currently serve as Director of Software Engineering at Triton Digital, where I lead development and QA teams across the advertising stack.
           </p>
           <p>
-            I have been immersed in the world of software testing since 2007, and my journey into coding began in 2011. My career trajectory has been shaped by a strong foundation in technical expertise and a passion for innovation. In early 2019, I embraced my first management role, driven by my inherent leadership skills and a commitment to guiding teams towards excellence.
+            My career began in software testing in 2007, and I moved into coding in 2011 before stepping into management in 2019. Over time my focus has expanded well beyond QA — I now drive technical strategy, cross-functional collaboration, and organizational adoption of emerging technologies including GitHub Copilot, MCP, and LLM-assisted development workflows. I'm passionate about helping engineering teams work smarter, ship higher-quality software, and grow professionally.
           </p>
           <p>
             Outside of work, I cherish time with my family and exploring new places. Whether I'm hiking in the great outdoors or indulging in a thrilling video game session, I find joy in both adventure and relaxation.
