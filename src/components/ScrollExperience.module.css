@@ -878,21 +878,26 @@
         width: 3px;
     }
 
+    /* Hide fixed right-side nav dots — they bleed out on narrow screens */
     .timeline {
-        right: 1rem;
-    }
-
-    .timelineDot {
-        width: 10px;
-        height: 10px;
+        display: none;
     }
 
     .heroSection {
         padding: 2rem 1rem;
     }
 
+    /* Decorative background blob — 800×800px absolute element causes overflow */
+    .heroSection::before {
+        display: none;
+    }
+
     .heroTitle {
         font-size: 2.5rem;
+    }
+
+    .heroLabel {
+        letter-spacing: 0.1em;
     }
 
     .heroDescription {
@@ -902,7 +907,7 @@
 
     .heroStats {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
+        gap: 1rem;
         margin-bottom: 3rem;
     }
 
@@ -919,13 +924,12 @@
     }
 
     .experienceSection {
-        padding: 6rem 1rem;
+        padding: 4rem 1rem;
     }
 
+    /* Decorative large number — 8rem absolute font overflows narrow screens */
     .sectionNumber {
-        font-size: 4rem;
-        top: 6rem;
-        left: 1rem;
+        display: none;
     }
 
     .roleTitle {
@@ -935,6 +939,18 @@
     .experienceHeader {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    /* Grouped section left indent causes extra overflow on mobile */
+    .experienceSectionGrouped {
+        margin-left: 0;
+        padding: 2rem 1rem;
+        border-left: 3px solid var(--accent-alpha-20);
+    }
+
+    .companyGroupHeader {
+        margin: 3rem auto 1.5rem;
+        padding: 0 1rem;
     }
 
     .achievementsGrid {
@@ -996,6 +1012,55 @@
 
     .endText {
         font-size: 1rem;
+    }
+}
+
+/* Small mobile — Pixel 6 Pro (412px) and similar narrow viewports */
+@media (max-width: 480px) {
+    .heroTitle {
+        font-size: 2rem;
+    }
+
+    .heroLabel {
+        letter-spacing: 0.05em;
+        font-size: 0.8rem;
+    }
+
+    .heroDescription {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .heroStats {
+        gap: 0.75rem;
+    }
+
+    /* Badge can contain long company name + count + duration — allow wrapping */
+    .companyGroupBadge {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 1rem 1.25rem;
+    }
+
+    .experienceSectionGrouped {
+        margin-left: 0;
+        padding: 1.5rem 0.75rem;
+    }
+
+    .roleTitle {
+        font-size: 1.7rem;
+    }
+
+    .connectTitle {
+        font-size: 1.7rem;
+    }
+
+    .connectSubtitle {
+        font-size: 1rem;
+    }
+
+    .endTitle {
+        font-size: 1.7rem;
     }
 }
 
