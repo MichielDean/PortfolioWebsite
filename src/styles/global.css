@@ -10,6 +10,7 @@
 html {
     background: var(--background, #F8FAFC);
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 :root {
