@@ -30,7 +30,7 @@
     "test:resume": "jest --config jest.resume.config.cjs"
   },
   "dependencies": {
-    "react": "^18.3.1",
+    "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-helmet-async": "^2.0.5",
     "react-router-dom": "^7.13.1"
@@ -41,7 +41,7 @@
     "@testing-library/react": "^16.3.2",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.10.0",
-    "@types/react": "^18.3.26",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.3.4",
     "identity-obj-proxy": "^3.0.0",
