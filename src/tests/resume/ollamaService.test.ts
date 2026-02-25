@@ -6,6 +6,17 @@
 
 import { OllamaService } from '../../resume/services/ollamaService';
 
+// Suppress console.error: source code logs on error paths (network failures,
+// parse failures) as expected behavior. Tests that exercise those paths would
+// produce noisy output without this suppression.
+beforeEach(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 // Helper to capture the fetch body sent during chat()
 // Uses jest.spyOn so restoreAllMocks() cleans it up automatically.
 async function chatAndCaptureBody(service: OllamaService): Promise<Record<string, unknown>> {
@@ -96,6 +107,15 @@ describe('OllamaService.forTask()', () => {
 // ─── isAvailable() ────────────────────────────────────────────────────────────
 
 describe('OllamaService.isAvailable()', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.runAllTimers();
+    jest.useRealTimers();
+  });
+
   it('returns true when fetch responds ok', async () => {
     jest.spyOn(global, 'fetch').mockResolvedValue({ ok: true } as Response);
     const svc = new OllamaService();

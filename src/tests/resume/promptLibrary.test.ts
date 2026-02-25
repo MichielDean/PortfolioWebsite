@@ -6,6 +6,15 @@
 
 import { PromptLibrary, PromptTemplate } from '../../resume/services/promptLibrary';
 
+// Suppress console.error: importTemplates logs on invalid JSON as expected behavior.
+beforeEach(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe('PromptLibrary — initialization', () => {
   it('constructs without throwing', () => {
     expect(() => new PromptLibrary()).not.toThrow();
