@@ -1,0 +1,2627 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ScrollExperience snapshot matches snapshot at desktop viewport 1`] = `
+<div
+  class="scrollContainer"
+>
+  <div
+    class="progressBar"
+  >
+    <div
+      class="progressFill"
+      style="transform: scaleY(0);"
+    />
+  </div>
+  <div
+    class="timeline"
+  >
+    <div
+      class="timelineDot timelineDotActive"
+    />
+    <div
+      class="timelineDot "
+    />
+    <div
+      class="timelineDot "
+    />
+    <div
+      class="timelineDot "
+    />
+    <div
+      class="timelineDot "
+    />
+    <div
+      class="timelineDot "
+    />
+  </div>
+  <div
+    class="heroSection"
+  >
+    <div
+      class="heroContent"
+    >
+      <div
+        class="heroLabel"
+      >
+        Director of Software Engineering
+      </div>
+      <h1
+        class="heroTitle"
+      >
+        <span
+          class="heroTitleLine"
+        >
+          Building
+        </span>
+        <span
+          class="heroTitleLine"
+        >
+          High-Performing
+        </span>
+        <span
+          class="heroTitleLine"
+        >
+          Teams
+        </span>
+      </h1>
+      <div
+        class="heroDescription"
+      >
+        Driving innovation through strategic leadership, technical excellence, and a relentless focus on quality and team development.
+      </div>
+      <div
+        class="heroStats"
+      >
+        <div
+          class="heroStat"
+        >
+          <div
+            class="heroStatLabel"
+          >
+            Leadership
+          </div>
+          <div
+            class="heroStatText"
+          >
+            Cross-functional team direction
+          </div>
+        </div>
+        <div
+          class="heroStat"
+        >
+          <div
+            class="heroStatLabel"
+          >
+            Architecture
+          </div>
+          <div
+            class="heroStatText"
+          >
+            End-to-end test frameworks
+          </div>
+        </div>
+        <div
+          class="heroStat"
+        >
+          <div
+            class="heroStatLabel"
+          >
+            Mentorship
+          </div>
+          <div
+            class="heroStatText"
+          >
+            Team growth & development
+          </div>
+        </div>
+      </div>
+      <div
+        class="scrollIndicator"
+      >
+        <span>
+          Scroll to explore my journey
+        </span>
+        <div
+          class="scrollArrow"
+        >
+          ↓
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div
+      class="companyGroupHeader "
+    >
+      <div
+        class="companyGroupBadge"
+      >
+        <span
+          class="companyGroupIcon"
+        >
+          🏢
+        </span>
+        <span
+          class="companyGroupName"
+        >
+          Triton Digital
+        </span>
+        <span
+          class="companyGroupCount"
+        >
+          3
+           
+          Roles
+        </span>
+        <span
+          class="companyGroupDuration"
+        >
+          6 years
+        </span>
+      </div>
+      <div
+        class="companyGroupLine"
+      />
+    </div>
+    <div
+      class="experienceSection  experienceSectionGrouped"
+      style="transform: translateY(50px); opacity: 0;"
+    >
+      <div
+        class="experienceContent"
+      >
+        <div
+          class="experienceHeader"
+        >
+          <div
+            class="companyBadge"
+          >
+            <span
+              class="companyDot"
+            />
+            Triton Digital
+            <span
+              class="roleNumber"
+            >
+              Role 
+              1
+              /
+              3
+            </span>
+          </div>
+          <div
+            class="duration"
+          >
+            Mar 2022 - Present
+             
+            <span
+              class="durationYears"
+            >
+              • 
+              3 years
+            </span>
+          </div>
+        </div>
+        <h2
+          class="roleTitle"
+        >
+          Director of Software Engineering
+        </h2>
+        <div
+          class="achievementsGrid"
+        >
+          <div
+            class="achievementCard"
+            style="animation-delay: 0s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Multi-Team Leadership
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Direct three engineering teams across the Triton Advertising stack: two development teams and the organization-wide QA team, overseeing five scrum teams and managing multiple direct reports to ensure seamless collaboration and efficient delivery of high-quality software products.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Lead technical strategy and architecture decisions across assigned development teams and quality assurance, aligning engineering efforts with product vision and business objectives.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Served as a key liaison between engineering teams and executive leadership, providing insights and recommendations to drive strategic decision-making.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Held responsible for the overall success of five scrum teams, driving the adoption of best practices, agile methodologies, and innovative solutions to achieve project goals and deliverables.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.1s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Cross-Functional Collaboration
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Fostered a unified engineering culture across development and QA teams, promoting shared ownership of quality, open communication, and collaborative problem-solving.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Collaborated with cross-functional teams, including product management, operations, and stakeholders, to align team efforts with broader business objectives.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Broke down silos between development and QA within assigned teams, creating integrated workflows that improved product outcomes, velocity, and team morale.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.2s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Test Architecture & Engineering Excellence
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Defined and implemented an end-to-end test architecture that is reusable across all teams in the organization, significantly improving the efficiency and effectiveness of testing processes and reducing redundancy.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Established quality standards and engineering best practices adopted across managed development and QA teams.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Championed shift-left testing practices, integrating quality early in the development lifecycle.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.30000000000000004s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Team Development & Mentorship
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Conducted bi-weekly one-on-one meetings with all direct reports across development and QA to provide personalized guidance, performance feedback, and professional development support, fostering a culture of continuous improvement.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Mentored and coached engineers at all levels, fostering their professional growth and enhancing overall team capabilities across multiple disciplines.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Conducted regular training sessions on engineering best practices, tools, and methodologies to keep teams up-to-date with industry advancements.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Built career development paths for team members, resulting in internal promotions and increased retention.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.4s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Strategic Planning & Innovation
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Developed and executed strategic plans for assigned teams to support the organization's long-term goals, ensuring that technical strategies align with business objectives and product roadmaps.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Implemented data-driven approaches to engineering, leveraging metrics and analytics to identify areas for improvement and drive continuous enhancement of processes.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Led technical innovation initiatives within managed teams, evaluating and adopting new tools and technologies to improve team efficiency and product quality.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div
+        class="decorativeCircle"
+      />
+      <div
+        class="decorativeLine"
+      />
+    </div>
+  </div>
+  <div>
+    <div
+      class="experienceSection  experienceSectionGrouped"
+      style="transform: translateY(50px); opacity: 0;"
+    >
+      <div
+        class="experienceContent"
+      >
+        <div
+          class="experienceHeader"
+        >
+          <div
+            class="companyBadge"
+          >
+            <span
+              class="companyDot"
+            />
+            Triton Digital
+            <span
+              class="roleNumber"
+            >
+              Role 
+              2
+              /
+              3
+            </span>
+          </div>
+          <div
+            class="duration"
+          >
+            Mar 2019 - Mar 2022
+             
+            <span
+              class="durationYears"
+            >
+              • 
+              3 years
+            </span>
+          </div>
+        </div>
+        <h2
+          class="roleTitle"
+        >
+          Senior Software Engineering Manager [QA]
+        </h2>
+        <div
+          class="achievementsGrid"
+        >
+          <div
+            class="achievementCard"
+            style="animation-delay: 0s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Leadership
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Promoted to senior level manager after demonstrating exceptional leadership competence, resulting in heightened team performance and streamlined project delivery.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.1s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Team Transformation
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Led a comprehensive QA team transformation, significantly improving team morale and adopting innovative automation practices to enhance productivity and accuracy.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.2s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Test Automation
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Established effective test automation practices within sprint cycles, streamlining testing processes, and reducing time-to-market for software releases.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.30000000000000004s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Recruitment and Talent Management
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Managed the entire QA recruiting pipeline, successfully hiring high-performing engineers who contributed to the team's success and operational excellence.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.4s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Stakeholder Communication
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Facilitated regular updates to stakeholders, ensuring transparency in project progress and maintaining strong relationships with internal and external stakeholders.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Presented QA findings and metrics to senior leadership, providing actionable insights and influencing decision-making at the highest levels.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div
+        class="decorativeCircle"
+      />
+      <div
+        class="decorativeLine"
+      />
+    </div>
+  </div>
+  <div>
+    <div
+      class="experienceSection  experienceSectionGrouped"
+      style="transform: translateY(50px); opacity: 0;"
+    >
+      <div
+        class="experienceContent"
+      >
+        <div
+          class="experienceHeader"
+        >
+          <div
+            class="companyBadge"
+          >
+            <span
+              class="companyDot"
+            />
+            Triton Digital
+            <span
+              class="roleNumber"
+            >
+              Role 
+              3
+              /
+              3
+            </span>
+          </div>
+          <div
+            class="duration"
+          >
+            Mar 2019 - Apr 2019
+             
+            <span
+              class="durationYears"
+            >
+              • 
+              1 month
+            </span>
+          </div>
+        </div>
+        <h2
+          class="roleTitle"
+        >
+          Senior Software Development Engineer Test
+        </h2>
+        <div
+          class="achievementsGrid"
+        >
+          <div
+            class="achievementCard"
+            style="animation-delay: 0s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Rapidly Adapted to Java Development
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Quickly transitioned from a .NET development background to Java, demonstrating versatility and the ability to learn new technologies efficiently.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.1s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Front-End Testing Framework
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Developed a new front-end testing framework, significantly improving testing efficiency and reliability for the development team.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.2s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              End-to-End Test Automation
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Implemented impactful end-to-end test automation, reducing manual testing efforts and enhancing test coverage and accuracy.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.30000000000000004s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Mentoring Junior Engineers
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Mentored junior engineers, sharing knowledge and best practices to increase team velocity and overall technical competence.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div
+        class="decorativeCircle"
+      />
+      <div
+        class="decorativeLine"
+      />
+    </div>
+  </div>
+  <div>
+    <div
+      class="companyGroupHeader "
+    >
+      <div
+        class="companyGroupBadge"
+      >
+        <span
+          class="companyGroupIcon"
+        >
+          🏢
+        </span>
+        <span
+          class="companyGroupName"
+        >
+          Risk Placement Services, Inc.
+        </span>
+        <span
+          class="companyGroupCount"
+        >
+          1
+           
+          Role
+        </span>
+        <span
+          class="companyGroupDuration"
+        >
+          1 year
+        </span>
+      </div>
+      <div
+        class="companyGroupLine"
+      />
+    </div>
+    <div
+      class="experienceSection  "
+      style="transform: translateY(50px); opacity: 0;"
+    >
+      <div
+        class="experienceContent"
+      >
+        <div
+          class="experienceHeader"
+        >
+          <div
+            class="companyBadge"
+          >
+            <span
+              class="companyDot"
+            />
+            Risk Placement Services, Inc.
+          </div>
+          <div
+            class="duration"
+          >
+            May 2018 - Mar 2019
+             
+            <span
+              class="durationYears"
+            >
+              • 
+              10 months
+            </span>
+          </div>
+        </div>
+        <h2
+          class="roleTitle"
+        >
+          Senior SDET
+        </h2>
+        <div
+          class="achievementsGrid"
+        >
+          <div
+            class="achievementCard"
+            style="animation-delay: 0s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Automation Framework Implementation
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Established an automation framework within the first month of joining, significantly enhancing the efficiency of testing processes.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.1s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Automated Deployment Pipeline
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Implemented an automated deployment pipeline to the staging environment, reducing manual deployment efforts and minimizing errors.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.2s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Championing Automation
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Championed automation throughout the entire software lifecycle, driving the transition from manual to automated testing practices.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.30000000000000004s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Leadership in Transition
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Led the transition from manual to automated testing processes, resulting in increased testing efficiency and effectiveness.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div
+        class="decorativeCircle"
+      />
+      <div
+        class="decorativeLine"
+      />
+    </div>
+  </div>
+  <div>
+    <div
+      class="companyGroupHeader "
+    >
+      <div
+        class="companyGroupBadge"
+      >
+        <span
+          class="companyGroupIcon"
+        >
+          🏢
+        </span>
+        <span
+          class="companyGroupName"
+        >
+          Scentsy, Inc.
+        </span>
+        <span
+          class="companyGroupCount"
+        >
+          1
+           
+          Role
+        </span>
+        <span
+          class="companyGroupDuration"
+        >
+          7 years
+        </span>
+      </div>
+      <div
+        class="companyGroupLine"
+      />
+    </div>
+    <div
+      class="experienceSection  "
+      style="transform: translateY(50px); opacity: 0;"
+    >
+      <div
+        class="experienceContent"
+      >
+        <div
+          class="experienceHeader"
+        >
+          <div
+            class="companyBadge"
+          >
+            <span
+              class="companyDot"
+            />
+            Scentsy, Inc.
+          </div>
+          <div
+            class="duration"
+          >
+            Jun 2011 - May 2018
+             
+            <span
+              class="durationYears"
+            >
+              • 
+              7 years
+            </span>
+          </div>
+        </div>
+        <h2
+          class="roleTitle"
+        >
+          SDET III
+        </h2>
+        <div
+          class="achievementsGrid"
+        >
+          <div
+            class="achievementCard"
+            style="animation-delay: 0s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Leadership and Project Management
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Led the SDET team for the IT department, managing multiple successful projects and ensuring high-quality software delivery.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.1s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Test Dashboard Development
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Built a test dashboard using .NET Core and D3.js with real-time test execution reporting, enhancing transparency and visibility of testing efforts.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.2s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Test Analytics and Triage Tools
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Implemented comprehensive test analytics and triage tools, improving the efficiency of identifying and resolving test issues.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.30000000000000004s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Career Progression
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Progressed from a manual tester to a lead SDET role, demonstrating continual growth and increased responsibility within the organization.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div
+        class="decorativeCircle"
+      />
+      <div
+        class="decorativeLine"
+      />
+    </div>
+  </div>
+  <div>
+    <div
+      class="companyGroupHeader "
+    >
+      <div
+        class="companyGroupBadge"
+      >
+        <span
+          class="companyGroupIcon"
+        >
+          🏢
+        </span>
+        <span
+          class="companyGroupName"
+        >
+          Lionbridge
+        </span>
+        <span
+          class="companyGroupCount"
+        >
+          1
+           
+          Role
+        </span>
+        <span
+          class="companyGroupDuration"
+        >
+          4 years
+        </span>
+      </div>
+      <div
+        class="companyGroupLine"
+      />
+    </div>
+    <div
+      class="experienceSection  "
+      style="transform: translateY(50px); opacity: 0;"
+    >
+      <div
+        class="experienceContent"
+      >
+        <div
+          class="experienceHeader"
+        >
+          <div
+            class="companyBadge"
+          >
+            <span
+              class="companyDot"
+            />
+            Lionbridge
+          </div>
+          <div
+            class="duration"
+          >
+            May 2007 - Jun 2011
+             
+            <span
+              class="durationYears"
+            >
+              • 
+              4 years
+            </span>
+          </div>
+        </div>
+        <h2
+          class="roleTitle"
+        >
+          Software Test Engineer
+        </h2>
+        <div
+          class="achievementsGrid"
+        >
+          <div
+            class="achievementCard"
+            style="animation-delay: 0s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Full-Time Employee Achievement
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Achieved rare full-time employee status through demonstrated competence and exceptional performance.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.1s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Contract Work with Major Tech Companies
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Performed contract work with major tech companies including HP, Microsoft, and Palm, delivering high-quality testing services.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.2s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Manual Testing Expertise
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Conducted manual testing across mobile, web, and hardware platforms, ensuring comprehensive test coverage and reliability.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.30000000000000004s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Client Satisfaction
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Managed independent testing contracts with high client satisfaction, demonstrating strong project management and communication skills.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div
+        class="decorativeCircle"
+      />
+      <div
+        class="decorativeLine"
+      />
+    </div>
+  </div>
+  <div
+    class="connectSection"
+  >
+    <div
+      class="connectContent"
+    >
+      <h2
+        class="connectTitle"
+      >
+        Let's Connect
+      </h2>
+      <p
+        class="connectSubtitle"
+      >
+        Find me on these platforms and let's collaborate
+      </p>
+      <div
+        class="socialCards"
+      >
+        <a
+          class="socialCard"
+          href="https://www.linkedin.com/in/michielbugher/"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <div
+            class="socialIcon"
+          >
+            <svg
+              fill="currentColor"
+              height="48"
+              viewBox="0 0 24 24"
+              width="48"
+            >
+              <path
+                d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+              />
+            </svg>
+          </div>
+          <div
+            class="socialInfo"
+          >
+            <h3
+              class="socialName"
+            >
+              LinkedIn
+            </h3>
+            <p
+              class="socialDescription"
+            >
+              Professional network & career updates
+            </p>
+          </div>
+          <div
+            class="socialArrow"
+          >
+            →
+          </div>
+        </a>
+        <a
+          class="socialCard"
+          href="https://github.com/MichielDean"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <div
+            class="socialIcon"
+          >
+            <svg
+              fill="currentColor"
+              height="48"
+              viewBox="0 0 24 24"
+              width="48"
+            >
+              <path
+                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+              />
+            </svg>
+          </div>
+          <div
+            class="socialInfo"
+          >
+            <h3
+              class="socialName"
+            >
+              GitHub
+            </h3>
+            <p
+              class="socialDescription"
+            >
+              Open source projects & code samples
+            </p>
+          </div>
+          <div
+            class="socialArrow"
+          >
+            →
+          </div>
+        </a>
+        <a
+          class="socialCard"
+          href="https://stackoverflow.com/users/2027382/michiel-bugher"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <div
+            class="socialIcon"
+          >
+            <svg
+              fill="currentColor"
+              height="48"
+              viewBox="0 0 24 24"
+              width="48"
+            >
+              <path
+                d="M15.725 0l-1.72 1.277 6.39 8.588 1.716-1.277L15.725 0zm-3.94 3.418l-1.369 1.644 8.225 6.85 1.369-1.644-8.225-6.85zm-3.15 4.465l-.905 1.94 9.702 4.517.904-1.94-9.701-4.517zm-1.85 4.86l-.44 2.093 10.473 2.201.44-2.092-10.473-2.203zM1.89 15.47V24h19.19v-8.53h-2.133v6.397H4.021v-6.396H1.89zm4.265 2.133v2.13h10.66v-2.13H6.154Z"
+              />
+            </svg>
+          </div>
+          <div
+            class="socialInfo"
+          >
+            <h3
+              class="socialName"
+            >
+              Stack Overflow
+            </h3>
+            <p
+              class="socialDescription"
+            >
+              Technical Q&A & community contributions
+            </p>
+          </div>
+          <div
+            class="socialArrow"
+          >
+            →
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div
+    class="endSection"
+  >
+    <div
+      class="endContent"
+    >
+      <div
+        class="endIcon"
+      >
+        ✨
+      </div>
+      <h2
+        class="endTitle"
+      >
+        That's My Journey
+      </h2>
+      <p
+        class="endText"
+      >
+        17
+        + years evolving from hands-on testing through automation architecture to engineering leadership, driving quality excellence and team success.
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ScrollExperience snapshot matches snapshot at mobile viewport (Pixel 6 Pro) 1`] = `
+<div
+  class="scrollContainer"
+>
+  <div
+    class="progressBar"
+  >
+    <div
+      class="progressFill"
+      style="transform: scaleY(0);"
+    />
+  </div>
+  <div
+    class="timeline"
+  >
+    <div
+      class="timelineDot timelineDotActive"
+    />
+    <div
+      class="timelineDot "
+    />
+    <div
+      class="timelineDot "
+    />
+    <div
+      class="timelineDot "
+    />
+    <div
+      class="timelineDot "
+    />
+    <div
+      class="timelineDot "
+    />
+  </div>
+  <div
+    class="heroSection"
+  >
+    <div
+      class="heroContent"
+    >
+      <div
+        class="heroLabel"
+      >
+        Director of Software Engineering
+      </div>
+      <h1
+        class="heroTitle"
+      >
+        <span
+          class="heroTitleLine"
+        >
+          Building
+        </span>
+        <span
+          class="heroTitleLine"
+        >
+          High-Performing
+        </span>
+        <span
+          class="heroTitleLine"
+        >
+          Teams
+        </span>
+      </h1>
+      <div
+        class="heroDescription"
+      >
+        Driving innovation through strategic leadership, technical excellence, and a relentless focus on quality and team development.
+      </div>
+      <div
+        class="heroStats"
+      >
+        <div
+          class="heroStat"
+        >
+          <div
+            class="heroStatLabel"
+          >
+            Leadership
+          </div>
+          <div
+            class="heroStatText"
+          >
+            Cross-functional team direction
+          </div>
+        </div>
+        <div
+          class="heroStat"
+        >
+          <div
+            class="heroStatLabel"
+          >
+            Architecture
+          </div>
+          <div
+            class="heroStatText"
+          >
+            End-to-end test frameworks
+          </div>
+        </div>
+        <div
+          class="heroStat"
+        >
+          <div
+            class="heroStatLabel"
+          >
+            Mentorship
+          </div>
+          <div
+            class="heroStatText"
+          >
+            Team growth & development
+          </div>
+        </div>
+      </div>
+      <div
+        class="scrollIndicator"
+      >
+        <span>
+          Scroll to explore my journey
+        </span>
+        <div
+          class="scrollArrow"
+        >
+          ↓
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div
+      class="companyGroupHeader "
+    >
+      <div
+        class="companyGroupBadge"
+      >
+        <span
+          class="companyGroupIcon"
+        >
+          🏢
+        </span>
+        <span
+          class="companyGroupName"
+        >
+          Triton Digital
+        </span>
+        <span
+          class="companyGroupCount"
+        >
+          3
+           
+          Roles
+        </span>
+        <span
+          class="companyGroupDuration"
+        >
+          6 years
+        </span>
+      </div>
+      <div
+        class="companyGroupLine"
+      />
+    </div>
+    <div
+      class="experienceSection  experienceSectionGrouped"
+      style="transform: translateY(50px); opacity: 0;"
+    >
+      <div
+        class="experienceContent"
+      >
+        <div
+          class="experienceHeader"
+        >
+          <div
+            class="companyBadge"
+          >
+            <span
+              class="companyDot"
+            />
+            Triton Digital
+            <span
+              class="roleNumber"
+            >
+              Role 
+              1
+              /
+              3
+            </span>
+          </div>
+          <div
+            class="duration"
+          >
+            Mar 2022 - Present
+             
+            <span
+              class="durationYears"
+            >
+              • 
+              3 years
+            </span>
+          </div>
+        </div>
+        <h2
+          class="roleTitle"
+        >
+          Director of Software Engineering
+        </h2>
+        <div
+          class="achievementsGrid"
+        >
+          <div
+            class="achievementCard"
+            style="animation-delay: 0s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Multi-Team Leadership
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Direct three engineering teams across the Triton Advertising stack: two development teams and the organization-wide QA team, overseeing five scrum teams and managing multiple direct reports to ensure seamless collaboration and efficient delivery of high-quality software products.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Lead technical strategy and architecture decisions across assigned development teams and quality assurance, aligning engineering efforts with product vision and business objectives.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Served as a key liaison between engineering teams and executive leadership, providing insights and recommendations to drive strategic decision-making.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Held responsible for the overall success of five scrum teams, driving the adoption of best practices, agile methodologies, and innovative solutions to achieve project goals and deliverables.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.1s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Cross-Functional Collaboration
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Fostered a unified engineering culture across development and QA teams, promoting shared ownership of quality, open communication, and collaborative problem-solving.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Collaborated with cross-functional teams, including product management, operations, and stakeholders, to align team efforts with broader business objectives.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Broke down silos between development and QA within assigned teams, creating integrated workflows that improved product outcomes, velocity, and team morale.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.2s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Test Architecture & Engineering Excellence
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Defined and implemented an end-to-end test architecture that is reusable across all teams in the organization, significantly improving the efficiency and effectiveness of testing processes and reducing redundancy.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Established quality standards and engineering best practices adopted across managed development and QA teams.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Championed shift-left testing practices, integrating quality early in the development lifecycle.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.30000000000000004s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Team Development & Mentorship
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Conducted bi-weekly one-on-one meetings with all direct reports across development and QA to provide personalized guidance, performance feedback, and professional development support, fostering a culture of continuous improvement.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Mentored and coached engineers at all levels, fostering their professional growth and enhancing overall team capabilities across multiple disciplines.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Conducted regular training sessions on engineering best practices, tools, and methodologies to keep teams up-to-date with industry advancements.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Built career development paths for team members, resulting in internal promotions and increased retention.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.4s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Strategic Planning & Innovation
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Developed and executed strategic plans for assigned teams to support the organization's long-term goals, ensuring that technical strategies align with business objectives and product roadmaps.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Implemented data-driven approaches to engineering, leveraging metrics and analytics to identify areas for improvement and drive continuous enhancement of processes.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Led technical innovation initiatives within managed teams, evaluating and adopting new tools and technologies to improve team efficiency and product quality.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div
+        class="decorativeCircle"
+      />
+      <div
+        class="decorativeLine"
+      />
+    </div>
+  </div>
+  <div>
+    <div
+      class="experienceSection  experienceSectionGrouped"
+      style="transform: translateY(50px); opacity: 0;"
+    >
+      <div
+        class="experienceContent"
+      >
+        <div
+          class="experienceHeader"
+        >
+          <div
+            class="companyBadge"
+          >
+            <span
+              class="companyDot"
+            />
+            Triton Digital
+            <span
+              class="roleNumber"
+            >
+              Role 
+              2
+              /
+              3
+            </span>
+          </div>
+          <div
+            class="duration"
+          >
+            Mar 2019 - Mar 2022
+             
+            <span
+              class="durationYears"
+            >
+              • 
+              3 years
+            </span>
+          </div>
+        </div>
+        <h2
+          class="roleTitle"
+        >
+          Senior Software Engineering Manager [QA]
+        </h2>
+        <div
+          class="achievementsGrid"
+        >
+          <div
+            class="achievementCard"
+            style="animation-delay: 0s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Leadership
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Promoted to senior level manager after demonstrating exceptional leadership competence, resulting in heightened team performance and streamlined project delivery.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.1s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Team Transformation
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Led a comprehensive QA team transformation, significantly improving team morale and adopting innovative automation practices to enhance productivity and accuracy.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.2s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Test Automation
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Established effective test automation practices within sprint cycles, streamlining testing processes, and reducing time-to-market for software releases.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.30000000000000004s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Recruitment and Talent Management
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Managed the entire QA recruiting pipeline, successfully hiring high-performing engineers who contributed to the team's success and operational excellence.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.4s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Stakeholder Communication
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Facilitated regular updates to stakeholders, ensuring transparency in project progress and maintaining strong relationships with internal and external stakeholders.
+              </li>
+              <li
+                class="achievementItem"
+              >
+                Presented QA findings and metrics to senior leadership, providing actionable insights and influencing decision-making at the highest levels.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div
+        class="decorativeCircle"
+      />
+      <div
+        class="decorativeLine"
+      />
+    </div>
+  </div>
+  <div>
+    <div
+      class="experienceSection  experienceSectionGrouped"
+      style="transform: translateY(50px); opacity: 0;"
+    >
+      <div
+        class="experienceContent"
+      >
+        <div
+          class="experienceHeader"
+        >
+          <div
+            class="companyBadge"
+          >
+            <span
+              class="companyDot"
+            />
+            Triton Digital
+            <span
+              class="roleNumber"
+            >
+              Role 
+              3
+              /
+              3
+            </span>
+          </div>
+          <div
+            class="duration"
+          >
+            Mar 2019 - Apr 2019
+             
+            <span
+              class="durationYears"
+            >
+              • 
+              1 month
+            </span>
+          </div>
+        </div>
+        <h2
+          class="roleTitle"
+        >
+          Senior Software Development Engineer Test
+        </h2>
+        <div
+          class="achievementsGrid"
+        >
+          <div
+            class="achievementCard"
+            style="animation-delay: 0s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Rapidly Adapted to Java Development
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Quickly transitioned from a .NET development background to Java, demonstrating versatility and the ability to learn new technologies efficiently.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.1s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Front-End Testing Framework
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Developed a new front-end testing framework, significantly improving testing efficiency and reliability for the development team.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.2s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              End-to-End Test Automation
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Implemented impactful end-to-end test automation, reducing manual testing efforts and enhancing test coverage and accuracy.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.30000000000000004s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Mentoring Junior Engineers
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Mentored junior engineers, sharing knowledge and best practices to increase team velocity and overall technical competence.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div
+        class="decorativeCircle"
+      />
+      <div
+        class="decorativeLine"
+      />
+    </div>
+  </div>
+  <div>
+    <div
+      class="companyGroupHeader "
+    >
+      <div
+        class="companyGroupBadge"
+      >
+        <span
+          class="companyGroupIcon"
+        >
+          🏢
+        </span>
+        <span
+          class="companyGroupName"
+        >
+          Risk Placement Services, Inc.
+        </span>
+        <span
+          class="companyGroupCount"
+        >
+          1
+           
+          Role
+        </span>
+        <span
+          class="companyGroupDuration"
+        >
+          1 year
+        </span>
+      </div>
+      <div
+        class="companyGroupLine"
+      />
+    </div>
+    <div
+      class="experienceSection  "
+      style="transform: translateY(50px); opacity: 0;"
+    >
+      <div
+        class="experienceContent"
+      >
+        <div
+          class="experienceHeader"
+        >
+          <div
+            class="companyBadge"
+          >
+            <span
+              class="companyDot"
+            />
+            Risk Placement Services, Inc.
+          </div>
+          <div
+            class="duration"
+          >
+            May 2018 - Mar 2019
+             
+            <span
+              class="durationYears"
+            >
+              • 
+              10 months
+            </span>
+          </div>
+        </div>
+        <h2
+          class="roleTitle"
+        >
+          Senior SDET
+        </h2>
+        <div
+          class="achievementsGrid"
+        >
+          <div
+            class="achievementCard"
+            style="animation-delay: 0s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Automation Framework Implementation
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Established an automation framework within the first month of joining, significantly enhancing the efficiency of testing processes.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.1s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Automated Deployment Pipeline
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Implemented an automated deployment pipeline to the staging environment, reducing manual deployment efforts and minimizing errors.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.2s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Championing Automation
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Championed automation throughout the entire software lifecycle, driving the transition from manual to automated testing practices.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.30000000000000004s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Leadership in Transition
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Led the transition from manual to automated testing processes, resulting in increased testing efficiency and effectiveness.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div
+        class="decorativeCircle"
+      />
+      <div
+        class="decorativeLine"
+      />
+    </div>
+  </div>
+  <div>
+    <div
+      class="companyGroupHeader "
+    >
+      <div
+        class="companyGroupBadge"
+      >
+        <span
+          class="companyGroupIcon"
+        >
+          🏢
+        </span>
+        <span
+          class="companyGroupName"
+        >
+          Scentsy, Inc.
+        </span>
+        <span
+          class="companyGroupCount"
+        >
+          1
+           
+          Role
+        </span>
+        <span
+          class="companyGroupDuration"
+        >
+          7 years
+        </span>
+      </div>
+      <div
+        class="companyGroupLine"
+      />
+    </div>
+    <div
+      class="experienceSection  "
+      style="transform: translateY(50px); opacity: 0;"
+    >
+      <div
+        class="experienceContent"
+      >
+        <div
+          class="experienceHeader"
+        >
+          <div
+            class="companyBadge"
+          >
+            <span
+              class="companyDot"
+            />
+            Scentsy, Inc.
+          </div>
+          <div
+            class="duration"
+          >
+            Jun 2011 - May 2018
+             
+            <span
+              class="durationYears"
+            >
+              • 
+              7 years
+            </span>
+          </div>
+        </div>
+        <h2
+          class="roleTitle"
+        >
+          SDET III
+        </h2>
+        <div
+          class="achievementsGrid"
+        >
+          <div
+            class="achievementCard"
+            style="animation-delay: 0s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Leadership and Project Management
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Led the SDET team for the IT department, managing multiple successful projects and ensuring high-quality software delivery.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.1s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Test Dashboard Development
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Built a test dashboard using .NET Core and D3.js with real-time test execution reporting, enhancing transparency and visibility of testing efforts.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.2s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Test Analytics and Triage Tools
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Implemented comprehensive test analytics and triage tools, improving the efficiency of identifying and resolving test issues.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.30000000000000004s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Career Progression
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Progressed from a manual tester to a lead SDET role, demonstrating continual growth and increased responsibility within the organization.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div
+        class="decorativeCircle"
+      />
+      <div
+        class="decorativeLine"
+      />
+    </div>
+  </div>
+  <div>
+    <div
+      class="companyGroupHeader "
+    >
+      <div
+        class="companyGroupBadge"
+      >
+        <span
+          class="companyGroupIcon"
+        >
+          🏢
+        </span>
+        <span
+          class="companyGroupName"
+        >
+          Lionbridge
+        </span>
+        <span
+          class="companyGroupCount"
+        >
+          1
+           
+          Role
+        </span>
+        <span
+          class="companyGroupDuration"
+        >
+          4 years
+        </span>
+      </div>
+      <div
+        class="companyGroupLine"
+      />
+    </div>
+    <div
+      class="experienceSection  "
+      style="transform: translateY(50px); opacity: 0;"
+    >
+      <div
+        class="experienceContent"
+      >
+        <div
+          class="experienceHeader"
+        >
+          <div
+            class="companyBadge"
+          >
+            <span
+              class="companyDot"
+            />
+            Lionbridge
+          </div>
+          <div
+            class="duration"
+          >
+            May 2007 - Jun 2011
+             
+            <span
+              class="durationYears"
+            >
+              • 
+              4 years
+            </span>
+          </div>
+        </div>
+        <h2
+          class="roleTitle"
+        >
+          Software Test Engineer
+        </h2>
+        <div
+          class="achievementsGrid"
+        >
+          <div
+            class="achievementCard"
+            style="animation-delay: 0s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Full-Time Employee Achievement
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Achieved rare full-time employee status through demonstrated competence and exceptional performance.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.1s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Contract Work with Major Tech Companies
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Performed contract work with major tech companies including HP, Microsoft, and Palm, delivering high-quality testing services.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.2s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Manual Testing Expertise
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Conducted manual testing across mobile, web, and hardware platforms, ensuring comprehensive test coverage and reliability.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="achievementCard"
+            style="animation-delay: 0.30000000000000004s;"
+          >
+            <h3
+              class="achievementTitle"
+            >
+              Client Satisfaction
+            </h3>
+            <ul
+              class="achievementList"
+            >
+              <li
+                class="achievementItem"
+              >
+                Managed independent testing contracts with high client satisfaction, demonstrating strong project management and communication skills.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div
+        class="decorativeCircle"
+      />
+      <div
+        class="decorativeLine"
+      />
+    </div>
+  </div>
+  <div
+    class="connectSection"
+  >
+    <div
+      class="connectContent"
+    >
+      <h2
+        class="connectTitle"
+      >
+        Let's Connect
+      </h2>
+      <p
+        class="connectSubtitle"
+      >
+        Find me on these platforms and let's collaborate
+      </p>
+      <div
+        class="socialCards"
+      >
+        <a
+          class="socialCard"
+          href="https://www.linkedin.com/in/michielbugher/"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <div
+            class="socialIcon"
+          >
+            <svg
+              fill="currentColor"
+              height="48"
+              viewBox="0 0 24 24"
+              width="48"
+            >
+              <path
+                d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+              />
+            </svg>
+          </div>
+          <div
+            class="socialInfo"
+          >
+            <h3
+              class="socialName"
+            >
+              LinkedIn
+            </h3>
+            <p
+              class="socialDescription"
+            >
+              Professional network & career updates
+            </p>
+          </div>
+          <div
+            class="socialArrow"
+          >
+            →
+          </div>
+        </a>
+        <a
+          class="socialCard"
+          href="https://github.com/MichielDean"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <div
+            class="socialIcon"
+          >
+            <svg
+              fill="currentColor"
+              height="48"
+              viewBox="0 0 24 24"
+              width="48"
+            >
+              <path
+                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+              />
+            </svg>
+          </div>
+          <div
+            class="socialInfo"
+          >
+            <h3
+              class="socialName"
+            >
+              GitHub
+            </h3>
+            <p
+              class="socialDescription"
+            >
+              Open source projects & code samples
+            </p>
+          </div>
+          <div
+            class="socialArrow"
+          >
+            →
+          </div>
+        </a>
+        <a
+          class="socialCard"
+          href="https://stackoverflow.com/users/2027382/michiel-bugher"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <div
+            class="socialIcon"
+          >
+            <svg
+              fill="currentColor"
+              height="48"
+              viewBox="0 0 24 24"
+              width="48"
+            >
+              <path
+                d="M15.725 0l-1.72 1.277 6.39 8.588 1.716-1.277L15.725 0zm-3.94 3.418l-1.369 1.644 8.225 6.85 1.369-1.644-8.225-6.85zm-3.15 4.465l-.905 1.94 9.702 4.517.904-1.94-9.701-4.517zm-1.85 4.86l-.44 2.093 10.473 2.201.44-2.092-10.473-2.203zM1.89 15.47V24h19.19v-8.53h-2.133v6.397H4.021v-6.396H1.89zm4.265 2.133v2.13h10.66v-2.13H6.154Z"
+              />
+            </svg>
+          </div>
+          <div
+            class="socialInfo"
+          >
+            <h3
+              class="socialName"
+            >
+              Stack Overflow
+            </h3>
+            <p
+              class="socialDescription"
+            >
+              Technical Q&A & community contributions
+            </p>
+          </div>
+          <div
+            class="socialArrow"
+          >
+            →
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div
+    class="endSection"
+  >
+    <div
+      class="endContent"
+    >
+      <div
+        class="endIcon"
+      >
+        ✨
+      </div>
+      <h2
+        class="endTitle"
+      >
+        That's My Journey
+      </h2>
+      <p
+        class="endText"
+      >
+        17
+        + years evolving from hands-on testing through automation architecture to engineering leadership, driving quality excellence and team success.
+      </p>
+    </div>
+  </div>
+</div>
+`;
