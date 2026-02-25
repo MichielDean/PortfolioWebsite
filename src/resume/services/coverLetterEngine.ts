@@ -18,6 +18,13 @@ export class CoverLetterEngine {
   }
 
   /**
+   * Factory: creates a CoverLetterEngine wired to the cover-letter model.
+   */
+  static create(): CoverLetterEngine {
+    return new CoverLetterEngine(OllamaService.forTask('cover-letter'));
+  }
+
+  /**
    * Generate a tailored cover letter using LLM intelligence
    */
   async generateCoverLetter(

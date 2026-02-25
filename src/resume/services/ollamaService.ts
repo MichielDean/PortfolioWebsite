@@ -4,6 +4,18 @@
  * Requires Ollama to be installed and running locally
  */
 
+const MODEL_ALIASES: Record<string, string> = {
+  'qwen3':    'qwen3:14b',
+  'qwen2':    'qwen2.5:14b',
+  'deepseek': 'deepseek-r1:14b',
+  'fast':     'qwen2.5:7b',
+  'qwen3-8b': 'qwen3:8b',
+};
+
+function resolveModel(model: string): string {
+  return MODEL_ALIASES[model] ?? model;
+}
+
 export interface OllamaConfig {
   baseUrl: string;
   model: string;
@@ -30,10 +42,25 @@ export class OllamaService {
 
   constructor(config?: Partial<OllamaConfig>) {
     this.config = {
-      baseUrl: config?.baseUrl || 'http://127.0.0.1:11434', // Use IPv4 explicitly
-      model: config?.model || 'llama3.1:8b', // Llama 3.1 8B - optimal for structured tasks, fits on GPU
+      baseUrl: config?.baseUrl || 'http://192.168.0.135:11434',
+      model: resolveModel(config?.model || 'qwen3:14b'),
       temperature: config?.temperature || 0.3 // Lower temperature for more focused, factual responses
     };
+  }
+
+  /**
+   * Returns a purpose-specific OllamaService instance for the given task.
+   * Each task uses the model best suited for its workload.
+   */
+  static forTask(task: 'analyze' | 'tailor' | 'cover-letter' | 'validate' | 'score'): OllamaService {
+    const taskModels: Record<string, string> = {
+      'analyze':      'qwen3:14b',       // JD analysis: needs strong instruction following
+      'tailor':       'qwen3:14b',       // Resume tailoring: complex judgment + keyword injection
+      'cover-letter': 'deepseek-r1:14b', // Cover letter: reasoning model for better prose
+      'validate':     'qwen2.5:14b',     // Validation: pattern matching, structural check
+      'score':        'qwen2.5:14b',     // ATS scoring: keyword matching, scoring logic
+    };
+    return new OllamaService({ model: taskModels[task] ?? 'qwen3:14b' });
   }
 
   /**

@@ -24,12 +24,54 @@ const colors = {
 
 interface CLIOptions {
   jobFile?: string;
+  url?: string;
   jobTitle?: string;
   company?: string;
   output?: string;
   coverLetterOnly?: boolean;
   noCoverLetter?: boolean;
   tone?: 'professional' | 'enthusiastic' | 'conversational';
+}
+
+/**
+ * Fetch a job posting from a URL and strip HTML to plain text.
+ * Pure Node.js — no new dependencies.
+ */
+async function fetchJobFromUrl(url: string): Promise<string> {
+  const { get } = await import('https');
+  const { get: httpGet } = await import('http');
+
+  return new Promise((resolve, reject) => {
+    const client = url.startsWith('https') ? get : httpGet;
+    const req = client(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+      }
+    }, (res) => {
+      let data = '';
+      res.on('data', (chunk: Buffer | string) => data += chunk);
+      res.on('end', () => {
+        // Strip HTML tags and compress whitespace
+        const text = data
+          .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+          .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+          .replace(/<[^>]+>/g, ' ')
+          .replace(/&nbsp;/g, ' ')
+          .replace(/&amp;/g, '&')
+          .replace(/\s{3,}/g, '\n\n')
+          .trim()
+          .slice(0, 8000);
+
+        if (text.length < 200) {
+          reject(new Error('URL returned too little text. If this is LinkedIn, paste the job text to a file and use --job-file instead.'));
+        } else {
+          resolve(text);
+        }
+      });
+    });
+    req.on('error', reject);
+  });
 }
 
 class ResumeCLI {
@@ -39,10 +81,10 @@ class ResumeCLI {
   private coverLetter: CoverLetterEngine;
 
   constructor() {
-    this.ollama = new OllamaService();
-    this.tailoring = new ResumeTailoringEngine(this.ollama);
-    this.validator = new LLMValidator(this.ollama);
-    this.coverLetter = new CoverLetterEngine(this.ollama);
+    this.ollama = OllamaService.forTask('analyze');
+    this.tailoring = ResumeTailoringEngine.create();
+    this.validator = new LLMValidator(OllamaService.forTask('validate'));
+    this.coverLetter = CoverLetterEngine.create();
   }
 
   async run(args: string[]): Promise<void> {
@@ -62,7 +104,13 @@ class ResumeCLI {
 
     const options = this.parseArgs(args);
 
-    if (!options.jobFile || !options.jobTitle || !options.company) {
+    if (!options.jobFile && !options.url) {
+      console.error(`${colors.red}Error: Missing required argument: --job-file or --url${colors.reset}`);
+      this.printHelp();
+      process.exit(1);
+    }
+
+    if (!options.jobTitle || !options.company) {
       console.error(`${colors.red}Error: Missing required arguments${colors.reset}`);
       this.printHelp();
       process.exit(1);
@@ -80,6 +128,10 @@ class ResumeCLI {
         case '--job-file':
         case '-j':
           options.jobFile = args[++i];
+          break;
+        case '--url':
+        case '-u':
+          options.url = args[++i];
           break;
         case '--job-title':
         case '-t':
@@ -113,6 +165,20 @@ class ResumeCLI {
     return options;
   }
 
+  private async resolveJobPosting(options: CLIOptions): Promise<string> {
+    if (options.url) {
+      console.log(`${colors.cyan}🌐 Fetching job posting from URL...${colors.reset}`);
+      const text = await fetchJobFromUrl(options.url);
+      console.log(`${colors.green}   Got ${text.length} chars of job posting text${colors.reset}`);
+      return text;
+    } else if (options.jobFile) {
+      return fs.readFileSync(options.jobFile, 'utf-8');
+    } else {
+      console.error(`${colors.red}Error: Must provide --job-file or --url${colors.reset}`);
+      process.exit(1);
+    }
+  }
+
   private async generateResume(options: CLIOptions): Promise<void> {
     try {
       console.log(`${colors.bright}Processing...${colors.reset}\n`);
@@ -127,9 +193,9 @@ class ResumeCLI {
       console.log(`${colors.cyan}→ Loading profile data...${colors.reset}`);
       const profile = getProfileForResume();
 
-      // Read job posting
+      // Read job posting (from file or URL)
       console.log(`${colors.cyan}→ Reading job posting...${colors.reset}`);
-      const jobPosting = fs.readFileSync(options.jobFile!, 'utf-8');
+      const jobPosting = await this.resolveJobPosting(options);
 
       // Handle cover letter only mode
       if (options.coverLetterOnly) {
@@ -442,7 +508,8 @@ ${colors.bright}Usage:${colors.reset}
   npm run tailor-resume [options]
 
 ${colors.bright}Options:${colors.reset}
-  -j, --job-file <file>     Path to job posting text file (required)
+  -j, --job-file <file>     Path to job posting text file (required if --url not given)
+  -u, --url <url>           Job posting URL (LinkedIn or other job board)
   -t, --job-title <title>   Job title (required)
   -c, --company <name>      Company name (required)
   -o, --output <file>       Output filename (default: generated/resume.html)
@@ -452,8 +519,11 @@ ${colors.bright}Options:${colors.reset}
   -h, --help                Show this help message
 
 ${colors.bright}Examples:${colors.reset}
-  ${colors.cyan}# Generate both resume and cover letter${colors.reset}
+  ${colors.cyan}# Generate resume from a job posting file${colors.reset}
   node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Staff Engineer" --company "ClickUp"
+
+  ${colors.cyan}# Generate resume from a job posting URL${colors.reset}
+  node dist/resume-cli/resume/cli/resumeTailor.js --url "https://linkedin.com/jobs/view/..." --job-title "Staff Engineer" --company "ClickUp"
 
   ${colors.cyan}# Generate only cover letter${colors.reset}
   node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Staff Engineer" --company "ClickUp" --cover-letter-only

@@ -7,6 +7,8 @@ import { OllamaService } from './ollamaService.js';
 import { PromptLibrary } from './promptLibrary.js';
 import { SimpleProfile } from './profileDataAdapter.js';
 
+
+
 export interface TailoredResumeResult {
   summary: string;
   selectedExperiences: {
@@ -25,9 +27,22 @@ export class ResumeTailoringEngine {
   private promptLibrary: PromptLibrary;
 
   constructor(
-    private ollama: OllamaService
+    private ollamaAnalyze: OllamaService,
+    private ollamaTailor: OllamaService,
+    private ollamaValidate: OllamaService
   ) {
     this.promptLibrary = new PromptLibrary();
+  }
+
+  /**
+   * Factory: creates an engine wired to task-appropriate Ollama instances.
+   */
+  static create(): ResumeTailoringEngine {
+    return new ResumeTailoringEngine(
+      OllamaService.forTask('analyze'),
+      OllamaService.forTask('tailor'),
+      OllamaService.forTask('validate')
+    );
   }
 
   /**
@@ -60,7 +75,7 @@ export class ResumeTailoringEngine {
     }
 
     // Get LLM to do the intelligent tailoring using library prompts
-    const response = await this.ollama.chat([
+    const response = await this.ollamaTailor.chat([
       {
         role: 'system',
         content: prompts.system
