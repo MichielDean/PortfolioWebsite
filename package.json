@@ -26,7 +26,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:e2e": "jest --config jest.e2e.config.ts",
-    "prebuild": "npm test"
+    "prebuild": "npm test",
+    "test:resume": "jest --config jest.resume.config.cjs"
   },
   "dependencies": {
     "react": "^18.3.1",
