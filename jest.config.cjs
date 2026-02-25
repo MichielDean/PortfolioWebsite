@@ -9,12 +9,12 @@ module.exports = {
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '\\.(css|less|scss|sass)$': '<rootDir>/__mocks__/cssModuleMock.js',
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
       '<rootDir>/__mocks__/fileMock.js',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  testPathIgnorePatterns: ['node_modules', 'dist'],
+  testPathIgnorePatterns: ['node_modules', 'dist', 'src/tests/e2e'],
   transformIgnorePatterns: ['node_modules/'],
   setupFilesAfterEnv: ['<rootDir>/setup-test-env.js'],
   moduleDirectories: ['node_modules', '<rootDir>/src']
