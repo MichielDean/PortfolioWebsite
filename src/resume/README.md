@@ -5,12 +5,38 @@ AI-powered resume and cover letter generation with LLM-first architecture, RAG l
 ## Quick Start
 
 ```bash
-# 1. Install Ollama from https://ollama.ai
-# 2. Pull a large model: ollama pull gpt-oss:120b
-# 3. Update your data: src/data/profileData.ts
-# 4. Generate resume & cover letter:
+# 1. Ollama must be running at 192.168.0.135:11434 (remote server)
+# 2. Update your data: src/data/profileData.ts
+# 3. Generate resume & cover letter from a file:
 .\scripts\tailor-resume.ps1 -JobFile job.txt -JobTitle "Job Title" -Company "Company"
+# OR from a URL directly:
+node dist/resume-cli/resume/cli/resumeTailor.js --url "https://linkedin.com/jobs/view/..." --job-title "Staff Engineer" --company "Acme"
 ```
+
+## Model Selection
+
+Each step in the pipeline uses the right model for the task:
+
+| Step | Model | Why |
+|------|-------|-----|
+| JD Analysis | `qwen3:14b` | Strong instruction following for structured keyword extraction |
+| Resume Tailoring | `qwen3:14b` | Complex judgment — relevance ranking, keyword injection |
+| Cover Letter | `deepseek-r1:14b` | Reasoning model produces superior prose quality |
+| Validation | `qwen2.5:14b` | Pattern matching + structural checks — 14B is sufficient |
+| ATS Scoring | `qwen2.5:14b` | Keyword matching — no need for a reasoning model |
+
+**Default model:** `qwen3:14b` (previously `llama3.1:8b`)  
+**Ollama server:** `http://192.168.0.135:11434` (previously `127.0.0.1:11434`)
+
+Model aliases are also supported for convenience:
+
+| Alias | Resolves to |
+|-------|-------------|
+| `qwen3` | `qwen3:14b` |
+| `qwen2` | `qwen2.5:14b` |
+| `deepseek` | `deepseek-r1:14b` |
+| `fast` | `qwen2.5:7b` |
+| `qwen3-8b` | `qwen3:8b` |
 
 ## Features
 
@@ -71,8 +97,11 @@ The tool now automatically generates personalized cover letters that:
 # First build
 npm run build
 
-# Generate both resume and cover letter
+# Generate both resume and cover letter (from file)
 node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Senior Engineer" --company "Acme Corp"
+
+# Generate from a job posting URL directly
+node dist/resume-cli/resume/cli/resumeTailor.js --url "https://linkedin.com/jobs/view/..." --job-title "Senior Engineer" --company "Acme Corp"
 
 # Generate only cover letter
 node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Senior Engineer" --company "Acme Corp" --cover-letter-only
@@ -86,7 +115,8 @@ node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "
 
 ### Options
 ```
---job-file, -j <file>     Job posting file (required)
+--job-file, -j <file>     Job posting file (required if --url not given)
+--url, -u <url>           Job posting URL (LinkedIn or other job board)
 --job-title, -t <title>   Job title (required)
 --company, -c <name>      Company name (required)
 --output, -o <file>       Resume output (default: generated/resume.html)
