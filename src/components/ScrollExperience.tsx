@@ -140,7 +140,7 @@ const ScrollExperience: React.FC<ScrollExperienceProps> = ({ workHistory }) => {
                         )}
 
                         <div
-                            ref={(el) => (sectionRefs.current[index] = el)}
+                            ref={(el) => { sectionRefs.current[index] = el; }}
                             className={`${styles.experienceSection} ${isVisible ? styles.experienceSectionVisible : ''} ${hasMultiplePositions ? styles.experienceSectionGrouped : ''}`}
                             style={{
                                 transform: `translateY(${isVisible ? 0 : 50}px)`,

@@ -26,5 +26,5 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*", "vite.config.ts"],
-  "exclude": ["src/resume/**/*"]
+  "exclude": ["src/resume/**/*", "src/tests/resume/**/*"]
 }
