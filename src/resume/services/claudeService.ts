@@ -87,7 +87,7 @@ export class ClaudeService {
    */
   async isAvailable(): Promise<boolean> {
     try {
-      await runClaudeCLI('ping', this.model, 5000);
+      await runClaudeCLI('ping', this.model, 15000);
       return true;
     } catch {
       return false;
@@ -128,7 +128,7 @@ export class ClaudeService {
     parts.push('Assistant:');
 
     const input = parts.join('\n\n');
-    return runClaudeCLI(input, this.model, 60000);
+    return runClaudeCLI(input, this.model, 120000);
   }
 
   /**

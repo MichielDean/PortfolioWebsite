@@ -104,8 +104,8 @@ class ResumeCLI {
     // Check Claude API
     const isClaudeAvailable = await this.claude!.isAvailable();
     if (!isClaudeAvailable) {
-      console.error(`${colors.red}Error: Claude API is not available!${colors.reset}`);
-      console.log(`\nEnsure ANTHROPIC_API_KEY is set: export ANTHROPIC_API_KEY=$(pass anthropic/claude)\n`);
+      console.error(`${colors.red}Error: Claude CLI is not available!${colors.reset}`);
+      console.log(`\nEnsure you are logged in: run 'claude' and authenticate with your claude.ai subscription.\n`);
       process.exit(1);
     }
 
