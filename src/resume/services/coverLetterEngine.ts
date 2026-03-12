@@ -3,7 +3,7 @@
  * Generates personalized cover letters that highlight skill matches and growth opportunities
  */
 
-import { OllamaService } from './ollamaService.js';
+import { ClaudeService as OllamaService } from './claudeService.js';
 import { PromptLibrary } from './promptLibrary.js';
 import { SimpleProfile } from './profileDataAdapter.js';
 import { CoverLetterResult, CoverLetterOptions } from '../types/resumeTypes.js';
