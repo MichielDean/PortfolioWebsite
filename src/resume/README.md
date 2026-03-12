@@ -33,19 +33,9 @@ Each step in the pipeline uses the right Claude model for the task:
 **Backend:** Anthropic Claude API (`@anthropic-ai/sdk`)  
 **API Key:** Set via `ANTHROPIC_API_KEY` environment variable (use `pass` for secure storage)
 
-Model aliases are also supported for convenience:
-
-| Alias | Resolves to |
-|-------|-------------|
-| `qwen3` | `qwen3:14b` |
-| `qwen2` | `qwen2.5:14b` |
-| `deepseek` | `deepseek-r1:14b` |
-| `fast` | `qwen2.5:7b` |
-| `qwen3-8b` | `qwen3:8b` |
-
 ## Features
 
-🤖 **Local AI** - Private, offline processing with Ollama  
+🤖 **Claude AI** - High-quality resume tailoring via Anthropic API  
 🎯 **LLM-First** - Intelligent content selection, not keyword matching  
 🛡️ **Anti-Fabrication** - Auto-correction prevents company/role hallucination  
 📝 **Cover Letters** - Personalized letters highlighting skill matches & growth opportunities  

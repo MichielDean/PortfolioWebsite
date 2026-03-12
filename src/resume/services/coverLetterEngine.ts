@@ -21,7 +21,7 @@ export class CoverLetterEngine {
    * Factory: creates a CoverLetterEngine wired to the cover-letter model.
    */
   static create(): CoverLetterEngine {
-    return new CoverLetterEngine(new OllamaService());
+    return new CoverLetterEngine(OllamaService.forTask('cover-letter'));
   }
 
   /**

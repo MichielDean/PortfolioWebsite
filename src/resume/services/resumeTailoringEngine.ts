@@ -26,11 +26,7 @@ export interface TailoredResumeResult {
 export class ResumeTailoringEngine {
   private promptLibrary: PromptLibrary;
 
-  constructor(
-    _ollamaAnalyze: OllamaService,
-    private ollamaTailor: OllamaService,
-    _ollamaValidate: OllamaService
-  ) {
+  constructor(private ollamaTailor: OllamaService) {
     this.promptLibrary = new PromptLibrary();
   }
 
@@ -38,11 +34,7 @@ export class ResumeTailoringEngine {
    * Factory: creates an engine wired to task-appropriate Ollama instances.
    */
   static create(): ResumeTailoringEngine {
-    return new ResumeTailoringEngine(
-      OllamaService.forTask('analyze'),
-      OllamaService.forTask('tailor'),
-      OllamaService.forTask('validate')
-    );
+    return new ResumeTailoringEngine(OllamaService.forTask('tailor'));
   }
 
   /**

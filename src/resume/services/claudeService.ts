@@ -99,12 +99,19 @@ export class ClaudeService {
       messages: anthropicMessages,
     });
 
-    const block = response.content[0];
-    if (block.type !== 'text') {
-      throw new Error(`Unexpected response block type: ${block.type}`);
+    if (response.content.length === 0) {
+      throw new Error('Claude returned an empty response');
     }
 
-    return block.text;
+    const textBlocks = response.content
+      .filter((block): block is Anthropic.TextBlock => block.type === 'text')
+      .map(block => block.text);
+
+    if (textBlocks.length === 0) {
+      throw new Error(`Claude returned no text blocks; first block type: ${response.content[0].type}`);
+    }
+
+    return textBlocks.join('\n');
   }
 
   /**
@@ -243,4 +250,11 @@ Modified summary:`;
   }
 }
 
-export const claudeService = new ClaudeService();
+let _claudeService: ClaudeService | null = null;
+
+export function getClaudeService(): ClaudeService {
+  if (!_claudeService) {
+    _claudeService = new ClaudeService();
+  }
+  return _claudeService;
+}

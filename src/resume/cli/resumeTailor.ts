@@ -75,13 +75,13 @@ async function fetchJobFromUrl(url: string): Promise<string> {
 }
 
 class ResumeCLI {
-  private ollama: OllamaService;
+  private claude: OllamaService;
   private tailoring: ResumeTailoringEngine;
   private validator: LLMValidator;
   private coverLetter: CoverLetterEngine;
 
   constructor() {
-    this.ollama = OllamaService.forTask('analyze');
+    this.claude = OllamaService.forTask('analyze');
     this.tailoring = ResumeTailoringEngine.create();
     this.validator = new LLMValidator(OllamaService.forTask('validate'));
     this.coverLetter = CoverLetterEngine.create();
@@ -93,8 +93,8 @@ class ResumeCLI {
     console.log(`${colors.bright}${colors.blue}═══════════════════════════════════════════════════════${colors.reset}\n`);
 
     // Check Claude API
-    const isOllamaAvailable = await this.ollama.isAvailable();
-    if (!isOllamaAvailable) {
+    const isClaudeAvailable = await this.claude.isAvailable();
+    if (!isClaudeAvailable) {
       console.error(`${colors.red}Error: Claude API is not available!${colors.reset}`);
       console.log(`\nEnsure ANTHROPIC_API_KEY is set: export ANTHROPIC_API_KEY=$(pass anthropic/claude)\n`);
       process.exit(1);
