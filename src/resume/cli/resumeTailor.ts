@@ -37,6 +37,23 @@ interface CLIOptions {
  * Fetch a job posting from a URL and strip HTML to plain text.
  * Pure Node.js — no new dependencies.
  */
+/**
+ * Sanitize a company name for use in a filename.
+ * e.g. "JP Morgan Chase & Co." → "jp_morgan_chase_co"
+ */
+/**
+ * Sanitize a company name for use in a filename.
+ * e.g. "JP Morgan Chase & Co." → "jp_morgan_chase_co"
+ * Falls back to "unknown_company" if the result would be empty (e.g. all-special-char input).
+ */
+function sanitizeCompanyName(company: string): string {
+  const sanitized = company
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')  // non-alphanumeric runs → single underscore
+    .replace(/^_+|_+$/g, '');      // trim leading/trailing underscores
+  return sanitized.length > 0 ? sanitized : 'unknown_company';
+}
+
 async function fetchJobFromUrl(url: string): Promise<string> {
   const { get } = await import('https');
   const { get: httpGet } = await import('http');
@@ -250,8 +267,9 @@ class ResumeCLI {
       console.log(`${colors.cyan}→ Generating HTML...${colors.reset}`);
       const html = this.generateHTML(profile, tailored, options);
 
-      // Save to generated folder by default
-      const outputFile = options.output || './generated/resume.html';
+      // Save to generated folder — named by company unless overridden
+      const companySuffix = sanitizeCompanyName(options.company!);
+      const outputFile = options.output || `./generated/resume_${companySuffix}.html`;
       fs.writeFileSync(outputFile, html);
 
       // Generate PDF automatically
@@ -303,15 +321,16 @@ class ResumeCLI {
       options.jobTitle!
     );
 
-    const htmlFile = './generated/cover-letter.html';
+    const companySuffix = sanitizeCompanyName(options.company!);
+    const htmlFile = `./generated/cover-letter_${companySuffix}.html`;
     fs.writeFileSync(htmlFile, coverLetterHTML);
 
     // Generate PDF
-    const pdfFile = './generated/cover-letter.pdf';
+    const pdfFile = `./generated/cover-letter_${companySuffix}.pdf`;
     await this.generatePDF(coverLetterHTML, pdfFile);
 
     // Save text version
-    const textFile = './generated/cover-letter.txt';
+    const textFile = `./generated/cover-letter_${companySuffix}.txt`;
     fs.writeFileSync(textFile, coverLetterResult.fullLetter);
 
     console.log(`\n${colors.green}${colors.bright}✓ Cover Letter Generated!${colors.reset}\n`);
@@ -346,15 +365,16 @@ class ResumeCLI {
       options.jobTitle!
     );
 
-    const htmlFile = './generated/cover-letter.html';
+    const companySuffix = sanitizeCompanyName(options.company!);
+    const htmlFile = `./generated/cover-letter_${companySuffix}.html`;
     fs.writeFileSync(htmlFile, coverLetterHTML);
 
     // Generate PDF
-    const pdfFile = './generated/cover-letter.pdf';
+    const pdfFile = `./generated/cover-letter_${companySuffix}.pdf`;
     await this.generatePDF(coverLetterHTML, pdfFile);
 
     // Save text version
-    const textFile = './generated/cover-letter.txt';
+    const textFile = `./generated/cover-letter_${companySuffix}.txt`;
     fs.writeFileSync(textFile, coverLetterResult.fullLetter);
 
     console.log(`\n${colors.green}${colors.bright}✓ Cover Letter Generated!${colors.reset}\n`);
@@ -521,7 +541,7 @@ ${colors.bright}Options:${colors.reset}
   -u, --url <url>           Job posting URL (LinkedIn or other job board)
   -t, --job-title <title>   Job title (required)
   -c, --company <name>      Company name (required)
-  -o, --output <file>       Output filename (default: generated/resume.html)
+  -o, --output <file>       Output filename (default: generated/resume_<company>.html)
   --cover-letter-only       Generate only a cover letter (no resume)
   --no-cover-letter         Skip cover letter generation
   --tone <tone>             Cover letter tone: professional, enthusiastic, conversational (default: professional)
@@ -545,7 +565,7 @@ ${colors.bright}Examples:${colors.reset}
 
 ${colors.bright}Note:${colors.reset}
   All generated files are saved to the ${colors.cyan}generated/${colors.reset} folder.
-  Generated files: resume.html, resume.pdf, cover-letter.html, cover-letter.pdf, cover-letter.txt
+  Generated files: resume_<company>.html, resume_<company>.pdf, cover-letter_<company>.html, cover-letter_<company>.pdf, cover-letter_<company>.txt
 `);
   }
 }
