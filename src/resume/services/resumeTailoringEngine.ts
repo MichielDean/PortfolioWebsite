@@ -3,7 +3,7 @@
  * Relies on LLM intelligence instead of rigid keyword matching
  */
 
-import { OllamaService } from './ollamaService.js';
+import { ClaudeService as OllamaService } from './claudeService.js';
 import { PromptLibrary } from './promptLibrary.js';
 import { SimpleProfile } from './profileDataAdapter.js';
 
@@ -27,9 +27,9 @@ export class ResumeTailoringEngine {
   private promptLibrary: PromptLibrary;
 
   constructor(
-    private ollamaAnalyze: OllamaService,
+    _ollamaAnalyze: OllamaService,
     private ollamaTailor: OllamaService,
-    private ollamaValidate: OllamaService
+    _ollamaValidate: OllamaService
   ) {
     this.promptLibrary = new PromptLibrary();
   }

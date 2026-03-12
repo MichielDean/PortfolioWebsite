@@ -3,7 +3,7 @@
  * Uses LLM to fact-check resume content instead of rigid rules
  */
 
-import { OllamaService } from './ollamaService.js';
+import { ClaudeService as OllamaService } from './claudeService.js';
 import { PromptLibrary } from './promptLibrary.js';
 import { SimpleProfile } from './profileDataAdapter.js';
 import { TailoredResumeResult } from './resumeTailoringEngine.js';

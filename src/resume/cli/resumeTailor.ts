@@ -6,7 +6,7 @@
 import * as fs from 'fs';
 import puppeteer from 'puppeteer';
 import { getProfileForResume } from '../services/profileDataAdapter.js';
-import { OllamaService } from '../services/ollamaService.js';
+import { ClaudeService as OllamaService } from '../services/claudeService.js';
 import { ResumeTailoringEngine } from '../services/resumeTailoringEngine.js';
 import { LLMValidator } from '../services/llmValidator.js';
 import { CoverLetterEngine } from '../services/coverLetterEngine.js';
@@ -92,15 +92,15 @@ class ResumeCLI {
     console.log(`${colors.bright}${colors.cyan}  Resume Tailor - LLM-First Architecture${colors.reset}`);
     console.log(`${colors.bright}${colors.blue}═══════════════════════════════════════════════════════${colors.reset}\n`);
 
-    // Check Ollama
+    // Check Claude API
     const isOllamaAvailable = await this.ollama.isAvailable();
     if (!isOllamaAvailable) {
-      console.error(`${colors.red}Error: Ollama is not running!${colors.reset}`);
-      console.log(`\nPlease start Ollama and try again.\n`);
+      console.error(`${colors.red}Error: Claude API is not available!${colors.reset}`);
+      console.log(`\nEnsure ANTHROPIC_API_KEY is set: export ANTHROPIC_API_KEY=$(pass anthropic/claude)\n`);
       process.exit(1);
     }
 
-    console.log(`${colors.green}✓ Ollama is running${colors.reset}\n`);
+    console.log(`${colors.green}✓ Claude API is available${colors.reset}\n`);
 
     const options = this.parseArgs(args);
 
