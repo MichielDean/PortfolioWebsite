@@ -1,46 +1,41 @@
 # Resume Tailor Tool
 
-AI-powered resume and cover letter generation with LLM-first architecture, RAG learning, and anti-fabrication safeguards. All processing happens locally via Ollama.
+AI-powered resume and cover letter generation with LLM-first architecture, RAG learning, and anti-fabrication safeguards. Powered by Claude (Anthropic).
 
 ## Quick Start
 
 ```bash
-# 1. Ollama must be running at 192.168.0.135:11434 (remote server)
-# 2. Update your data: src/data/profileData.ts
-# 3. Generate resume & cover letter from a file:
-.\scripts\tailor-resume.ps1 -JobFile job.txt -JobTitle "Job Title" -Company "Company"
+# 1. Set your Anthropic API key (store in pass, never plain text):
+export ANTHROPIC_API_KEY=$(pass anthropic/claude)
+# 2. Create contact.json from the example (gitignored):
+cp contact.example.json contact.json  # then fill in your details
+# 3. Update your data: src/data/profileData.ts
+# 4. Build the CLI:
+npx tsc --project src/resume/tsconfig.json
+# 5. Generate resume & cover letter:
+node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Job Title" --company "Company"
 # OR from a URL directly:
 node dist/resume-cli/resume/cli/resumeTailor.js --url "https://linkedin.com/jobs/view/..." --job-title "Staff Engineer" --company "Acme"
 ```
 
 ## Model Selection
 
-Each step in the pipeline uses the right model for the task:
+Each step in the pipeline uses the right Claude model for the task:
 
 | Step | Model | Why |
 |------|-------|-----|
-| JD Analysis | `qwen3:14b` | Strong instruction following for structured keyword extraction |
-| Resume Tailoring | `qwen3:14b` | Complex judgment — relevance ranking, keyword injection |
-| Cover Letter | `deepseek-r1:14b` | Reasoning model produces superior prose quality |
-| Validation | `qwen2.5:14b` | Pattern matching + structural checks — 14B is sufficient |
-| ATS Scoring | `qwen2.5:14b` | Keyword matching — no need for a reasoning model |
+| JD Analysis | `claude-sonnet-4-5` | Strong instruction following for structured keyword extraction |
+| Resume Tailoring | `claude-sonnet-4-5` | Complex judgment — relevance ranking, keyword injection |
+| Cover Letter | `claude-sonnet-4-5` | High-quality prose generation |
+| Validation | `claude-haiku-4-5` | Fast pattern matching + structural checks |
+| ATS Scoring | `claude-haiku-4-5` | Keyword matching — speed prioritized |
 
-**Default model:** `qwen3:14b` (previously `llama3.1:8b`)  
-**Ollama server:** `http://192.168.0.135:11434` (previously `127.0.0.1:11434`)
-
-Model aliases are also supported for convenience:
-
-| Alias | Resolves to |
-|-------|-------------|
-| `qwen3` | `qwen3:14b` |
-| `qwen2` | `qwen2.5:14b` |
-| `deepseek` | `deepseek-r1:14b` |
-| `fast` | `qwen2.5:7b` |
-| `qwen3-8b` | `qwen3:8b` |
+**Backend:** Anthropic Claude API (`@anthropic-ai/sdk`)  
+**API Key:** Set via `ANTHROPIC_API_KEY` environment variable (use `pass` for secure storage)
 
 ## Features
 
-🤖 **Local AI** - Private, offline processing with Ollama  
+🤖 **Claude AI** - High-quality resume tailoring via Anthropic API  
 🎯 **LLM-First** - Intelligent content selection, not keyword matching  
 🛡️ **Anti-Fabrication** - Auto-correction prevents company/role hallucination  
 📝 **Cover Letters** - Personalized letters highlighting skill matches & growth opportunities  

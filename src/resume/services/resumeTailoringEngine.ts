@@ -3,7 +3,7 @@
  * Relies on LLM intelligence instead of rigid keyword matching
  */
 
-import { OllamaService } from './ollamaService.js';
+import { ClaudeService as OllamaService } from './claudeService.js';
 import { PromptLibrary } from './promptLibrary.js';
 import { SimpleProfile } from './profileDataAdapter.js';
 
@@ -26,23 +26,15 @@ export interface TailoredResumeResult {
 export class ResumeTailoringEngine {
   private promptLibrary: PromptLibrary;
 
-  constructor(
-    private ollamaAnalyze: OllamaService,
-    private ollamaTailor: OllamaService,
-    private ollamaValidate: OllamaService
-  ) {
+  constructor(private ollamaTailor: OllamaService) {
     this.promptLibrary = new PromptLibrary();
   }
 
   /**
-   * Factory: creates an engine wired to task-appropriate Ollama instances.
+   * Factory: creates an engine wired to task-appropriate Claude instances.
    */
   static create(): ResumeTailoringEngine {
-    return new ResumeTailoringEngine(
-      OllamaService.forTask('analyze'),
-      OllamaService.forTask('tailor'),
-      OllamaService.forTask('validate')
-    );
+    return new ResumeTailoringEngine(OllamaService.forTask('tailor'));
   }
 
   /**

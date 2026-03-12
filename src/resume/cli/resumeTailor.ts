@@ -6,7 +6,7 @@
 import * as fs from 'fs';
 import puppeteer from 'puppeteer';
 import { getProfileForResume } from '../services/profileDataAdapter.js';
-import { OllamaService } from '../services/ollamaService.js';
+import { ClaudeService as OllamaService } from '../services/claudeService.js';
 import { ResumeTailoringEngine } from '../services/resumeTailoringEngine.js';
 import { LLMValidator } from '../services/llmValidator.js';
 import { CoverLetterEngine } from '../services/coverLetterEngine.js';
@@ -75,32 +75,41 @@ async function fetchJobFromUrl(url: string): Promise<string> {
 }
 
 class ResumeCLI {
-  private ollama: OllamaService;
-  private tailoring: ResumeTailoringEngine;
-  private validator: LLMValidator;
-  private coverLetter: CoverLetterEngine;
+  private claude: OllamaService | null = null;
+  private tailoring: ResumeTailoringEngine | null = null;
+  private validator: LLMValidator | null = null;
+  private coverLetter: CoverLetterEngine | null = null;
 
   constructor() {
-    this.ollama = OllamaService.forTask('analyze');
-    this.tailoring = ResumeTailoringEngine.create();
-    this.validator = new LLMValidator(OllamaService.forTask('validate'));
-    this.coverLetter = CoverLetterEngine.create();
+    // Services are created lazily in run() to avoid import-time crashes
+    // when ANTHROPIC_API_KEY is not yet set.
+  }
+
+  private initServices(): void {
+    if (!this.claude) {
+      this.claude = OllamaService.forTask('analyze');
+      this.tailoring = ResumeTailoringEngine.create();
+      this.validator = new LLMValidator(OllamaService.forTask('validate'));
+      this.coverLetter = CoverLetterEngine.create();
+    }
   }
 
   async run(args: string[]): Promise<void> {
+    this.initServices();
+
     console.log(`${colors.bright}${colors.blue}═══════════════════════════════════════════════════════${colors.reset}`);
     console.log(`${colors.bright}${colors.cyan}  Resume Tailor - LLM-First Architecture${colors.reset}`);
     console.log(`${colors.bright}${colors.blue}═══════════════════════════════════════════════════════${colors.reset}\n`);
 
-    // Check Ollama
-    const isOllamaAvailable = await this.ollama.isAvailable();
-    if (!isOllamaAvailable) {
-      console.error(`${colors.red}Error: Ollama is not running!${colors.reset}`);
-      console.log(`\nPlease start Ollama and try again.\n`);
+    // Check Claude API
+    const isClaudeAvailable = await this.claude!.isAvailable();
+    if (!isClaudeAvailable) {
+      console.error(`${colors.red}Error: Claude API is not available!${colors.reset}`);
+      console.log(`\nEnsure ANTHROPIC_API_KEY is set: export ANTHROPIC_API_KEY=$(pass anthropic/claude)\n`);
       process.exit(1);
     }
 
-    console.log(`${colors.green}✓ Ollama is running${colors.reset}\n`);
+    console.log(`${colors.green}✓ Claude API is available${colors.reset}\n`);
 
     const options = this.parseArgs(args);
 
@@ -205,7 +214,7 @@ class ResumeCLI {
 
       // Tailor resume using LLM
       console.log(`${colors.cyan}→ Tailoring resume with LLM...${colors.reset}`);
-      const tailored = await this.tailoring.tailorResume(
+      const tailored = await this.tailoring!.tailorResume(
         profile,
         jobPosting,
         options.jobTitle!,
@@ -217,7 +226,7 @@ class ResumeCLI {
 
       // Validate with LLM
       console.log(`${colors.cyan}→ Validating content with LLM...${colors.reset}`);
-      const validation = await this.validator.validateResume(profile, tailored);
+      const validation = await this.validator!.validateResume(profile, tailored);
 
       if (!validation.isValid) {
         console.error(`${colors.red}✗ Validation failed!${colors.reset}`);
@@ -273,7 +282,7 @@ class ResumeCLI {
   private async generateCoverLetterOnly(profile: any, jobPosting: string, options: CLIOptions): Promise<void> {
     console.log(`${colors.cyan}→ Generating cover letter...${colors.reset}`);
     
-    const coverLetterResult = await this.coverLetter.generateCoverLetter(
+    const coverLetterResult = await this.coverLetter!.generateCoverLetter(
       profile,
       jobPosting,
       options.jobTitle!,
@@ -285,7 +294,7 @@ class ResumeCLI {
     );
 
     // Save cover letter HTML
-    const coverLetterHTML = this.coverLetter.exportToHTML(
+    const coverLetterHTML = this.coverLetter!.exportToHTML(
       coverLetterResult,
       profile.name,
       profile.email,
@@ -316,7 +325,7 @@ class ResumeCLI {
   }
 
   private async generateAndSaveCoverLetter(profile: any, jobPosting: string, options: CLIOptions): Promise<void> {
-    const coverLetterResult = await this.coverLetter.generateCoverLetter(
+    const coverLetterResult = await this.coverLetter!.generateCoverLetter(
       profile,
       jobPosting,
       options.jobTitle!,
@@ -328,7 +337,7 @@ class ResumeCLI {
     );
 
     // Save cover letter HTML
-    const coverLetterHTML = this.coverLetter.exportToHTML(
+    const coverLetterHTML = this.coverLetter!.exportToHTML(
       coverLetterResult,
       profile.name,
       profile.email,
