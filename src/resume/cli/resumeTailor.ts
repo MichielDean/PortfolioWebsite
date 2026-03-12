@@ -251,7 +251,8 @@ class ResumeCLI {
       const html = this.generateHTML(profile, tailored, options);
 
       // Save to generated folder by default
-      const outputFile = options.output || './generated/resume.html';
+      const companySuffix = options.company ? `_${options.company.toLowerCase().replace(/\s+/g, '_')}` : '';
+      const outputFile = options.output || `./generated/resume${companySuffix}.html`;
       fs.writeFileSync(outputFile, html);
 
       // Generate PDF automatically
@@ -303,15 +304,16 @@ class ResumeCLI {
       options.jobTitle!
     );
 
-    const htmlFile = './generated/cover-letter.html';
+    const companySuffix = options.company ? `_${options.company.toLowerCase().replace(/\s+/g, '_')}` : '';
+    const htmlFile = `./generated/cover-letter${companySuffix}.html`;
     fs.writeFileSync(htmlFile, coverLetterHTML);
 
     // Generate PDF
-    const pdfFile = './generated/cover-letter.pdf';
+    const pdfFile = `./generated/cover-letter${companySuffix}.pdf`;
     await this.generatePDF(coverLetterHTML, pdfFile);
 
     // Save text version
-    const textFile = './generated/cover-letter.txt';
+    const textFile = `./generated/cover-letter${companySuffix}.txt`;
     fs.writeFileSync(textFile, coverLetterResult.fullLetter);
 
     console.log(`\n${colors.green}${colors.bright}✓ Cover Letter Generated!${colors.reset}\n`);
@@ -346,15 +348,16 @@ class ResumeCLI {
       options.jobTitle!
     );
 
-    const htmlFile = './generated/cover-letter.html';
+    const companySuffix = options.company ? `_${options.company.toLowerCase().replace(/\s+/g, '_')}` : '';
+    const htmlFile = `./generated/cover-letter${companySuffix}.html`;
     fs.writeFileSync(htmlFile, coverLetterHTML);
 
     // Generate PDF
-    const pdfFile = './generated/cover-letter.pdf';
+    const pdfFile = `./generated/cover-letter${companySuffix}.pdf`;
     await this.generatePDF(coverLetterHTML, pdfFile);
 
     // Save text version
-    const textFile = './generated/cover-letter.txt';
+    const textFile = `./generated/cover-letter${companySuffix}.txt`;
     fs.writeFileSync(textFile, coverLetterResult.fullLetter);
 
     console.log(`\n${colors.green}${colors.bright}✓ Cover Letter Generated!${colors.reset}\n`);
