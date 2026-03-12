@@ -1,7 +1,7 @@
 /**
  * Claude AI Service
  * Drop-in replacement for OllamaService, using the Anthropic SDK.
- * Reads ANTHROPIC_API_KEY from the environment (set via pass in .bashrc).
+ * Reads ANTHROPIC_API_KEY from the environment.
  */
 
 import Anthropic from '@anthropic-ai/sdk';
@@ -21,7 +21,7 @@ export interface ClaudeConfig {
  * Task-to-model mapping.
  * All tasks use claude-sonnet for quality; swap to claude-haiku for speed if needed.
  */
-const TASK_MODELS: Record<string, string> = {
+const TASK_MODELS: Record<'analyze' | 'tailor' | 'cover-letter' | 'validate' | 'score', string> = {
   'analyze':      'claude-sonnet-4-5',
   'tailor':       'claude-sonnet-4-5',
   'cover-letter': 'claude-sonnet-4-5',
@@ -29,22 +29,27 @@ const TASK_MODELS: Record<string, string> = {
   'score':        'claude-haiku-4-5',
 };
 
+/**
+ * Module-level lazy Anthropic client shared across all ClaudeService instances.
+ * Initialised on first use to avoid import-time crashes when the key is absent.
+ */
+let _sharedClient: Anthropic | null = null;
+
+function getSharedClient(): Anthropic {
+  if (!_sharedClient) {
+    _sharedClient = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  }
+  return _sharedClient;
+}
+
 export class ClaudeService {
-  private client: Anthropic;
   private model: string;
   private maxTokens: number;
   private temperature: number;
 
   constructor(config: ClaudeConfig = {}) {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-      throw new Error(
-        'ANTHROPIC_API_KEY is not set. ' +
-        'Run: export ANTHROPIC_API_KEY=$(pass anthropic/claude)'
-      );
-    }
-
-    this.client = new Anthropic({ apiKey });
+    // Do NOT validate the API key here — defer to chat() / isAvailable()
+    // so callers get a friendly message instead of a constructor crash.
     this.model = config.model ?? 'claude-sonnet-4-5';
     this.maxTokens = config.maxTokens ?? 4096;
     this.temperature = config.temperature ?? 0.3;
@@ -52,37 +57,72 @@ export class ClaudeService {
 
   /**
    * Returns a purpose-specific ClaudeService instance for the given task.
+   * All instances share one underlying Anthropic client (lazy-initialised).
    */
   static forTask(task: 'analyze' | 'tailor' | 'cover-letter' | 'validate' | 'score'): ClaudeService {
-    return new ClaudeService({ model: TASK_MODELS[task] ?? 'claude-sonnet-4-5' });
+    return new ClaudeService({ model: TASK_MODELS[task] }); // TASK_MODELS is exhaustive; fallback removed
   }
 
   /**
    * Check if the Claude API is reachable and the key is valid.
+   * Returns false (and logs) on any error, including missing key or network timeout.
+   * Imposes a 5-second timeout on the probe request.
    */
   async isAvailable(): Promise<boolean> {
-    try {
-      // Minimal call to verify connectivity + auth
-      await this.client.messages.create({
-        model: this.model,
-        max_tokens: 8,
-        messages: [{ role: 'user', content: 'ping' }],
-      });
-      return true;
-    } catch {
+    if (!process.env.ANTHROPIC_API_KEY) {
+      console.warn('[ClaudeService] isAvailable: ANTHROPIC_API_KEY is not set');
       return false;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    try {
+      await getSharedClient().messages.create(
+        {
+          model: this.model,
+          max_tokens: 8,
+          messages: [{ role: 'user', content: 'ping' }],
+        },
+        { signal: controller.signal }
+      );
+      return true;
+    } catch (err) {
+      console.warn('[ClaudeService] isAvailable: probe failed:', err);
+      return false;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
   /**
    * Send a chat completion request to Claude.
    * Accepts the same [{role, content}] format as OllamaService.
-   * The first 'system' message is extracted and passed as the system prompt.
+   * The first 'system' message(s) are extracted and passed as the system prompt.
+   *
+   * Message ordering requirements:
+   *  - `messages` must not be empty.
+   *  - The first non-system message must have role 'user'.
+   *  - System messages must precede user/assistant turns in the input array.
    */
   async chat(messages: ChatMessage[]): Promise<string> {
+    if (!process.env.ANTHROPIC_API_KEY) {
+      throw new Error('ANTHROPIC_API_KEY is not set');
+    }
+
     // Extract system prompt (Claude API takes it separately)
     const systemMessages = messages.filter(m => m.role === 'system');
     const userMessages = messages.filter(m => m.role !== 'system');
+
+    if (userMessages.length === 0) {
+      throw new Error('[ClaudeService] chat(): messages must contain at least one user or assistant message');
+    }
+
+    if (userMessages[0].role !== 'user') {
+      throw new Error(
+        `[ClaudeService] chat(): first non-system message must have role 'user', got '${userMessages[0].role}'`
+      );
+    }
 
     const systemPrompt = systemMessages.map(m => m.content).join('\n\n');
 
@@ -91,13 +131,25 @@ export class ClaudeService {
       content: m.content,
     }));
 
-    const response = await this.client.messages.create({
-      model: this.model,
-      max_tokens: this.maxTokens,
-      temperature: this.temperature,
-      ...(systemPrompt ? { system: systemPrompt } : {}),
-      messages: anthropicMessages,
-    });
+    // 60-second timeout on LLM calls. No retry — callers are responsible for retry policy.
+    const chatController = new AbortController();
+    const chatTimeoutId = setTimeout(() => chatController.abort(), 60000);
+
+    let response: Anthropic.Message;
+    try {
+      response = await getSharedClient().messages.create(
+        {
+          model: this.model,
+          max_tokens: this.maxTokens,
+          temperature: this.temperature,
+          ...(systemPrompt ? { system: systemPrompt } : {}),
+          messages: anthropicMessages,
+        },
+        { signal: chatController.signal }
+      );
+    } finally {
+      clearTimeout(chatTimeoutId);
+    }
 
     if (response.content.length === 0) {
       throw new Error('Claude returned an empty response');
@@ -162,7 +214,8 @@ Return a JSON object with arrays for: skills, qualifications, responsibilities, 
       }
 
       return JSON.parse(response);
-    } catch {
+    } catch (error) {
+      console.warn('[ClaudeService] extractJobKeywords: JSON parse failed. Error:', error, 'Response snippet:', typeof response === 'string' ? response.slice(0, 200) : response);
       return { skills: [], qualifications: [], responsibilities: [], tools: [] };
     }
   }
@@ -230,13 +283,12 @@ Modified summary:`;
   }
 
   /**
-   * Calculate relevance score for an achievement based on job keywords.
+   * Heuristic keyword-overlap score. Does not call the LLM.
    */
-  async scoreAchievement(
-    _achievementDescription: string,
+  scoreAchievementByKeywordMatch(
     achievementKeywords: string[],
     jobKeywords: string[]
-  ): Promise<number> {
+  ): number {
     const matches = achievementKeywords.filter(ak =>
       jobKeywords.some(
         jk =>

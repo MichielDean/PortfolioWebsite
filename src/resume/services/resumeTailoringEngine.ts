@@ -31,7 +31,7 @@ export class ResumeTailoringEngine {
   }
 
   /**
-   * Factory: creates an engine wired to task-appropriate Ollama instances.
+   * Factory: creates an engine wired to task-appropriate Claude instances.
    */
   static create(): ResumeTailoringEngine {
     return new ResumeTailoringEngine(OllamaService.forTask('tailor'));
