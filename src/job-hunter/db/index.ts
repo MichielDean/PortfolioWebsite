@@ -12,7 +12,7 @@ export type {
   ApplicationInput,
 } from './types';
 
-export { runMigrations } from './migrations';
+export { runMigrations, initConnection } from './migrations';
 
 export {
   upsertJob,

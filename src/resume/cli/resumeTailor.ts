@@ -270,8 +270,8 @@ class ResumeCLI {
 
       // Generate PDF automatically
       console.log(`${colors.cyan}→ Generating PDF...${colors.reset}`);
-      const companySuffix = options.company ? `_${options.company.toLowerCase().replace(/\s+/g, '_')}` : '';
-      const pdfFile = options.output?.replace('.html', '.pdf') || `./generated/resume${companySuffix}.pdf`;
+      const pdfCompanySuffix = options.company ? `_${options.company.toLowerCase().replace(/\s+/g, '_')}` : '';
+      const pdfFile = options.output?.replace('.html', '.pdf') || `./generated/resume${pdfCompanySuffix}.pdf`;
       await this.generatePDF(html, pdfFile);
 
       console.log(`\n${colors.green}${colors.bright}✓ Resume Generated!${colors.reset}\n`);
@@ -305,50 +305,6 @@ class ResumeCLI {
       }
     );
 
-    const coverLetterHTML = this.coverLetter!.exportToHTML(
-      coverLetterResult,
-      profile.name,
-      profile.email,
-      profile.phone,
-      options.company!,
-      options.jobTitle!
-    );
-
-    const companySuffix = sanitizeCompanyName(options.company!);
-    const htmlFile = `./generated/cover-letter_${companySuffix}.html`;
-    fs.writeFileSync(htmlFile, coverLetterHTML);
-
-    // Generate PDF
-    const pdfFile = `./generated/cover-letter_${companySuffix}.pdf`;
-    await this.generatePDF(coverLetterHTML, pdfFile);
-
-    // Save text version
-    const textFile = `./generated/cover-letter_${companySuffix}.txt`;
-    fs.writeFileSync(textFile, coverLetterResult.fullLetter);
-
-    console.log(`\n${colors.green}${colors.bright}✓ Cover Letter Generated!${colors.reset}\n`);
-    console.log(`Cover Letter Details:`);
-    console.log(`  Tone: ${coverLetterResult.tone}`);
-    console.log(`  Skill Matches: ${coverLetterResult.skillMatches.length}`);
-    console.log(`  Growth Areas: ${coverLetterResult.growthOpportunities.length}`);
-    console.log(`  HTML Output: ${htmlFile}`);
-    console.log(`  PDF Output:  ${pdfFile}`);
-    console.log(`  Text Output: ${textFile}\n`);
-  }
-
-  private async generateAndSaveCoverLetter(profile: any, jobPosting: string, options: CLIOptions): Promise<void> {
-    const coverLetterResult = await this.coverLetter!.generateCoverLetter(
-      profile,
-      jobPosting,
-      options.jobTitle!,
-      options.company!,
-      { 
-        tone: options.tone || 'professional',
-        maxLength: 400
-      }
-    );
-
-    // Save cover letter HTML
     const coverLetterHTML = this.coverLetter!.exportToHTML(
       coverLetterResult,
       profile.name,
