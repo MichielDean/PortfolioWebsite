@@ -4,7 +4,7 @@ import { fetchTheirStackJobs } from './sources/theirstack';
 import { fetchGreenhouseJobs } from './sources/greenhouse';
 import { GREENHOUSE_WATCHLIST } from './sources/greenhouse.config';
 
-/** Normalized form accepted by ingestJobs(). Identical to JobInput. */
+/** Normalized form accepted by ingestJobs(). */
 export type NormalizedJob = JobInput;
 
 export interface IngestionResult {
@@ -41,7 +41,7 @@ export async function ingestJobs(
   let inserted = 0;
   let skipped = 0;
 
-  const doInsert = db.transaction(() => {
+  db.transaction(() => {
     for (const job of jobs) {
       if (checkExists.get(job.source, job.external_id)) {
         skipped++;
@@ -66,9 +66,7 @@ export async function ingestJobs(
       );
       inserted++;
     }
-  });
-
-  doInsert();
+  })();
 
   return { inserted, skipped };
 }
@@ -83,12 +81,6 @@ export async function runIngestion(db: Database.Database): Promise<IngestionResu
     fetchGreenhouseJobs(GREENHOUSE_WATCHLIST),
   ]);
 
-  const jobs: NormalizedJob[] = [];
-  for (const result of results) {
-    if (result.status === 'fulfilled') {
-      jobs.push(...result.value);
-    }
-  }
-
+  const jobs = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
   return ingestJobs(db, jobs);
 }
