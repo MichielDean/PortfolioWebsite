@@ -283,7 +283,7 @@ describe('fetchGreenhouseJobs() — request shape', () => {
 
 describe('fetchGreenhouseJobs() — error handling', () => {
   it('returns empty array (does not throw) when a single company returns non-ok response', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.spyOn(global, 'fetch').mockResolvedValue({
       ok: false,
       status: 404,
