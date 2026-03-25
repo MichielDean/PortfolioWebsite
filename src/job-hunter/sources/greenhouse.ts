@@ -12,6 +12,22 @@ export interface GreenhouseJob {
   absolute_url: string;
 }
 
+// Type guard: validates that an unknown array element has all required GreenhouseJob fields.
+// Prevents null-dereference when the API returns malformed or draft listings.
+function isValidGreenhouseJobShape(element: unknown): element is GreenhouseJob {
+  if (typeof element !== 'object' || element === null) return false;
+  const e = element as Record<string, unknown>;
+  return (
+    (typeof e.id === 'number' || typeof e.id === 'string') &&
+    typeof e.title === 'string' &&
+    typeof e.content === 'string' &&
+    typeof e.absolute_url === 'string' &&
+    typeof e.location === 'object' &&
+    e.location !== null &&
+    typeof (e.location as Record<string, unknown>).name === 'string'
+  );
+}
+
 // Returns true if the title contains any target role string (case-insensitive).
 export function matchesTargetRole(title: string, roles: string[] = TARGET_ROLES): boolean {
   const lower = title.toLowerCase();
@@ -39,30 +55,38 @@ export function normalizeJob(job: GreenhouseJob, company: string): JobInput {
 
 // Fetches jobs from all Greenhouse board tokens in the watchlist,
 // filtering for target roles and remote positions.
+// Per-company failures are logged and skipped so one bad board does not
+// discard results already collected from other companies.
 export async function fetchGreenhouseJobs(
   watchlist: string[] = GREENHOUSE_WATCHLIST,
 ): Promise<JobInput[]> {
   const all: JobInput[] = [];
 
   for (const token of watchlist) {
-    const url = `${API_BASE}/${token}/jobs?content=true`;
-    const response = await fetch(url);
+    try {
+      const url = `${API_BASE}/${token}/jobs?content=true`;
+      const response = await fetch(url);
 
-    if (!response.ok) {
-      throw new Error(
-        `Greenhouse API error for ${token}: ${response.status} ${response.statusText}`,
-      );
+      if (!response.ok) {
+        console.warn(
+          `Greenhouse: skipping ${token} — ${response.status} ${response.statusText}`,
+        );
+        continue;
+      }
+
+      const { jobs } = (await response.json()) as { jobs?: unknown };
+      if (!Array.isArray(jobs)) {
+        console.warn(`Greenhouse: skipping ${token} — unexpected response shape`);
+        continue;
+      }
+
+      const matched = jobs
+        .filter(isValidGreenhouseJobShape)
+        .filter((job) => matchesTargetRole(job.title) && isRemote(job));
+      all.push(...matched.map((job) => normalizeJob(job, token)));
+    } catch (err) {
+      console.warn(`Greenhouse: skipping ${token} — ${(err as Error).message}`);
     }
-
-    const { jobs } = (await response.json()) as { jobs?: unknown };
-    if (!Array.isArray(jobs)) {
-      throw new Error(`Unexpected Greenhouse response shape for ${token}`);
-    }
-
-    const matched = (jobs as GreenhouseJob[]).filter(
-      (job) => matchesTargetRole(job.title) && isRemote(job),
-    );
-    all.push(...matched.map((job) => normalizeJob(job, token)));
   }
 
   return all;
