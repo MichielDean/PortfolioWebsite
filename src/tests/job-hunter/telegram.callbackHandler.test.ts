@@ -436,6 +436,76 @@ describe('runCallbackPoller() — missing credentials', () => {
   });
 });
 
+// ─── runCallbackPoller() — resilient to malformed response body ──────────────
+
+describe('runCallbackPoller() — resilient to malformed response body', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
+  test('Given HTTP 200 with malformed JSON body, When poller receives it, Then backsoff 5s and continues polling without dying', async () => {
+    const db = makeDb();
+    const controller = new AbortController();
+    let callCount = 0;
+
+    jest.spyOn(global, 'fetch').mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) {
+        return {
+          ok: true,
+          json: () => { throw new SyntaxError('Unexpected token'); },
+          text: () => Promise.resolve(''),
+        } as unknown as Response;
+      }
+      controller.abort();
+      return {
+        ok: true,
+        json: () => Promise.resolve({ ok: true, result: [] }),
+        text: () => Promise.resolve(''),
+      } as unknown as Response;
+    });
+
+    const pollerPromise = runCallbackPoller(db, new EventEmitter(), 'mytoken', controller.signal);
+    await jest.advanceTimersByTimeAsync(6000);
+    const result = await pollerPromise;
+
+    expect(result).toEqual({ approved: 0, denied: 0, ignored: 0 });
+    expect(callCount).toBe(2);
+  });
+
+  test('Given HTTP 200 with missing result field in body, When poller receives it, Then backsoff 5s and continues polling without dying', async () => {
+    const db = makeDb();
+    const controller = new AbortController();
+    let callCount = 0;
+
+    jest.spyOn(global, 'fetch').mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) {
+        return {
+          ok: true,
+          json: () => Promise.resolve({ ok: true }),
+          text: () => Promise.resolve(''),
+        } as unknown as Response;
+      }
+      controller.abort();
+      return {
+        ok: true,
+        json: () => Promise.resolve({ ok: true, result: [] }),
+        text: () => Promise.resolve(''),
+      } as unknown as Response;
+    });
+
+    const pollerPromise = runCallbackPoller(db, new EventEmitter(), 'mytoken', controller.signal);
+    await jest.advanceTimersByTimeAsync(6000);
+    const result = await pollerPromise;
+
+    expect(result).toEqual({ approved: 0, denied: 0, ignored: 0 });
+    expect(callCount).toBe(2);
+  });
+});
+
 // ─── runCallbackPoller() — processes updates ─────────────────────────────────
 
 describe('runCallbackPoller() — dispatches callback_query updates', () => {

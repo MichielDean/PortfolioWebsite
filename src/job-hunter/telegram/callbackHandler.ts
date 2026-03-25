@@ -125,14 +125,20 @@ export async function runCallbackPoller(
       continue;
     }
 
-    const body = (await response.json()) as { ok: boolean; result: TelegramUpdate[] };
-    for (const update of body.result) {
-      if (update.callback_query) {
-        const cq = update.callback_query;
-        const outcome = await handleCallback(db, token, emitter, cq.id, cq.data ?? '');
-        totals[outcome]++;
+    try {
+      const body = (await response.json()) as { ok: boolean; result: TelegramUpdate[] };
+      for (const update of body.result) {
+        if (update.callback_query) {
+          const cq = update.callback_query;
+          const outcome = await handleCallback(db, token, emitter, cq.id, cq.data ?? '');
+          totals[outcome]++;
+        }
+        offset = update.update_id + 1;
       }
-      offset = update.update_id + 1;
+    } catch (err) {
+      console.warn('getUpdates response parse error:', err);
+      await new Promise(r => setTimeout(r, 5000));
+      continue;
     }
   }
 
