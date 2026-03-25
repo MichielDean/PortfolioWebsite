@@ -12,8 +12,7 @@ export interface GreenhouseJob {
   absolute_url: string;
 }
 
-// Type guard: validates that an unknown array element has all required GreenhouseJob fields.
-// Prevents null-dereference when the API returns malformed or draft listings.
+// Skips malformed/draft listings to prevent null-dereference in isRemote().
 function isValidGreenhouseJobShape(element: unknown): element is GreenhouseJob {
   if (typeof element !== 'object' || element === null) return false;
   const e = element as Record<string, unknown>;
@@ -28,18 +27,15 @@ function isValidGreenhouseJobShape(element: unknown): element is GreenhouseJob {
   );
 }
 
-// Returns true if the title contains any target role string (case-insensitive).
 export function matchesTargetRole(title: string, roles: string[] = TARGET_ROLES): boolean {
   const lower = title.toLowerCase();
   return roles.some((role) => lower.includes(role.toLowerCase()));
 }
 
-// Returns true if the job location name or content mentions "remote" (case-insensitive).
 export function isRemote(job: Pick<GreenhouseJob, 'location' | 'content'>): boolean {
   return /remote/i.test(job.location.name) || /remote/i.test(job.content);
 }
 
-// Normalizes a Greenhouse job to the internal JobInput shape.
 export function normalizeJob(job: GreenhouseJob, company: string): JobInput {
   return {
     source: 'greenhouse',
@@ -53,10 +49,7 @@ export function normalizeJob(job: GreenhouseJob, company: string): JobInput {
   };
 }
 
-// Fetches jobs from all Greenhouse board tokens in the watchlist,
-// filtering for target roles and remote positions.
-// Per-company failures are logged and skipped so one bad board does not
-// discard results already collected from other companies.
+// Per-company failures are logged and skipped — one bad board does not discard results from others.
 export async function fetchGreenhouseJobs(
   watchlist: string[] = GREENHOUSE_WATCHLIST,
 ): Promise<JobInput[]> {

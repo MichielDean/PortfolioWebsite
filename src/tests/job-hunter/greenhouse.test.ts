@@ -291,7 +291,6 @@ describe('fetchGreenhouseJobs() — error handling', () => {
     } as Response);
     const jobs = await fetchGreenhouseJobs(['unknown-company']);
     expect(jobs).toHaveLength(0);
-    warnSpy.mockRestore();
   });
 
   it('logs a warning with the board token when API returns non-ok response', async () => {
@@ -303,41 +302,37 @@ describe('fetchGreenhouseJobs() — error handling', () => {
     } as Response);
     await fetchGreenhouseJobs(['stripe']);
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('stripe'));
-    warnSpy.mockRestore();
   });
 
   it('returns empty array (does not throw) when fetch itself throws (network failure)', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.spyOn(global, 'fetch').mockRejectedValue(new Error('Network error'));
     const jobs = await fetchGreenhouseJobs(['stripe']);
     expect(jobs).toHaveLength(0);
-    warnSpy.mockRestore();
   });
 
   it('returns empty array and logs warning when response jobs field is missing', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
       json: async () => ({}),
     } as Response);
     const jobs = await fetchGreenhouseJobs(['stripe']);
     expect(jobs).toHaveLength(0);
-    warnSpy.mockRestore();
   });
 
   it('returns empty array and logs warning when response jobs field is null', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
       json: async () => ({ jobs: null }),
     } as Response);
     const jobs = await fetchGreenhouseJobs(['stripe']);
     expect(jobs).toHaveLength(0);
-    warnSpy.mockRestore();
   });
 
   it('returns results from successful companies when one company fails (partial failure)', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
     jest.spyOn(global, 'fetch').mockImplementation(async (url) => {
       const token = String(url).split('/boards/')[1]?.split('/')[0] ?? '';
       if (token === 'broken') {
@@ -351,26 +346,23 @@ describe('fetchGreenhouseJobs() — error handling', () => {
     const jobs = await fetchGreenhouseJobs(['stripe', 'broken']);
     expect(jobs).toHaveLength(1);
     expect(jobs[0].company).toBe('stripe');
-    warnSpy.mockRestore();
   });
 
   it('skips elements with null location without throwing TypeError', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
     const nullLocationJob = { ...remoteJob, id: 9999, location: null };
     mockFetch({ stripe: { jobs: [nullLocationJob, remoteJob] } });
     const jobs = await fetchGreenhouseJobs(['stripe']);
     expect(jobs).toHaveLength(1);
     expect(jobs[0].external_id).toBe('1001');
-    warnSpy.mockRestore();
   });
 
   it('skips elements with undefined location without throwing TypeError', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
     const undefinedLocationJob = { ...remoteJob, id: 8888, location: undefined };
     mockFetch({ stripe: { jobs: [undefinedLocationJob, remoteJob] } });
     const jobs = await fetchGreenhouseJobs(['stripe']);
     expect(jobs).toHaveLength(1);
     expect(jobs[0].external_id).toBe('1001');
-    warnSpy.mockRestore();
   });
 });
