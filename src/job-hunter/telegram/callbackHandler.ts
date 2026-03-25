@@ -27,11 +27,14 @@ async function answerCallbackQuery(
   callbackQueryId: string,
   text: string,
 ): Promise<void> {
-  await fetch(`${TELEGRAM_API_BASE}/bot${botToken}/answerCallbackQuery`, {
+  const response = await fetch(`${TELEGRAM_API_BASE}/bot${botToken}/answerCallbackQuery`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ callback_query_id: callbackQueryId, text }),
   });
+  if (!response.ok) {
+    console.warn(`answerCallbackQuery failed: ${response.status} ${response.statusText}`);
+  }
 }
 
 /**
@@ -56,9 +59,9 @@ export async function handleCallback(
 
   const { action, jobId } = parsed;
 
-  // Idempotency: already actioned → no-op
+  // Idempotency: no approval row or already actioned → no-op
   const approval = getApproval(db, jobId);
-  if (approval && approval.status !== 'pending') return 'ignored';
+  if (!approval || approval.status !== 'pending') return 'ignored';
 
   if (action === 'deny') {
     upsertApproval(db, { job_id: jobId, status: 'denied' });
@@ -112,11 +115,13 @@ export async function runCallbackPoller(
     } catch (err) {
       if (signal?.aborted) break;
       console.warn('getUpdates fetch error:', err);
+      await new Promise(r => setTimeout(r, 5000));
       continue;
     }
 
     if (!response.ok) {
       console.warn(`getUpdates failed: ${response.status} ${response.statusText}`);
+      await new Promise(r => setTimeout(r, 5000));
       continue;
     }
 

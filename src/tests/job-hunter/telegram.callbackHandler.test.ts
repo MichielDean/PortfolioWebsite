@@ -304,6 +304,119 @@ describe('handleCallback() — idempotency', () => {
   });
 });
 
+// ─── handleCallback() — no approval row (non-notified jobs) ──────────────────
+
+describe('handleCallback() — no approval row', () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  test('Given valid approve callback but job id does not exist in DB, When called, Then returns "ignored"', async () => {
+    const db = makeDb();
+    const fetchSpy = mockFetch();
+
+    const result = await handleCallback(db, 'token', new EventEmitter(), 'cq-1', 'approve:9999');
+
+    expect(result).toBe('ignored');
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  test('Given valid deny callback but job id does not exist in DB, When called, Then returns "ignored"', async () => {
+    const db = makeDb();
+    const fetchSpy = mockFetch();
+
+    const result = await handleCallback(db, 'token', new EventEmitter(), 'cq-1', 'deny:9999');
+
+    expect(result).toBe('ignored');
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  test('Given valid approve callback for existing job with no approval row, When called, Then returns "ignored"', async () => {
+    const db = makeDb();
+    const job = upsertJob(db, {
+      source: 'theirstack',
+      ats_type: 'unknown',
+      external_id: 'ts-no-approval',
+      title: 'Engineer',
+      company: 'Acme',
+      url: 'https://acme.com/jobs/2',
+      salary_raw: null,
+      posted_at: null,
+    });
+    addScore(db, { job_id: job.id, score: 8, rationale: 'Good fit' });
+    // Intentionally no upsertApproval call — job was never sent through the notifier
+    const fetchSpy = mockFetch();
+
+    const result = await handleCallback(db, 'token', new EventEmitter(), 'cq-1', `approve:${job.id}`);
+
+    expect(result).toBe('ignored');
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  test('Given valid deny callback for existing job with no approval row, When called, Then returns "ignored"', async () => {
+    const db = makeDb();
+    const job = upsertJob(db, {
+      source: 'theirstack',
+      ats_type: 'unknown',
+      external_id: 'ts-no-approval-2',
+      title: 'Engineer',
+      company: 'Acme',
+      url: 'https://acme.com/jobs/3',
+      salary_raw: null,
+      posted_at: null,
+    });
+    addScore(db, { job_id: job.id, score: 8, rationale: 'Good fit' });
+    // Intentionally no upsertApproval call — job was never sent through the notifier
+    const fetchSpy = mockFetch();
+
+    const result = await handleCallback(db, 'token', new EventEmitter(), 'cq-1', `deny:${job.id}`);
+
+    expect(result).toBe('ignored');
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  test('Given valid approve callback for existing job with no approval row, When called, Then does not emit approve event', async () => {
+    const db = makeDb();
+    const job = upsertJob(db, {
+      source: 'theirstack',
+      ats_type: 'unknown',
+      external_id: 'ts-no-approval-3',
+      title: 'Engineer',
+      company: 'Acme',
+      url: 'https://acme.com/jobs/4',
+      salary_raw: null,
+      posted_at: null,
+    });
+    addScore(db, { job_id: job.id, score: 8, rationale: 'Good fit' });
+    mockFetch();
+    const emitter = new EventEmitter();
+    const approveSpy = jest.fn();
+    emitter.on('approve', approveSpy);
+
+    await handleCallback(db, 'token', emitter, 'cq-1', `approve:${job.id}`);
+
+    expect(approveSpy).not.toHaveBeenCalled();
+  });
+
+  test('Given valid deny callback for existing job with no approval row, When called, Then does not blacklist the job', async () => {
+    const db = makeDb();
+    const job = upsertJob(db, {
+      source: 'theirstack',
+      ats_type: 'unknown',
+      external_id: 'ts-no-approval-4',
+      title: 'Engineer',
+      company: 'Acme',
+      url: 'https://acme.com/jobs/5',
+      salary_raw: null,
+      posted_at: null,
+    });
+    addScore(db, { job_id: job.id, score: 8, rationale: 'Good fit' });
+    mockFetch();
+
+    await handleCallback(db, 'token', new EventEmitter(), 'cq-1', `deny:${job.id}`);
+
+    expect(getJobById(db, job.id)?.blacklisted).toBe(0);
+  });
+});
+
 // ─── handleCallback() — invalid callback data ────────────────────────────────
 
 describe('handleCallback() — invalid callback data', () => {
