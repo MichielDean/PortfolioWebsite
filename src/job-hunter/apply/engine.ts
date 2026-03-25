@@ -109,16 +109,16 @@ async function sendManualFallback(
   coverLetterPdfPath: string,
   fetchFn: FetchFn,
 ): Promise<void> {
-  const text = `Apply manually: ${job.url}`;
-  await sendTelegramMessage(botToken, chatId, text, fetchFn);
-  await sendTelegramDocument(botToken, chatId, resumePdfPath, text, fetchFn);
-  await sendTelegramDocument(botToken, chatId, coverLetterPdfPath, text, fetchFn);
   addApplication(db, {
     job_id: job.id,
     method: 'manual',
     submitted_at: new Date().toISOString(),
     result: 'manual_required',
   });
+  const text = `Apply manually: ${job.url}`;
+  await sendTelegramMessage(botToken, chatId, text, fetchFn);
+  await sendTelegramDocument(botToken, chatId, resumePdfPath, text, fetchFn);
+  await sendTelegramDocument(botToken, chatId, coverLetterPdfPath, text, fetchFn);
 }
 
 /**
@@ -163,9 +163,17 @@ export async function runApplyEngine(
       await sendTelegramMessage(botToken, chatId, `Application submitted: ${job.title} at ${job.company}`, fetchFn);
     } catch (err) {
       console.warn(`runApplyEngine: ${job.ats_type} apply failed for job ${jobId}:`, err);
-      await sendManualFallback(db, botToken, chatId, job, resumePdfPath, coverLetterPdfPath, fetchFn);
+      try {
+        await sendManualFallback(db, botToken, chatId, job, resumePdfPath, coverLetterPdfPath, fetchFn);
+      } catch (fallbackErr) {
+        console.warn(`runApplyEngine: manual fallback notification failed for job ${jobId}:`, fallbackErr);
+      }
     }
   } else {
-    await sendManualFallback(db, botToken, chatId, job, resumePdfPath, coverLetterPdfPath, fetchFn);
+    try {
+      await sendManualFallback(db, botToken, chatId, job, resumePdfPath, coverLetterPdfPath, fetchFn);
+    } catch (fallbackErr) {
+      console.warn(`runApplyEngine: manual fallback notification failed for job ${jobId}:`, fallbackErr);
+    }
   }
 }

@@ -573,6 +573,70 @@ describe('runApplyEngine() — unknown ATS type sends manual fallback', () => {
   });
 });
 
+// ─── runApplyEngine() — Telegram failure during manual fallback ───────────────
+
+describe('runApplyEngine() — Telegram failure during manual fallback', () => {
+  test('Given Greenhouse ATS fails AND Telegram sendMessage fails, When runApplyEngine called, Then DB records application with result manual_required', async () => {
+    const db = makeDb();
+    const jobId = seedJob(db, { ats_type: 'greenhouse' });
+    const fixtures = makePdfFixtures();
+    const fetchMock = makeMockFetch([
+      { ok: false, status: 422 }, // Greenhouse fail
+      { ok: false, status: 429 }, // Telegram sendMessage fail
+    ]);
+
+    await runApplyEngine(db, 'token', 'chat-123', jobId, fixtures.resumePdf, fixtures.coverLetterPdf, TEST_PROFILE, fetchMock);
+
+    expect(getApplication(db, jobId)?.result).toBe('manual_required');
+    cleanPdfFixtures(fixtures);
+  });
+
+  test('Given Greenhouse ATS fails AND Telegram sendMessage fails, When runApplyEngine called, Then runApplyEngine does not throw', async () => {
+    const db = makeDb();
+    const jobId = seedJob(db, { ats_type: 'greenhouse' });
+    const fixtures = makePdfFixtures();
+    const fetchMock = makeMockFetch([
+      { ok: false, status: 422 }, // Greenhouse fail
+      { ok: false, status: 429 }, // Telegram sendMessage fail
+    ]);
+
+    await expect(
+      runApplyEngine(db, 'token', 'chat-123', jobId, fixtures.resumePdf, fixtures.coverLetterPdf, TEST_PROFILE, fetchMock),
+    ).resolves.toBeUndefined();
+    cleanPdfFixtures(fixtures);
+  });
+
+  test('Given unknown ATS AND Telegram sendDocument fails, When runApplyEngine called, Then DB records application with result manual_required', async () => {
+    const db = makeDb();
+    const jobId = seedJob(db, { ats_type: 'workday', url: 'https://workday.com/jobs/9' });
+    const fixtures = makePdfFixtures();
+    const fetchMock = makeMockFetch([
+      { ok: true, status: 200 },  // Telegram sendMessage ok
+      { ok: false, status: 503 }, // Telegram sendDocument resume fail
+    ]);
+
+    await runApplyEngine(db, 'token', 'chat-123', jobId, fixtures.resumePdf, fixtures.coverLetterPdf, TEST_PROFILE, fetchMock);
+
+    expect(getApplication(db, jobId)?.result).toBe('manual_required');
+    cleanPdfFixtures(fixtures);
+  });
+
+  test('Given unknown ATS AND Telegram sendDocument fails, When runApplyEngine called, Then runApplyEngine does not throw', async () => {
+    const db = makeDb();
+    const jobId = seedJob(db, { ats_type: 'workday', url: 'https://workday.com/jobs/9' });
+    const fixtures = makePdfFixtures();
+    const fetchMock = makeMockFetch([
+      { ok: true, status: 200 },  // Telegram sendMessage ok
+      { ok: false, status: 503 }, // Telegram sendDocument resume fail
+    ]);
+
+    await expect(
+      runApplyEngine(db, 'token', 'chat-123', jobId, fixtures.resumePdf, fixtures.coverLetterPdf, TEST_PROFILE, fetchMock),
+    ).resolves.toBeUndefined();
+    cleanPdfFixtures(fixtures);
+  });
+});
+
 // ─── runApplyEngine() — job not found ────────────────────────────────────────
 
 describe('runApplyEngine() — job not found', () => {
