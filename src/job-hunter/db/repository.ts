@@ -35,14 +35,9 @@ export function upsertJob(db: Database.Database, input: JobInput): Job {
       posted_at  = excluded.posted_at,
       fetched_at = excluded.fetched_at
   `).run({
-    source:      input.source,
-    ats_type:    input.ats_type,
-    external_id: input.external_id,
-    title:       input.title,
-    company:     input.company,
-    url:         input.url,
-    salary_raw:  input.salary_raw ?? null,
-    posted_at:   input.posted_at ?? null,
+    ...input,
+    salary_raw: input.salary_raw ?? null,
+    posted_at:  input.posted_at ?? null,
     fetched_at,
   });
   return db.prepare('SELECT * FROM jobs WHERE source = ? AND external_id = ?')
@@ -51,7 +46,7 @@ export function upsertJob(db: Database.Database, input: JobInput): Job {
 
 /** Retrieve a job by its primary key. Returns `undefined` if not found. */
 export function getJobById(db: Database.Database, id: number): Job | undefined {
-  return (db.prepare('SELECT * FROM jobs WHERE id = ?').get(id) as Job | undefined) ?? undefined;
+  return db.prepare('SELECT * FROM jobs WHERE id = ?').get(id) as Job | undefined;
 }
 
 /**
@@ -100,7 +95,7 @@ export function addScore(db: Database.Database, input: ScoreInput): Score {
 
 /** Retrieve the score for a job. Returns `undefined` if no score exists yet. */
 export function getScore(db: Database.Database, jobId: number): Score | undefined {
-  return (db.prepare('SELECT * FROM scores WHERE job_id = ?').get(jobId) as Score | undefined) ?? undefined;
+  return db.prepare('SELECT * FROM scores WHERE job_id = ?').get(jobId) as Score | undefined;
 }
 
 // ─── Approvals ────────────────────────────────────────────────────────────────
@@ -138,7 +133,7 @@ export function upsertApproval(db: Database.Database, input: ApprovalInput): App
 
 /** Retrieve the approval record for a job. Returns `undefined` if none exists. */
 export function getApproval(db: Database.Database, jobId: number): Approval | undefined {
-  return (db.prepare('SELECT * FROM approvals WHERE job_id = ?').get(jobId) as Approval | undefined) ?? undefined;
+  return db.prepare('SELECT * FROM approvals WHERE job_id = ?').get(jobId) as Approval | undefined;
 }
 
 // ─── Applications ─────────────────────────────────────────────────────────────
@@ -156,7 +151,5 @@ export function addApplication(db: Database.Database, input: ApplicationInput): 
 
 /** Retrieve the application record for a job. Returns `undefined` if none exists. */
 export function getApplication(db: Database.Database, jobId: number): Application | undefined {
-  return (
-    db.prepare('SELECT * FROM applications WHERE job_id = ?').get(jobId) as Application | undefined
-  ) ?? undefined;
+  return db.prepare('SELECT * FROM applications WHERE job_id = ?').get(jobId) as Application | undefined;
 }
