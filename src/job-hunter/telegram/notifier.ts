@@ -5,21 +5,30 @@ import type { EligibleJob } from '../db/index.js';
 const TELEGRAM_API_BASE = 'https://api.telegram.org';
 const MIN_NOTIFY_SCORE = 6;
 
+/** Escape HTML special characters for Telegram HTML parse_mode. */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 /** Format a job as an HTML message for Telegram. */
 export function formatJobMessage(job: EligibleJob): string {
   const lines: string[] = [
-    `<b>${job.title}</b>`,
-    `<b>Company:</b> ${job.company}`,
+    `<b>${escapeHtml(job.title)}</b>`,
+    `<b>Company:</b> ${escapeHtml(job.company)}`,
   ];
   if (job.salary_raw != null) {
-    lines.push(`<b>Salary:</b> ${job.salary_raw}`);
+    lines.push(`<b>Salary:</b> ${escapeHtml(job.salary_raw)}`);
   }
   if (job.posted_at != null) {
-    lines.push(`<b>Posted:</b> ${job.posted_at}`);
+    lines.push(`<b>Posted:</b> ${escapeHtml(job.posted_at)}`);
   }
   lines.push(`<b>Fit score:</b> ${job.score}/10`);
-  lines.push(`<b>Rationale:</b> ${job.rationale}`);
-  lines.push(`<a href="${job.url}">View job</a>`);
+  lines.push(`<b>Rationale:</b> ${escapeHtml(job.rationale)}`);
+  lines.push(`<a href="${escapeHtml(job.url)}">View job</a>`);
   return lines.join('\n');
 }
 
@@ -48,8 +57,12 @@ async function sendJobNotification(
   );
 
   if (!response.ok) {
-    throw new Error(`Telegram API error: ${response.status} ${response.statusText}`);
+    const body = await response.json().catch(() => ({})) as { description?: string };
+    const description = body.description ?? response.statusText;
+    throw new Error(`Telegram API error: ${response.status} ${description}`);
   }
+
+  await response.text();
 }
 
 export interface NotifierResult {

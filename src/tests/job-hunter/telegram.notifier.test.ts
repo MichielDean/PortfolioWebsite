@@ -53,12 +53,14 @@ function seedJobWithScore(
 }
 
 /** Mock global.fetch to return a Telegram-like success or error response. */
-function mockFetch(ok = true, statusText = 'OK'): jest.SpyInstance {
+function mockFetch(ok = true, statusText = 'OK', jsonBody: unknown = {}): jest.SpyInstance {
   return jest.spyOn(global, 'fetch').mockResolvedValue({
     ok,
     status: ok ? 200 : 400,
     statusText,
-  } as Response);
+    json: () => Promise.resolve(jsonBody),
+    text: () => Promise.resolve(JSON.stringify(jsonBody)),
+  } as unknown as Response);
 }
 
 /** Parse the JSON body from the most recent fetch call. */
@@ -252,6 +254,28 @@ describe('formatJobMessage()', () => {
     const msg = formatJobMessage({ ...fullJob, posted_at: null });
     expect(msg).not.toContain('Posted');
   });
+
+  test('Given company contains & char, When formatJobMessage called, Then & is escaped as &amp;', () => {
+    const msg = formatJobMessage({ ...fullJob, company: 'AT&T' });
+    expect(msg).toContain('AT&amp;T');
+    expect(msg).not.toContain('AT&T');
+  });
+
+  test('Given title contains < and > chars, When formatJobMessage called, Then chars are escaped', () => {
+    const msg = formatJobMessage({ ...fullJob, title: 'VP <Engineering>' });
+    expect(msg).toContain('VP &lt;Engineering&gt;');
+    expect(msg).not.toContain('VP <Engineering>');
+  });
+
+  test('Given url contains & in query string, When formatJobMessage called, Then & in href attribute is escaped', () => {
+    const msg = formatJobMessage({ ...fullJob, url: 'https://example.com?a=1&b=2' });
+    expect(msg).toContain('href="https://example.com?a=1&amp;b=2"');
+  });
+
+  test('Given rationale contains HTML special chars, When formatJobMessage called, Then chars are escaped', () => {
+    const msg = formatJobMessage({ ...fullJob, rationale: 'Score > 8 & great leadership' });
+    expect(msg).toContain('Score &gt; 8 &amp; great leadership');
+  });
 });
 
 // ─── runNotifier() ────────────────────────────────────────────────────────────
@@ -414,6 +438,26 @@ describe('runNotifier()', () => {
     expect(warnSpy).toHaveBeenCalled();
   });
 
+  test('Given Telegram API returns error with description, When runNotifier called, Then warning includes description', async () => {
+    const db = makeDb();
+    seedJobWithScore(db, {}, 8);
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: false,
+      status: 400,
+      statusText: 'Bad Request',
+      json: () => Promise.resolve({ description: "can't parse entities: malformed HTML" }),
+      text: () => Promise.resolve(''),
+    } as unknown as Response);
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await runNotifier(db, 'tok', 'chat');
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ message: expect.stringContaining("can't parse entities") }),
+    );
+  });
+
   test('Given Telegram API returns error, When runNotifier called, Then does not store approval', async () => {
     const db = makeDb();
     const id = seedJobWithScore(db, {}, 8);
@@ -444,7 +488,13 @@ describe('runNotifier()', () => {
     let callCount = 0;
     jest.spyOn(global, 'fetch').mockImplementation(async () => {
       const ok = callCount++ === 0;
-      return { ok, status: ok ? 200 : 400, statusText: ok ? 'OK' : 'Bad Request' } as Response;
+      return {
+        ok,
+        status: ok ? 200 : 400,
+        statusText: ok ? 'OK' : 'Bad Request',
+        json: () => Promise.resolve(ok ? {} : { description: 'Bad Request' }),
+        text: () => Promise.resolve('{}'),
+      } as unknown as Response;
     });
     jest.spyOn(console, 'warn').mockImplementation(() => {});
 
