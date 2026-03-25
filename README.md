@@ -224,6 +224,37 @@ Each notification:
 - Stores a pending approval record so the job isn't re-notified on subsequent runs
 - Requires environment variables: `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
 
+**Telegram Callback Handler**:
+```typescript
+import { runCallbackPoller } from './job-hunter/telegram/callbackHandler';
+import { EventEmitter } from 'events';
+import Database from 'better-sqlite3';
+
+const db = new Database('jobs.db');
+const emitter = new EventEmitter();
+
+// Listen for approve events from user clicks
+emitter.on('approve', async (jobId: number) => {
+  console.log(`Job ${jobId} approved by user, triggering resume generation...`);
+  // Connect to resume generation pipeline here
+});
+
+// Long-poll for callback_query events from user button clicks
+// Credentials from TELEGRAM_BOT_TOKEN env var when botToken not supplied
+const signal = new AbortController().signal;
+const result = await runCallbackPoller(db, emitter, undefined, signal);
+console.log(`Processed: Approved=${result.approved}, Denied=${result.denied}, Ignored=${result.ignored}`);
+```
+
+The callback handler:
+- Long-polls Telegram's `getUpdates` API for `callback_query` events (when users click buttons)
+- Parses the callback data to extract the action (approve/deny) and job ID
+- **Deny**: Updates approval status to 'denied', blacklists the job, notifies the user
+- **Approve**: Updates approval status to 'approved', emits an 'approve' event for downstream processing, notifies the user
+- **Idempotency**: Duplicate callbacks are silently ignored (no-ops) — prevents duplicate processing if a user clicks multiple times
+- **Error Handling**: Network errors and malformed responses trigger a 5-second backoff and retry; the poller never crashes
+- Requires environment variable: `TELEGRAM_BOT_TOKEN`
+
 ### Database Schema
 
 - **jobs**: Core job listings (source, title, company, URL, salary, posted date)
