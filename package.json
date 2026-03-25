@@ -27,10 +27,12 @@
     "test:coverage": "jest --coverage",
     "test:e2e": "jest --config jest.e2e.config.ts",
     "prebuild": "npm test",
-    "test:resume": "jest --config jest.resume.config.cjs"
+    "test:resume": "jest --config jest.resume.config.cjs",
+    "test:job-hunter": "jest --config jest.job-hunter.config.cjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
+    "better-sqlite3": "^12.8.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-helmet-async": "^3.0.0",
@@ -39,6 +41,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.2",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.3.5",
     "@types/react": "^19.2.14",
