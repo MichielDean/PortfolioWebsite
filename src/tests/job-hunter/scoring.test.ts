@@ -374,7 +374,7 @@ describe('runScoring()', () => {
   it('Given a mix of scores, When runScoring is called, Then only jobs scoring >= 6 are eligible', async () => {
     const db = makeDb();
     const jobA = seedJob(db, { external_id: 'high' });
-    const jobB = seedJob(db, { external_id: 'low' });
+    seedJob(db, { external_id: 'low' });
 
     let callCount = 0;
     const create = jest.fn().mockImplementation(() => {
