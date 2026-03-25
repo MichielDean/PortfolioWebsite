@@ -12,6 +12,8 @@ export type {
   ApplicationInput,
 } from './types';
 
+export type { EligibleJob } from './repository';
+
 export { runMigrations, initConnection } from './migrations';
 
 export {
@@ -25,6 +27,7 @@ export {
   getPendingApprovals,
   upsertApproval,
   getApproval,
+  getEligibleUnnotifiedJobs,
   addApplication,
   getApplication,
 } from './repository';
