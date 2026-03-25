@@ -149,11 +149,12 @@ export async function runApplyEngine(
   }
 
   if (job.ats_type === 'greenhouse' || job.ats_type === 'lever') {
-    const applyFn = job.ats_type === 'greenhouse'
-      ? () => applyGreenhouse(job, resumePdfPath, profile, fetchFn)
-      : () => applyLever(job, resumePdfPath, profile, fetchFn);
     try {
-      await applyFn();
+      if (job.ats_type === 'greenhouse') {
+        await applyGreenhouse(job, resumePdfPath, profile, fetchFn);
+      } else {
+        await applyLever(job, resumePdfPath, profile, fetchFn);
+      }
       addApplication(db, {
         job_id: job.id,
         method: job.ats_type,
