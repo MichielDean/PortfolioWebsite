@@ -26,7 +26,10 @@ export interface ScoringResult {
  * crafted job titles or descriptions from third-party APIs.
  */
 function sanitizeField(value: string, maxLen = 200): string {
-  return value.replace(/[\x00-\x1F\x7F]/g, ' ').trim().slice(0, maxLen);
+  return value
+    .replace(/[\x00-\x1F\x7F]/g, ' ')
+    .trim()
+    .slice(0, maxLen);
 }
 
 /**
@@ -39,11 +42,11 @@ export function buildScoringPrompt(profile: Profile, job: Job): string {
 
   const recentHistory = profile.workHistory
     .slice(0, 3)
-    .map(w => `- ${w.role} at ${w.company} (${w.duration})`)
+    .map((w) => `- ${w.role} at ${w.company} (${w.duration})`)
     .join('\n');
 
   const competencies = profile.workHistory
-    .flatMap(w => w.description.map(d => d.description))
+    .flatMap((w) => w.description.map((d) => d.description))
     .slice(0, 8)
     .join(', ');
 
@@ -65,12 +68,13 @@ export function buildScoringPrompt(profile: Profile, job: Job): string {
     `URL: ${sanitizeField(job.url, 500)}`,
   ];
 
-  if (job.salary_raw) lines.push(`Salary: ${sanitizeField(job.salary_raw, 100)}`);
+  if (job.salary_raw)
+    lines.push(`Salary: ${sanitizeField(job.salary_raw, 100)}`);
   if (job.posted_at) lines.push(`Posted: ${job.posted_at}`);
 
   lines.push(
     '',
-    'Score: 1-3 = poor fit, 4-5 = weak fit, 6-7 = good fit, 8-9 = excellent fit, 10 = perfect fit.',
+    'Score: 1-3 = poor fit, 4-5 = weak fit, 6-7 = good fit, 8-9 = excellent fit, 10 = perfect fit.'
   );
 
   return lines.join('\n');
@@ -83,7 +87,7 @@ export function buildScoringPrompt(profile: Profile, job: Job): string {
 export async function scoreJob(
   db: Database.Database,
   job: Job,
-  anthropic: Anthropic,
+  anthropic: Anthropic
 ): Promise<ClaudeScoreResponse> {
   const prompt = buildScoringPrompt(profileData, job);
 
@@ -105,14 +109,23 @@ export async function scoreJob(
     throw new Error(`Claude returned non-JSON response: ${block.text}`);
   }
 
-  if (typeof parsed.score !== 'number' || !Number.isInteger(parsed.score) || parsed.score < 1 || parsed.score > 10) {
+  if (
+    typeof parsed.score !== 'number' ||
+    !Number.isInteger(parsed.score) ||
+    parsed.score < 1 ||
+    parsed.score > 10
+  ) {
     throw new Error(`Claude returned invalid score: ${parsed.score}`);
   }
   if (typeof parsed.rationale !== 'string' || !parsed.rationale.trim()) {
     throw new Error(`Claude returned invalid rationale: ${parsed.rationale}`);
   }
 
-  addScore(db, { job_id: job.id, score: parsed.score, rationale: parsed.rationale });
+  addScore(db, {
+    job_id: job.id,
+    score: parsed.score,
+    rationale: parsed.rationale,
+  });
   return parsed;
 }
 
@@ -127,7 +140,7 @@ export async function scoreJob(
  */
 export async function runScoring(
   db: Database.Database,
-  anthropic?: Anthropic,
+  anthropic?: Anthropic
 ): Promise<ScoringResult> {
   const client = anthropic ?? new Anthropic();
   const unscoredJobs = getUnscoredJobs(db);
@@ -136,12 +149,12 @@ export async function runScoring(
 
   for (let i = 0; i < unscoredJobs.length; i += BATCH_SIZE) {
     if (i > 0) {
-      await new Promise<void>(resolve => setTimeout(resolve, BATCH_DELAY_MS));
+      await new Promise<void>((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
     }
 
     const batch = unscoredJobs.slice(i, i + BATCH_SIZE);
     const results = await Promise.allSettled(
-      batch.map(job => scoreJob(db, job, client)),
+      batch.map((job) => scoreJob(db, job, client))
     );
 
     for (const [j, result] of results.entries()) {

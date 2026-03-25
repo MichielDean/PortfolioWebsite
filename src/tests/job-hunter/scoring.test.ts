@@ -39,7 +39,7 @@ function makeDb(): Database.Database {
  */
 function makeMockAnthropic(
   score: number,
-  rationale: string,
+  rationale: string
 ): { client: Anthropic; create: jest.Mock } {
   const create = jest.fn().mockResolvedValue({
     content: [{ type: 'text', text: JSON.stringify({ score, rationale }) }],
@@ -49,7 +49,10 @@ function makeMockAnthropic(
 }
 
 /** Insert a job into the DB and return the persisted row. */
-function seedJob(db: Database.Database, overrides: Partial<JobInput> = {}): Job {
+function seedJob(
+  db: Database.Database,
+  overrides: Partial<JobInput> = {}
+): Job {
   return upsertJob(db, {
     source: 'theirstack',
     ats_type: 'unknown',
@@ -90,7 +93,8 @@ describe('buildScoringPrompt()', () => {
     const job = seedJob(db);
     const prompt = buildScoringPrompt(profileData, job);
 
-    const firstCompetency = profileData.workHistory[0].description[0].description;
+    const firstCompetency =
+      profileData.workHistory[0].description[0].description;
     expect(prompt).toContain(firstCompetency);
   });
 
@@ -157,14 +161,19 @@ describe('scoreJob()', () => {
   it('Given a valid job and mock Anthropic, When scoreJob is called, Then score is persisted to the DB', async () => {
     const db = makeDb();
     const job = seedJob(db);
-    const { client } = makeMockAnthropic(8, 'Strong leadership background. Good technical depth.');
+    const { client } = makeMockAnthropic(
+      8,
+      'Strong leadership background. Good technical depth.'
+    );
 
     await scoreJob(db, job, client);
 
     const persisted = getScore(db, job.id);
     expect(persisted).toBeDefined();
     expect(persisted!.score).toBe(8);
-    expect(persisted!.rationale).toBe('Strong leadership background. Good technical depth.');
+    expect(persisted!.rationale).toBe(
+      'Strong leadership background. Good technical depth.'
+    );
     expect(persisted!.scored_at).toBeDefined();
   });
 
@@ -176,18 +185,23 @@ describe('scoreJob()', () => {
     await scoreJob(db, job, client);
 
     expect(create).toHaveBeenCalledWith(
-      expect.objectContaining({ model: SCORING_MODEL }),
+      expect.objectContaining({ model: SCORING_MODEL })
     );
   });
 
   it('Given a valid job, When scoreJob is called, Then the prompt includes job and profile details', async () => {
     const db = makeDb();
-    const job = seedJob(db, { title: 'Engineering Manager', company: 'Initech' });
+    const job = seedJob(db, {
+      title: 'Engineering Manager',
+      company: 'Initech',
+    });
     const { client, create } = makeMockAnthropic(6, 'Good fit overall.');
 
     await scoreJob(db, job, client);
 
-    const call = create.mock.calls[0][0] as { messages: Array<{ content: string }> };
+    const call = create.mock.calls[0][0] as {
+      messages: Array<{ content: string }>;
+    };
     const sentPrompt = call.messages[0].content;
     expect(sentPrompt).toContain('Engineering Manager');
     expect(sentPrompt).toContain('Initech');
@@ -197,20 +211,30 @@ describe('scoreJob()', () => {
   it('Given a valid job, When scoreJob is called, Then the returned response matches the Claude output', async () => {
     const db = makeDb();
     const job = seedJob(db);
-    const { client } = makeMockAnthropic(9, 'Excellent match with strong leadership skills.');
+    const { client } = makeMockAnthropic(
+      9,
+      'Excellent match with strong leadership skills.'
+    );
 
     const result = await scoreJob(db, job, client);
 
-    expect(result).toEqual({ score: 9, rationale: 'Excellent match with strong leadership skills.' });
+    expect(result).toEqual({
+      score: 9,
+      rationale: 'Excellent match with strong leadership skills.',
+    });
   });
 
   it('Given Claude returns non-text content, When scoreJob is called, Then it throws', async () => {
     const db = makeDb();
     const job = seedJob(db);
-    const create = jest.fn().mockResolvedValue({ content: [{ type: 'tool_use', id: 'x' }] });
+    const create = jest
+      .fn()
+      .mockResolvedValue({ content: [{ type: 'tool_use', id: 'x' }] });
     const client = { messages: { create } } as unknown as Anthropic;
 
-    await expect(scoreJob(db, job, client)).rejects.toThrow('Unexpected response type');
+    await expect(scoreJob(db, job, client)).rejects.toThrow(
+      'Unexpected response type'
+    );
   });
 
   it('Given Claude returns non-JSON text, When scoreJob is called, Then it throws', async () => {
@@ -228,7 +252,12 @@ describe('scoreJob()', () => {
     const db = makeDb();
     const job = seedJob(db);
     const create = jest.fn().mockResolvedValue({
-      content: [{ type: 'text', text: JSON.stringify({ score: 11, rationale: 'Too high.' }) }],
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({ score: 11, rationale: 'Too high.' }),
+        },
+      ],
     });
     const client = { messages: { create } } as unknown as Anthropic;
 
@@ -239,11 +268,15 @@ describe('scoreJob()', () => {
     const db = makeDb();
     const job = seedJob(db);
     const create = jest.fn().mockResolvedValue({
-      content: [{ type: 'text', text: JSON.stringify({ score: 7, rationale: '   ' }) }],
+      content: [
+        { type: 'text', text: JSON.stringify({ score: 7, rationale: '   ' }) },
+      ],
     });
     const client = { messages: { create } } as unknown as Anthropic;
 
-    await expect(scoreJob(db, job, client)).rejects.toThrow('invalid rationale');
+    await expect(scoreJob(db, job, client)).rejects.toThrow(
+      'invalid rationale'
+    );
   });
 
   it('Given Claude returns an empty content array, When scoreJob is called, Then it throws Unexpected response type', async () => {
@@ -252,14 +285,21 @@ describe('scoreJob()', () => {
     const create = jest.fn().mockResolvedValue({ content: [] });
     const client = { messages: { create } } as unknown as Anthropic;
 
-    await expect(scoreJob(db, job, client)).rejects.toThrow('Unexpected response type');
+    await expect(scoreJob(db, job, client)).rejects.toThrow(
+      'Unexpected response type'
+    );
   });
 
   it('Given Claude returns a float score, When scoreJob is called, Then it throws invalid score', async () => {
     const db = makeDb();
     const job = seedJob(db);
     const create = jest.fn().mockResolvedValue({
-      content: [{ type: 'text', text: JSON.stringify({ score: 7.5, rationale: 'Good fit.' }) }],
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({ score: 7.5, rationale: 'Good fit.' }),
+        },
+      ],
     });
     const client = { messages: { create } } as unknown as Anthropic;
 
@@ -293,7 +333,10 @@ describe('runScoring()', () => {
   it('Given unscored jobs, When runScoring is called, Then scores are persisted to the DB', async () => {
     const db = makeDb();
     const job = seedJob(db);
-    const { client } = makeMockAnthropic(8, 'Strong engineering leadership background.');
+    const { client } = makeMockAnthropic(
+      8,
+      'Strong engineering leadership background.'
+    );
 
     await runScoring(db, client);
 
@@ -306,7 +349,10 @@ describe('runScoring()', () => {
   it('Given jobs scoring >= 6, When runScoring is called, Then they appear in eligible', async () => {
     const db = makeDb();
     seedJob(db, { external_id: 'j1' });
-    const { client } = makeMockAnthropic(MIN_ELIGIBLE_SCORE, 'Meets the threshold.');
+    const { client } = makeMockAnthropic(
+      MIN_ELIGIBLE_SCORE,
+      'Meets the threshold.'
+    );
 
     const result = await runScoring(db, client);
 
@@ -335,7 +381,12 @@ describe('runScoring()', () => {
       callCount++;
       const score = callCount === 1 ? 8 : 4;
       return Promise.resolve({
-        content: [{ type: 'text', text: JSON.stringify({ score, rationale: 'Rationale.' }) }],
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({ score, rationale: 'Rationale.' }),
+          },
+        ],
       });
     });
     const client = { messages: { create } } as unknown as Anthropic;
@@ -373,7 +424,12 @@ describe('runScoring()', () => {
       callCount++;
       if (callCount === 1) return Promise.reject(new Error('API timeout'));
       return Promise.resolve({
-        content: [{ type: 'text', text: JSON.stringify({ score: 7, rationale: 'Good fit.' }) }],
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({ score: 7, rationale: 'Good fit.' }),
+          },
+        ],
       });
     });
     const client = { messages: { create } } as unknown as Anthropic;
@@ -382,7 +438,11 @@ describe('runScoring()', () => {
     const result = await runScoring(db, client);
 
     expect(result.scored).toBe(1);
-    expect(warnSpy).toHaveBeenCalledWith('Failed to score job:', expect.any(Number), expect.any(Error));
+    expect(warnSpy).toHaveBeenCalledWith(
+      'Failed to score job:',
+      expect.any(Number),
+      expect.any(Error)
+    );
     warnSpy.mockRestore();
   });
 
