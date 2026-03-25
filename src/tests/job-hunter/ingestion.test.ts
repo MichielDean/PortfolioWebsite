@@ -265,6 +265,19 @@ describe('runIngestion()', () => {
     expect(listJobs(db)[0].source).toBe('greenhouse');
   });
 
+  it('Given TheirStack throws, When runIngestion is called, Then the error is logged via console.warn', async () => {
+    const db = makeDb();
+    const error = new Error('TheirStack API unavailable');
+    mockFetchTheirStack.mockRejectedValue(error);
+    mockFetchGreenhouse.mockResolvedValue([]);
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await runIngestion(db);
+
+    expect(warnSpy).toHaveBeenCalledWith('Job source fetch failed:', error);
+    warnSpy.mockRestore();
+  });
+
   it('Given Greenhouse throws, When runIngestion is called, Then TheirStack jobs are still ingested', async () => {
     const db = makeDb();
     mockFetchTheirStack.mockResolvedValue([jobA]);
@@ -277,6 +290,19 @@ describe('runIngestion()', () => {
     expect(listJobs(db)[0].source).toBe('theirstack');
   });
 
+  it('Given Greenhouse throws, When runIngestion is called, Then the error is logged via console.warn', async () => {
+    const db = makeDb();
+    const error = new Error('Greenhouse API unavailable');
+    mockFetchTheirStack.mockResolvedValue([]);
+    mockFetchGreenhouse.mockRejectedValue(error);
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await runIngestion(db);
+
+    expect(warnSpy).toHaveBeenCalledWith('Job source fetch failed:', error);
+    warnSpy.mockRestore();
+  });
+
   it('Given both sources throw, When runIngestion is called, Then returns zero counts', async () => {
     const db = makeDb();
     mockFetchTheirStack.mockRejectedValue(new Error('TheirStack API unavailable'));
@@ -286,5 +312,21 @@ describe('runIngestion()', () => {
 
     expect(result).toEqual({ inserted: 0, skipped: 0 });
     expect(listJobs(db)).toHaveLength(0);
+  });
+
+  it('Given both sources throw, When runIngestion is called, Then both errors are logged via console.warn', async () => {
+    const db = makeDb();
+    const tsError = new Error('TheirStack API unavailable');
+    const ghError = new Error('Greenhouse API unavailable');
+    mockFetchTheirStack.mockRejectedValue(tsError);
+    mockFetchGreenhouse.mockRejectedValue(ghError);
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await runIngestion(db);
+
+    expect(warnSpy).toHaveBeenCalledTimes(2);
+    expect(warnSpy).toHaveBeenCalledWith('Job source fetch failed:', tsError);
+    expect(warnSpy).toHaveBeenCalledWith('Job source fetch failed:', ghError);
+    warnSpy.mockRestore();
   });
 });

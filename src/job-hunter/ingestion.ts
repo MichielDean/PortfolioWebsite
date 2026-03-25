@@ -81,6 +81,12 @@ export async function runIngestion(db: Database.Database): Promise<IngestionResu
     fetchGreenhouseJobs(GREENHOUSE_WATCHLIST),
   ]);
 
+  for (const r of results) {
+    if (r.status === 'rejected') {
+      console.warn('Job source fetch failed:', r.reason);
+    }
+  }
+
   const jobs = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
   return ingestJobs(db, jobs);
 }
