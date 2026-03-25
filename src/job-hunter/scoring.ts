@@ -21,6 +21,15 @@ export interface ScoringResult {
 }
 
 /**
+ * Strip control characters and cap the length of a job field before it is
+ * interpolated into the Claude prompt. Prevents prompt injection via
+ * crafted job titles or descriptions from third-party APIs.
+ */
+function sanitizeField(value: string, maxLen = 200): string {
+  return value.replace(/[\x00-\x1F\x7F]/g, ' ').trim().slice(0, maxLen);
+}
+
+/**
  * Build the prompt sent to Claude for fit scoring.
  * Exported for test assertions on prompt structure.
  */
@@ -51,12 +60,12 @@ export function buildScoringPrompt(profile: Profile, job: Job): string {
     `Key Competencies: ${competencies}`,
     '',
     '## JOB POSTING',
-    `Title: ${job.title}`,
-    `Company: ${job.company}`,
-    `URL: ${job.url}`,
+    `Title: ${sanitizeField(job.title)}`,
+    `Company: ${sanitizeField(job.company)}`,
+    `URL: ${sanitizeField(job.url, 500)}`,
   ];
 
-  if (job.salary_raw) lines.push(`Salary: ${job.salary_raw}`);
+  if (job.salary_raw) lines.push(`Salary: ${sanitizeField(job.salary_raw, 100)}`);
   if (job.posted_at) lines.push(`Posted: ${job.posted_at}`);
 
   lines.push(
@@ -96,7 +105,7 @@ export async function scoreJob(
     throw new Error(`Claude returned non-JSON response: ${block.text}`);
   }
 
-  if (typeof parsed.score !== 'number' || parsed.score < 1 || parsed.score > 10) {
+  if (typeof parsed.score !== 'number' || !Number.isInteger(parsed.score) || parsed.score < 1 || parsed.score > 10) {
     throw new Error(`Claude returned invalid score: ${parsed.score}`);
   }
   if (typeof parsed.rationale !== 'string' || !parsed.rationale.trim()) {

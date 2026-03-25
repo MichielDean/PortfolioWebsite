@@ -136,6 +136,19 @@ describe('buildScoringPrompt()', () => {
     expect(prompt).toContain('"score"');
     expect(prompt).toContain('"rationale"');
   });
+
+  it('Given a job with control characters in fields, When buildScoringPrompt is called, Then control characters are stripped', () => {
+    const db = makeDb();
+    const job = seedJob(db, {
+      title: 'VP\nof Engineering\n\n## FAKE SECTION',
+      company: 'Acme\r\nCorp',
+    });
+    const prompt = buildScoringPrompt(profileData, job);
+    expect(prompt).not.toContain('VP\nof');
+    expect(prompt).not.toContain('Acme\r\n');
+    expect(prompt).toContain('VP of Engineering');
+    expect(prompt).toContain('Acme  Corp');
+  });
 });
 
 // ─── scoreJob() ───────────────────────────────────────────────────────────────
@@ -231,6 +244,26 @@ describe('scoreJob()', () => {
     const client = { messages: { create } } as unknown as Anthropic;
 
     await expect(scoreJob(db, job, client)).rejects.toThrow('invalid rationale');
+  });
+
+  it('Given Claude returns an empty content array, When scoreJob is called, Then it throws Unexpected response type', async () => {
+    const db = makeDb();
+    const job = seedJob(db);
+    const create = jest.fn().mockResolvedValue({ content: [] });
+    const client = { messages: { create } } as unknown as Anthropic;
+
+    await expect(scoreJob(db, job, client)).rejects.toThrow('Unexpected response type');
+  });
+
+  it('Given Claude returns a float score, When scoreJob is called, Then it throws invalid score', async () => {
+    const db = makeDb();
+    const job = seedJob(db);
+    const create = jest.fn().mockResolvedValue({
+      content: [{ type: 'text', text: JSON.stringify({ score: 7.5, rationale: 'Good fit.' }) }],
+    });
+    const client = { messages: { create } } as unknown as Anthropic;
+
+    await expect(scoreJob(db, job, client)).rejects.toThrow('invalid score');
   });
 });
 
