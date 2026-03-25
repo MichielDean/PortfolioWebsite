@@ -41,8 +41,8 @@ async function answerCallbackQuery(
  * Process one callback_query update.
  *
  * - deny:    sets approval status='denied', blacklists the job, answers the query.
- * - approve: sets approval status='approved', answers the query, emits 'approve' event.
- * - already actioned (not pending): no-op, returns 'ignored'.
+ * - approve: sets approval status='approved', emits 'approve' event, answers the query.
+ * - no approval row or already actioned (not pending): no-op, returns 'ignored'.
  * - unrecognised callback_data: no-op, returns 'ignored'.
  *
  * Returns the outcome label.
@@ -101,6 +101,7 @@ export async function runCallbackPoller(
 
   const totals: CallbackHandlerResult = { approved: 0, denied: 0, ignored: 0 };
   let offset = 0;
+  const backoff = () => new Promise<void>(r => setTimeout(r, 5000));
 
   while (!signal?.aborted) {
     let response: Response;
@@ -114,13 +115,13 @@ export async function runCallbackPoller(
     } catch (err) {
       if (signal?.aborted) break;
       console.warn('getUpdates fetch error:', err);
-      await new Promise(r => setTimeout(r, 5000));
+      await backoff();
       continue;
     }
 
     if (!response.ok) {
       console.warn(`getUpdates failed: ${response.status} ${response.statusText}`);
-      await new Promise(r => setTimeout(r, 5000));
+      await backoff();
       continue;
     }
 
@@ -136,7 +137,7 @@ export async function runCallbackPoller(
       }
     } catch (err) {
       console.warn('getUpdates response parse error:', err);
-      await new Promise(r => setTimeout(r, 5000));
+      await backoff();
       continue;
     }
   }
