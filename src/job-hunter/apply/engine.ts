@@ -149,6 +149,7 @@ export async function runApplyEngine(
   }
 
   if (job.ats_type === 'greenhouse' || job.ats_type === 'lever') {
+    let atsSucceeded = false;
     try {
       if (job.ats_type === 'greenhouse') {
         await applyGreenhouse(job, resumePdfPath, profile, fetchFn);
@@ -161,13 +162,20 @@ export async function runApplyEngine(
         submitted_at: new Date().toISOString(),
         result: 'submitted',
       });
-      await sendTelegramMessage(botToken, chatId, `Application submitted: ${job.title} at ${job.company}`, fetchFn);
+      atsSucceeded = true;
     } catch (err) {
       console.warn(`runApplyEngine: ${job.ats_type} apply failed for job ${jobId}:`, err);
       try {
         await sendManualFallback(db, botToken, chatId, job, resumePdfPath, coverLetterPdfPath, fetchFn);
       } catch (fallbackErr) {
         console.warn(`runApplyEngine: manual fallback notification failed for job ${jobId}:`, fallbackErr);
+      }
+    }
+    if (atsSucceeded) {
+      try {
+        await sendTelegramMessage(botToken, chatId, `Application submitted: ${job.title} at ${job.company}`, fetchFn);
+      } catch (telegramErr) {
+        console.warn(`runApplyEngine: Telegram confirmation failed for job ${jobId}:`, telegramErr);
       }
     }
   } else {

@@ -637,6 +637,58 @@ describe('runApplyEngine() — Telegram failure during manual fallback', () => {
   });
 });
 
+// ─── runApplyEngine() — ATS success, Telegram confirmation failure ───────────
+
+describe('runApplyEngine() — ATS succeeds but Telegram confirmation fails', () => {
+  test('Given Greenhouse ATS returns 200 but Telegram sendMessage returns 429, When runApplyEngine called, Then DB still records result submitted', async () => {
+    const db = makeDb();
+    const jobId = seedJob(db, { ats_type: 'greenhouse' });
+    const fixtures = makePdfFixtures();
+    const fetchMock = makeMockFetch([
+      { ok: true, status: 200 },  // Greenhouse success
+      { ok: false, status: 429 }, // Telegram sendMessage fail
+    ]);
+
+    await runApplyEngine(db, 'token', 'chat-123', jobId, fixtures.resumePdf, fixtures.coverLetterPdf, TEST_PROFILE, fetchMock);
+
+    expect(getApplication(db, jobId)?.result).toBe('submitted');
+    cleanPdfFixtures(fixtures);
+  });
+
+  test('Given Greenhouse ATS returns 200 but Telegram sendMessage returns 429, When runApplyEngine called, Then no sendDocument calls are made', async () => {
+    const db = makeDb();
+    const jobId = seedJob(db, { ats_type: 'greenhouse' });
+    const fixtures = makePdfFixtures();
+    const fetchMock = makeMockFetch([
+      { ok: true, status: 200 },  // Greenhouse success
+      { ok: false, status: 429 }, // Telegram sendMessage fail
+    ]);
+
+    await runApplyEngine(db, 'token', 'chat-123', jobId, fixtures.resumePdf, fixtures.coverLetterPdf, TEST_PROFILE, fetchMock);
+
+    const sendDocCalls = fetchMock.mock.calls.filter(
+      (call) => (call[0] as string).includes('sendDocument'),
+    );
+    expect(sendDocCalls).toHaveLength(0);
+    cleanPdfFixtures(fixtures);
+  });
+
+  test('Given Greenhouse ATS returns 200 but Telegram sendMessage returns 429, When runApplyEngine called, Then runApplyEngine does not throw', async () => {
+    const db = makeDb();
+    const jobId = seedJob(db, { ats_type: 'greenhouse' });
+    const fixtures = makePdfFixtures();
+    const fetchMock = makeMockFetch([
+      { ok: true, status: 200 },  // Greenhouse success
+      { ok: false, status: 429 }, // Telegram sendMessage fail
+    ]);
+
+    await expect(
+      runApplyEngine(db, 'token', 'chat-123', jobId, fixtures.resumePdf, fixtures.coverLetterPdf, TEST_PROFILE, fetchMock),
+    ).resolves.toBeUndefined();
+    cleanPdfFixtures(fixtures);
+  });
+});
+
 // ─── runApplyEngine() — job not found ────────────────────────────────────────
 
 describe('runApplyEngine() — job not found', () => {
