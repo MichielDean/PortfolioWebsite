@@ -170,6 +170,19 @@ describe('runApplyEngine() — Greenhouse happy path', () => {
     cleanPdfFixtures(fixtures);
   });
 
+  test('Given a Greenhouse job, When runApplyEngine called, Then form includes resume PDF attachment', async () => {
+    const db = makeDb();
+    const jobId = seedJob(db, { ats_type: 'greenhouse' });
+    const fixtures = makePdfFixtures();
+    const fetchMock = allSuccessFetch();
+
+    await runApplyEngine(db, 'token', 'chat-123', jobId, fixtures.resumePdf, fixtures.coverLetterPdf, TEST_PROFILE, fetchMock);
+
+    const form = (fetchMock.mock.calls[0] as [string, RequestInit])[1].body as unknown as FormData;
+    expect(form.get('resume')).toBeTruthy();
+    cleanPdfFixtures(fixtures);
+  });
+
   test('Given a Greenhouse job, When runApplyEngine called and returns 200, Then records application with method greenhouse', async () => {
     const db = makeDb();
     const jobId = seedJob(db, { ats_type: 'greenhouse' });
@@ -279,6 +292,19 @@ describe('runApplyEngine() — Lever happy path', () => {
     const form = (fetchMock.mock.calls[0] as [string, RequestInit])[1].body as unknown as FormData;
     const data = JSON.parse(form.get('data') as string) as { name: string; email: string };
     expect(data.email).toBe(TEST_PROFILE.email);
+    cleanPdfFixtures(fixtures);
+  });
+
+  test('Given a Lever job, When runApplyEngine called, Then form includes resume PDF attachment', async () => {
+    const db = makeDb();
+    const jobId = seedJob(db, { ats_type: 'lever', external_id: 'lever-resume-check' });
+    const fixtures = makePdfFixtures();
+    const fetchMock = allSuccessFetch();
+
+    await runApplyEngine(db, 'token', 'chat-123', jobId, fixtures.resumePdf, fixtures.coverLetterPdf, TEST_PROFILE, fetchMock);
+
+    const form = (fetchMock.mock.calls[0] as [string, RequestInit])[1].body as unknown as FormData;
+    expect(form.get('resume')).toBeTruthy();
     cleanPdfFixtures(fixtures);
   });
 
