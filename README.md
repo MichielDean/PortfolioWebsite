@@ -202,6 +202,28 @@ for (const job of unscoredJobs) {
 }
 ```
 
+**Telegram Notifications**:
+```typescript
+import { runNotifier } from './job-hunter/telegram/notifier';
+import Database from 'better-sqlite3';
+
+const db = new Database('jobs.db');
+
+// Send notifications for jobs with score >= 6
+// Credentials from TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID env vars
+const result = await runNotifier(db);
+console.log(`Notified: ${result.notified}, Skipped: ${result.skipped}`);
+
+// Or supply credentials directly
+const result = await runNotifier(db, 'your-bot-token', 'your-chat-id');
+```
+
+Each notification:
+- Displays the job title, company, salary (if available), posted date, fit score, and rationale
+- Includes an inline Telegram keyboard with Approve ✅ and Deny ❌ buttons
+- Stores a pending approval record so the job isn't re-notified on subsequent runs
+- Requires environment variables: `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
+
 ### Database Schema
 
 - **jobs**: Core job listings (source, title, company, URL, salary, posted date)
