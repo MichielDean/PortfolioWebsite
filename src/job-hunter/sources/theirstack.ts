@@ -1,15 +1,9 @@
 import type { JobInput } from '../db/types';
+import { TARGET_ROLES } from '../config';
 
 const API_URL = 'https://api.theirstack.com/v1/jobs/search';
 
 export const MAX_PAGES = 50;
-
-const JOB_TITLES = [
-  'Director of Engineering',
-  'Senior Engineering Manager',
-  'VP of Engineering',
-  'VP of QA',
-];
 
 export interface TheirStackJob {
   id: string | number;
@@ -53,7 +47,7 @@ export function normalizeJob(job: TheirStackJob): JobInput {
   };
 }
 
-// Requires THEIRSTACK_API_KEY. Fetches remote-only jobs posted in the last day for JOB_TITLES,
+// Requires THEIRSTACK_API_KEY. Fetches remote-only jobs posted in the last day for TARGET_ROLES,
 // paginating to exhaustion.
 export async function fetchTheirStackJobs(): Promise<JobInput[]> {
   const apiKey = process.env.THEIRSTACK_API_KEY;
@@ -73,7 +67,7 @@ export async function fetchTheirStackJobs(): Promise<JobInput[]> {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        job_title_or: JOB_TITLES,
+        job_title_or: TARGET_ROLES,
         remote: true,
         posted_at_max_age_days: 1,
         page,
