@@ -25,8 +25,6 @@ import {
   handleCallback,
   runCallbackPoller,
 } from '../../job-hunter/telegram/callbackHandler';
-import type { JobInput } from '../../job-hunter/db/types';
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function makeDb(): Database.Database {
@@ -36,10 +34,7 @@ function makeDb(): Database.Database {
 }
 
 /** Insert a job with a score and a pending approval; return the job id. */
-function seedJobWithPendingApproval(
-  db: Database.Database,
-  overrides: Partial<JobInput> = {},
-): number {
+function seedJobWithPendingApproval(db: Database.Database): number {
   const job = upsertJob(db, {
     source: 'theirstack',
     ats_type: 'unknown',
@@ -49,10 +44,28 @@ function seedJobWithPendingApproval(
     url: 'https://acme.com/jobs/1',
     salary_raw: '150000-200000',
     posted_at: '2025-03-20T00:00:00.000Z',
-    ...overrides,
   });
   addScore(db, { job_id: job.id, score: 8, rationale: 'Strong match' });
   upsertApproval(db, { job_id: job.id, status: 'pending' });
+  return job.id;
+}
+
+/**
+ * Insert a job with a score but no approval row (simulates a job that was never
+ * sent through the notifier); return the job id.
+ */
+function seedJobWithoutApproval(db: Database.Database): number {
+  const job = upsertJob(db, {
+    source: 'theirstack',
+    ats_type: 'unknown',
+    external_id: `ts-${Math.random()}`,
+    title: 'Engineer',
+    company: 'Acme',
+    url: 'https://acme.com/jobs/1',
+    salary_raw: null,
+    posted_at: null,
+  });
+  addScore(db, { job_id: job.id, score: 8, rationale: 'Good fit' });
   return job.id;
 }
 
@@ -331,21 +344,10 @@ describe('handleCallback() — no approval row', () => {
 
   test('Given valid approve callback for existing job with no approval row, When called, Then returns "ignored"', async () => {
     const db = makeDb();
-    const job = upsertJob(db, {
-      source: 'theirstack',
-      ats_type: 'unknown',
-      external_id: 'ts-no-approval',
-      title: 'Engineer',
-      company: 'Acme',
-      url: 'https://acme.com/jobs/2',
-      salary_raw: null,
-      posted_at: null,
-    });
-    addScore(db, { job_id: job.id, score: 8, rationale: 'Good fit' });
-    // Intentionally no upsertApproval call — job was never sent through the notifier
+    const jobId = seedJobWithoutApproval(db);
     const fetchSpy = mockFetch();
 
-    const result = await handleCallback(db, 'token', new EventEmitter(), 'cq-1', `approve:${job.id}`);
+    const result = await handleCallback(db, 'token', new EventEmitter(), 'cq-1', `approve:${jobId}`);
 
     expect(result).toBe('ignored');
     expect(fetchSpy).not.toHaveBeenCalled();
@@ -353,21 +355,10 @@ describe('handleCallback() — no approval row', () => {
 
   test('Given valid deny callback for existing job with no approval row, When called, Then returns "ignored"', async () => {
     const db = makeDb();
-    const job = upsertJob(db, {
-      source: 'theirstack',
-      ats_type: 'unknown',
-      external_id: 'ts-no-approval-2',
-      title: 'Engineer',
-      company: 'Acme',
-      url: 'https://acme.com/jobs/3',
-      salary_raw: null,
-      posted_at: null,
-    });
-    addScore(db, { job_id: job.id, score: 8, rationale: 'Good fit' });
-    // Intentionally no upsertApproval call — job was never sent through the notifier
+    const jobId = seedJobWithoutApproval(db);
     const fetchSpy = mockFetch();
 
-    const result = await handleCallback(db, 'token', new EventEmitter(), 'cq-1', `deny:${job.id}`);
+    const result = await handleCallback(db, 'token', new EventEmitter(), 'cq-1', `deny:${jobId}`);
 
     expect(result).toBe('ignored');
     expect(fetchSpy).not.toHaveBeenCalled();
@@ -375,45 +366,25 @@ describe('handleCallback() — no approval row', () => {
 
   test('Given valid approve callback for existing job with no approval row, When called, Then does not emit approve event', async () => {
     const db = makeDb();
-    const job = upsertJob(db, {
-      source: 'theirstack',
-      ats_type: 'unknown',
-      external_id: 'ts-no-approval-3',
-      title: 'Engineer',
-      company: 'Acme',
-      url: 'https://acme.com/jobs/4',
-      salary_raw: null,
-      posted_at: null,
-    });
-    addScore(db, { job_id: job.id, score: 8, rationale: 'Good fit' });
+    const jobId = seedJobWithoutApproval(db);
     mockFetch();
     const emitter = new EventEmitter();
     const approveSpy = jest.fn();
     emitter.on('approve', approveSpy);
 
-    await handleCallback(db, 'token', emitter, 'cq-1', `approve:${job.id}`);
+    await handleCallback(db, 'token', emitter, 'cq-1', `approve:${jobId}`);
 
     expect(approveSpy).not.toHaveBeenCalled();
   });
 
   test('Given valid deny callback for existing job with no approval row, When called, Then does not blacklist the job', async () => {
     const db = makeDb();
-    const job = upsertJob(db, {
-      source: 'theirstack',
-      ats_type: 'unknown',
-      external_id: 'ts-no-approval-4',
-      title: 'Engineer',
-      company: 'Acme',
-      url: 'https://acme.com/jobs/5',
-      salary_raw: null,
-      posted_at: null,
-    });
-    addScore(db, { job_id: job.id, score: 8, rationale: 'Good fit' });
+    const jobId = seedJobWithoutApproval(db);
     mockFetch();
 
-    await handleCallback(db, 'token', new EventEmitter(), 'cq-1', `deny:${job.id}`);
+    await handleCallback(db, 'token', new EventEmitter(), 'cq-1', `deny:${jobId}`);
 
-    expect(getJobById(db, job.id)?.blacklisted).toBe(0);
+    expect(getJobById(db, jobId)?.blacklisted).toBe(0);
   });
 });
 
