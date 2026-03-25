@@ -31,8 +31,7 @@ import {
 
 function makeDb(): Database.Database {
   const db = new Database(':memory:');
-  runMigrations(db);
-  db.pragma('foreign_keys = ON');
+  runMigrations(db); // also enables foreign_keys = ON
   return db;
 }
 
