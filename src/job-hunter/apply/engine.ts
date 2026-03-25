@@ -16,31 +16,28 @@ export interface ApplicantProfile {
 
 export type FetchFn = (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
 
+function appendPdf(form: FormData, field: string, filePath: string): void {
+  form.append(field, new Blob([fs.readFileSync(filePath)], { type: 'application/pdf' }), path.basename(filePath));
+}
+
 async function applyGreenhouse(
   job: Job,
   resumePdfPath: string,
   profile: ApplicantProfile,
   fetchFn: FetchFn,
 ): Promise<void> {
-  const fileBuffer = fs.readFileSync(resumePdfPath);
-  const fileName = path.basename(resumePdfPath);
   const form = new FormData();
   form.append('first_name', profile.firstName);
   form.append('last_name', profile.lastName);
   form.append('email', profile.email);
   form.append('job_id', job.external_id);
-  form.append('resume', new Blob([fileBuffer], { type: 'application/pdf' }), fileName);
+  appendPdf(form, 'resume', resumePdfPath);
 
-  const response = await fetchFn(GREENHOUSE_APPLY_URL, {
-    method: 'POST',
-    body: form,
-  });
+  const response = await fetchFn(GREENHOUSE_APPLY_URL, { method: 'POST', body: form });
 
   if (response.status !== 200 && response.status !== 201) {
     const body = await response.json().catch(() => ({})) as { message?: string };
-    throw new Error(
-      `Greenhouse apply failed: ${response.status} ${body.message ?? response.statusText}`,
-    );
+    throw new Error(`Greenhouse apply failed: ${response.status} ${body.message ?? response.statusText}`);
   }
 }
 
@@ -50,25 +47,18 @@ async function applyLever(
   profile: ApplicantProfile,
   fetchFn: FetchFn,
 ): Promise<void> {
-  const fileBuffer = fs.readFileSync(resumePdfPath);
-  const fileName = path.basename(resumePdfPath);
   const form = new FormData();
   form.append('data', JSON.stringify({
     name: `${profile.firstName} ${profile.lastName}`,
     email: profile.email,
   }));
-  form.append('resume', new Blob([fileBuffer], { type: 'application/pdf' }), fileName);
+  appendPdf(form, 'resume', resumePdfPath);
 
-  const response = await fetchFn(`${LEVER_APPLY_BASE}/${job.external_id}/apply`, {
-    method: 'POST',
-    body: form,
-  });
+  const response = await fetchFn(`${LEVER_APPLY_BASE}/${job.external_id}/apply`, { method: 'POST', body: form });
 
   if (response.status !== 200 && response.status !== 201) {
     const body = await response.json().catch(() => ({})) as { message?: string };
-    throw new Error(
-      `Lever apply failed: ${response.status} ${body.message ?? response.statusText}`,
-    );
+    throw new Error(`Lever apply failed: ${response.status} ${body.message ?? response.statusText}`);
   }
 }
 
@@ -86,9 +76,7 @@ async function sendTelegramMessage(
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({})) as { description?: string };
-    throw new Error(
-      `Telegram sendMessage failed: ${response.status} ${body.description ?? response.statusText}`,
-    );
+    throw new Error(`Telegram sendMessage failed: ${response.status} ${body.description ?? response.statusText}`);
   }
 }
 
@@ -99,23 +87,16 @@ async function sendTelegramDocument(
   caption: string,
   fetchFn: FetchFn,
 ): Promise<void> {
-  const fileBuffer = fs.readFileSync(filePath);
-  const fileName = path.basename(filePath);
   const form = new FormData();
   form.append('chat_id', chatId);
   form.append('caption', caption);
-  form.append('document', new Blob([fileBuffer], { type: 'application/pdf' }), fileName);
+  appendPdf(form, 'document', filePath);
 
-  const response = await fetchFn(`${TELEGRAM_API_BASE}/bot${botToken}/sendDocument`, {
-    method: 'POST',
-    body: form,
-  });
+  const response = await fetchFn(`${TELEGRAM_API_BASE}/bot${botToken}/sendDocument`, { method: 'POST', body: form });
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({})) as { description?: string };
-    throw new Error(
-      `Telegram sendDocument failed: ${response.status} ${body.description ?? response.statusText}`,
-    );
+    throw new Error(`Telegram sendDocument failed: ${response.status} ${body.description ?? response.statusText}`);
   }
 }
 
@@ -167,42 +148,21 @@ export async function runApplyEngine(
     return;
   }
 
-  if (job.ats_type === 'greenhouse') {
+  if (job.ats_type === 'greenhouse' || job.ats_type === 'lever') {
+    const applyFn = job.ats_type === 'greenhouse'
+      ? () => applyGreenhouse(job, resumePdfPath, profile, fetchFn)
+      : () => applyLever(job, resumePdfPath, profile, fetchFn);
     try {
-      await applyGreenhouse(job, resumePdfPath, profile, fetchFn);
+      await applyFn();
       addApplication(db, {
         job_id: job.id,
-        method: 'greenhouse',
+        method: job.ats_type,
         submitted_at: new Date().toISOString(),
         result: 'submitted',
       });
-      await sendTelegramMessage(
-        botToken,
-        chatId,
-        `Application submitted: ${job.title} at ${job.company}`,
-        fetchFn,
-      );
+      await sendTelegramMessage(botToken, chatId, `Application submitted: ${job.title} at ${job.company}`, fetchFn);
     } catch (err) {
-      console.warn(`runApplyEngine: Greenhouse apply failed for job ${jobId}:`, err);
-      await sendManualFallback(db, botToken, chatId, job, resumePdfPath, coverLetterPdfPath, fetchFn);
-    }
-  } else if (job.ats_type === 'lever') {
-    try {
-      await applyLever(job, resumePdfPath, profile, fetchFn);
-      addApplication(db, {
-        job_id: job.id,
-        method: 'lever',
-        submitted_at: new Date().toISOString(),
-        result: 'submitted',
-      });
-      await sendTelegramMessage(
-        botToken,
-        chatId,
-        `Application submitted: ${job.title} at ${job.company}`,
-        fetchFn,
-      );
-    } catch (err) {
-      console.warn(`runApplyEngine: Lever apply failed for job ${jobId}:`, err);
+      console.warn(`runApplyEngine: ${job.ats_type} apply failed for job ${jobId}:`, err);
       await sendManualFallback(db, botToken, chatId, job, resumePdfPath, coverLetterPdfPath, fetchFn);
     }
   } else {
