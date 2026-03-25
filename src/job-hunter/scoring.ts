@@ -1,7 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import type Database from 'better-sqlite3';
-import { profileData } from '@/data/profileData';
-import type { Profile } from '@/data/profileData';
+import { profileData, type Profile } from '@/data/profileData';
 import type { Job } from './db/types';
 import { getUnscoredJobs, addScore } from './db/repository';
 
@@ -39,7 +38,7 @@ export function buildScoringPrompt(profile: Profile, job: Job): string {
     .slice(0, 8)
     .join(', ');
 
-  const lines: string[] = [
+  const lines = [
     'Evaluate how well this candidate fits the following job posting.',
     'Respond with ONLY a JSON object in this exact format: {"score": <integer 1-10>, "rationale": "<2-3 sentences>"}',
     '',
@@ -136,8 +135,7 @@ export async function runScoring(
       batch.map(job => scoreJob(db, job, client)),
     );
 
-    for (let j = 0; j < batch.length; j++) {
-      const result = results[j];
+    for (const [j, result] of results.entries()) {
       if (result.status === 'fulfilled') {
         scored++;
         if (result.value.score >= MIN_ELIGIBLE_SCORE) {
