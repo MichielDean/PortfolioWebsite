@@ -12,7 +12,7 @@
  *          expectations
  */
 
-import { fetchTheirStackJobs, normalizeJob } from '../../job-hunter/sources/theirstack';
+import { fetchTheirStackJobs, normalizeJob, MAX_PAGES } from '../../job-hunter/sources/theirstack';
 import type { TheirStackJob } from '../../job-hunter/sources/theirstack';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -231,6 +231,78 @@ describe('normalizeJob() — field mapping', () => {
 
   it('sets posted_at to null when date_posted is null', () => {
     expect(normalizeJob(jobB).posted_at).toBeNull();
+  });
+});
+
+// ─── fetchTheirStackJobs() — pagination safety guard ─────────────────────────
+
+describe('fetchTheirStackJobs() — pagination safety guard', () => {
+  it('stops fetching at MAX_PAGES even when total_pages is much larger', async () => {
+    const bigTotal = MAX_PAGES + 100;
+    const pages = Array.from({ length: MAX_PAGES }, (_, i) =>
+      makePage([jobA], i, bigTotal),
+    );
+    const spy = mockFetch(pages);
+    await fetchTheirStackJobs();
+    expect(spy).toHaveBeenCalledTimes(MAX_PAGES);
+  });
+
+  it('logs a warning when pagination is truncated at MAX_PAGES', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const bigTotal = MAX_PAGES + 100;
+    const pages = Array.from({ length: MAX_PAGES }, (_, i) =>
+      makePage([jobA], i, bigTotal),
+    );
+    mockFetch(pages);
+    await fetchTheirStackJobs();
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('TheirStack'),
+    );
+    warnSpy.mockRestore();
+  });
+
+  it('does not log a warning when all pages are within MAX_PAGES', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    mockFetch([makePage([jobA], 0, 1)]);
+    await fetchTheirStackJobs();
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+});
+
+// ─── fetchTheirStackJobs() — response shape validation ───────────────────────
+
+describe('fetchTheirStackJobs() — response shape validation', () => {
+  it('throws a descriptive error when response data field is missing', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({ metadata: { total_pages: 1 } }),
+    } as Response);
+    await expect(fetchTheirStackJobs()).rejects.toThrow('Unexpected TheirStack response shape');
+  });
+
+  it('throws a descriptive error when response data field is null', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: null, metadata: { total_pages: 1 } }),
+    } as Response);
+    await expect(fetchTheirStackJobs()).rejects.toThrow('Unexpected TheirStack response shape');
+  });
+
+  it('throws a descriptive error when metadata is missing', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: [] }),
+    } as Response);
+    await expect(fetchTheirStackJobs()).rejects.toThrow('Unexpected TheirStack response shape');
+  });
+
+  it('throws a descriptive error when metadata.total_pages is not a number', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: [], metadata: { total_pages: 'five' } }),
+    } as Response);
+    await expect(fetchTheirStackJobs()).rejects.toThrow('Unexpected TheirStack response shape');
   });
 });
 

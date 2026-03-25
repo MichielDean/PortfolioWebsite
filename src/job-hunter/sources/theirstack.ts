@@ -2,6 +2,8 @@ import type { JobInput } from '../db/types';
 
 const API_URL = 'https://api.theirstack.com/v1/jobs/search';
 
+export const MAX_PAGES = 50;
+
 const JOB_TITLES = [
   'Director of Engineering',
   'Senior Engineering Manager',
@@ -63,7 +65,7 @@ export async function fetchTheirStackJobs(): Promise<JobInput[]> {
   let page = 0;
   let totalPages = 1;
 
-  while (page < totalPages) {
+  while (page < totalPages && page < MAX_PAGES) {
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
@@ -85,10 +87,20 @@ export async function fetchTheirStackJobs(): Promise<JobInput[]> {
       );
     }
 
-    const data = (await response.json()) as TheirStackResponse;
+    const raw = (await response.json()) as { data?: unknown; metadata?: { total_pages?: unknown } };
+    if (!Array.isArray(raw.data) || typeof raw.metadata?.total_pages !== 'number') {
+      throw new Error('Unexpected TheirStack response shape');
+    }
+    const data = raw as unknown as TheirStackResponse;
     all.push(...data.data.map(normalizeJob));
     totalPages = data.metadata.total_pages;
     page++;
+  }
+
+  if (totalPages > MAX_PAGES) {
+    console.warn(
+      `TheirStack: pagination truncated at MAX_PAGES=${MAX_PAGES}; API reported total_pages=${totalPages}`,
+    );
   }
 
   return all;

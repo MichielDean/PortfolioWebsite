@@ -1,13 +1,25 @@
 import Database from 'better-sqlite3';
 
 /**
+ * Per-connection initialisation. Must be called on every new connection,
+ * independent of whether migrations need to run. Sets SQLite pragmas that
+ * reset on each new connection (e.g. foreign_keys).
+ */
+export function initConnection(db: Database.Database): void {
+  db.pragma('foreign_keys = ON');
+}
+
+/**
  * Apply all schema migrations to the given database.
  *
  * Idempotent — safe to call multiple times. Uses `CREATE TABLE IF NOT EXISTS`
  * so re-running against an existing schema is a no-op.
+ *
+ * Also calls initConnection() so callers do not need to do so separately
+ * when opening a fresh database for the first time.
  */
 export function runMigrations(db: Database.Database): void {
-  db.pragma('foreign_keys = ON');
+  initConnection(db);
   db.exec(`
     CREATE TABLE IF NOT EXISTS jobs (
       id          INTEGER PRIMARY KEY AUTOINCREMENT,
