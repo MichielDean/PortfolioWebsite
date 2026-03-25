@@ -76,6 +76,7 @@ export function getUnscoredJobs(db: Database.Database): Job[] {
     SELECT j.* FROM jobs j
     LEFT JOIN scores s ON s.job_id = j.id
     WHERE s.job_id IS NULL AND j.blacklisted = 0
+    ORDER BY j.id
   `).all() as Job[];
 }
 

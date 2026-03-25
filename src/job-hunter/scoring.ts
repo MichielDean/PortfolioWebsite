@@ -70,7 +70,7 @@ export function buildScoringPrompt(profile: Profile, job: Job): string {
 
   if (job.salary_raw)
     lines.push(`Salary: ${sanitizeField(job.salary_raw, 100)}`);
-  if (job.posted_at) lines.push(`Posted: ${job.posted_at}`);
+  if (job.posted_at) lines.push(`Posted: ${sanitizeField(job.posted_at, 50)}`);
 
   lines.push(
     '',
