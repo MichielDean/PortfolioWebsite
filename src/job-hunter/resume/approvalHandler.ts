@@ -19,11 +19,11 @@ export type TailorFn = (
 ) => Promise<TailorResult>;
 
 function sanitizeCompany(company: string): string {
-  const s = company
+  const sanitized = company
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '_')
     .replace(/^_+|_+$/g, '');
-  return s.length > 0 ? s : 'unknown_company';
+  return sanitized.length > 0 ? sanitized : 'unknown_company';
 }
 
 async function defaultTailorFn(
@@ -130,7 +130,6 @@ export async function handleApproval(
   const { resumePdf, coverLetterPdf } = await tailorFn(job.title, job.company, job.url);
   const caption = `Resume and cover letter for ${job.title} at ${job.company}`;
 
-  // If the first send fails the whole operation fails cleanly — no DB row written.
   await sendDocument(botToken, chatId, resumePdf, caption);
 
   // If the first succeeded but the second fails, record a partial_send row so the
@@ -158,9 +157,6 @@ export async function handleApproval(
 /**
  * Register an 'approve' event listener on the emitter. For each approved
  * job, runs the full PDF generation and Telegram delivery pipeline.
- *
- * Credentials fall back to TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID env vars
- * when not supplied explicitly.
  */
 export function runApprovalHandler(
   db: Database.Database,
