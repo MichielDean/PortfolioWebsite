@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 import { getEligibleUnnotifiedJobs, upsertApproval } from '../db/index.js';
-import type { EligibleJob } from '../db/repository.js';
+import type { EligibleJob } from '../db/index.js';
 
 const TELEGRAM_API_BASE = 'https://api.telegram.org';
 const MIN_NOTIFY_SCORE = 6;

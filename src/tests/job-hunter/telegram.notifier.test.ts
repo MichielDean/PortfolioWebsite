@@ -61,6 +61,13 @@ function mockFetch(ok = true, statusText = 'OK'): jest.SpyInstance {
   } as Response);
 }
 
+/** Parse the JSON body from the most recent fetch call. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getLastFetchBody(): any {
+  const [, opts] = (global.fetch as jest.Mock).mock.calls[0] as [string, RequestInit];
+  return JSON.parse(opts.body as string);
+}
+
 // ─── getEligibleUnnotifiedJobs() ──────────────────────────────────────────────
 
 describe('getEligibleUnnotifiedJobs()', () => {
@@ -313,8 +320,7 @@ describe('runNotifier()', () => {
 
     await runNotifier(db, 'tok', 'chat99');
 
-    const [, opts] = (global.fetch as jest.Mock).mock.calls[0] as [string, RequestInit];
-    const body = JSON.parse(opts.body as string);
+    const body = getLastFetchBody();
     expect(body.chat_id).toBe('chat99');
     expect(body.parse_mode).toBe('HTML');
   });
@@ -326,8 +332,7 @@ describe('runNotifier()', () => {
 
     await runNotifier(db, 'tok', 'chat');
 
-    const [, opts] = (global.fetch as jest.Mock).mock.calls[0] as [string, RequestInit];
-    const body = JSON.parse(opts.body as string);
+    const body = getLastFetchBody();
     expect(body.text).toContain('Director of Engineering');
   });
 
@@ -338,8 +343,7 @@ describe('runNotifier()', () => {
 
     await runNotifier(db, 'tok', 'chat');
 
-    const [, opts] = (global.fetch as jest.Mock).mock.calls[0] as [string, RequestInit];
-    const body = JSON.parse(opts.body as string);
+    const body = getLastFetchBody();
     const keyboard = body.reply_markup.inline_keyboard;
     expect(keyboard).toHaveLength(1);
     expect(keyboard[0]).toHaveLength(2);
@@ -352,12 +356,9 @@ describe('runNotifier()', () => {
 
     await runNotifier(db, 'tok', 'chat');
 
-    const [, opts] = (global.fetch as jest.Mock).mock.calls[0] as [string, RequestInit];
-    const body = JSON.parse(opts.body as string);
+    const body = getLastFetchBody();
     const buttons = body.reply_markup.inline_keyboard[0];
-    const approveBtn = buttons.find((b: { callback_data: string }) =>
-      b.callback_data.startsWith('approve:'),
-    );
+    const approveBtn = buttons.find((b: { callback_data: string }) => b.callback_data.startsWith('approve:'));
     expect(approveBtn).toBeDefined();
     expect(approveBtn.callback_data).toBe(`approve:${id}`);
     expect(approveBtn.text).toBe('Approve ✅');
@@ -370,12 +371,9 @@ describe('runNotifier()', () => {
 
     await runNotifier(db, 'tok', 'chat');
 
-    const [, opts] = (global.fetch as jest.Mock).mock.calls[0] as [string, RequestInit];
-    const body = JSON.parse(opts.body as string);
+    const body = getLastFetchBody();
     const buttons = body.reply_markup.inline_keyboard[0];
-    const denyBtn = buttons.find((b: { callback_data: string }) =>
-      b.callback_data.startsWith('deny:'),
-    );
+    const denyBtn = buttons.find((b: { callback_data: string }) => b.callback_data.startsWith('deny:'));
     expect(denyBtn).toBeDefined();
     expect(denyBtn.callback_data).toBe(`deny:${id}`);
     expect(denyBtn.text).toBe('Deny ❌');
@@ -445,8 +443,8 @@ describe('runNotifier()', () => {
     seedJobWithScore(db, { external_id: 'bad' }, 7);
     let callCount = 0;
     jest.spyOn(global, 'fetch').mockImplementation(async () => {
-      callCount++;
-      return { ok: callCount === 1, status: callCount === 1 ? 200 : 400, statusText: callCount === 1 ? 'OK' : 'Bad Request' } as Response;
+      const ok = callCount++ === 0;
+      return { ok, status: ok ? 200 : 400, statusText: ok ? 'OK' : 'Bad Request' } as Response;
     });
     jest.spyOn(console, 'warn').mockImplementation(() => {});
 
