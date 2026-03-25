@@ -255,6 +255,39 @@ The callback handler:
 - **Error Handling**: Network errors and malformed responses trigger a 5-second backoff and retry; the poller never crashes
 - Requires environment variable: `TELEGRAM_BOT_TOKEN`
 
+**Resume Approval Handler**:
+```typescript
+import { runApprovalHandler } from './job-hunter/resume/approvalHandler';
+import { runCallbackPoller } from './job-hunter/telegram/callbackHandler';
+import { EventEmitter } from 'events';
+import Database from 'better-sqlite3';
+
+const db = new Database('jobs.db');
+const emitter = new EventEmitter();
+
+// Set up the approval handler to listen for approve events
+// When a user clicks the Approve button, the handler will:
+// 1. Invoke the resume tailor CLI with the job details
+// 2. Generate resume and cover letter PDFs
+// 3. Send both PDFs to the user via Telegram
+// 4. Record the submission in the applications table
+runApprovalHandler(db, emitter);
+
+// Start the callback poller to listen for user button clicks
+const signal = new AbortController().signal;
+const result = await runCallbackPoller(db, emitter, undefined, signal);
+```
+
+The approval handler:
+- Listens for 'approve' events emitted by the callback poller
+- Spawns the resume tailor CLI as a child process with the job details and posting URL
+- Waits up to 120 seconds for PDF generation to complete
+- Sends both resume and cover letter PDFs via Telegram with caption 'Resume and cover letter for {title} at {company}'
+- Records successful submissions with status 'pdfs_sent' in the applications table
+- On partial failure (e.g., resume sent but cover letter send failed), records a 'partial_send' status to prevent duplicate resumes on retry
+- Requires environment variables: `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
+- Requires the compiled resume tailor CLI at `dist/resume-cli/resume/cli/resumeTailor.js` (built via `npm run build`)
+
 ### Database Schema
 
 - **jobs**: Core job listings (source, title, company, URL, salary, posted date)
