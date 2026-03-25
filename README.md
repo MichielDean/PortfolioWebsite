@@ -56,6 +56,11 @@ Coverage report:
 npm test:coverage
 ```
 
+**Note:** The `npm test` command uses jsdom config. For job-hunter module tests, use:
+```sh
+npm run test:job-hunter
+```
+
 ## � Resume Tailoring Tool
 
 This project includes an AI-powered resume tailoring tool that customizes your resume for specific job postings.
@@ -98,7 +103,92 @@ This will generate:
 - ✅ Plain text URLs for maximum compatibility
 - ✅ No sensitive data in source control
 
-## �📦 Deployment
+## 🎯 Job Hunter Module
+
+A backend subsystem for automating remote job discovery, scoring, and application tracking.
+
+### Features
+- **Remote Job Fetching**: Integrates with TheirStack API to automatically fetch remote engineering positions (Director of Engineering, Senior Engineering Manager, VP of Engineering, VP of QA)
+- **SQLite Database**: Persistent storage for jobs, scores, approvals, and application tracking
+- **Daily Updates**: Configurable to fetch jobs posted in the last X days (defaults to 1 day)
+- **Pagination**: Safely handles large result sets with built-in guardrails (MAX_PAGES=50)
+- **Response Validation**: Validates external API responses before processing
+
+### Setup
+
+1. **Get a TheirStack API Key**:
+   - Sign up at [TheirStack](https://theirstack.com)
+   - Generate an API key from your account settings
+
+2. **Configure Environment**:
+```sh
+export THEIRSTACK_API_KEY="your-api-key-here"
+```
+
+### Usage
+
+**Fetch jobs from TheirStack**:
+```typescript
+import { fetchTheirStackJobs } from './job-hunter/sources/theirstack';
+
+const jobs = await fetchTheirStackJobs();
+// Returns normalized array of JobInput objects
+```
+
+**Database Operations**:
+```typescript
+import {
+  initConnection,
+  runMigrations,
+  upsertJob,
+  listJobs,
+  getUnscoredJobs,
+  addScore,
+  upsertApproval,
+} from './job-hunter/db';
+import Database from 'better-sqlite3';
+
+const db = new Database('jobs.db');
+initConnection(db);  // Enable foreign keys
+runMigrations(db);   // Create schema
+
+// Store jobs
+for (const job of jobs) {
+  upsertJob(db, job);
+}
+
+// List all jobs
+const allJobs = listJobs(db);
+
+// Score jobs
+const unscoredJobs = getUnscoredJobs(db);
+for (const job of unscoredJobs) {
+  // AI scoring logic here
+  addScore(db, { job_id: job.id, score: 0.85, rationale: '...' });
+}
+```
+
+### Database Schema
+
+- **jobs**: Core job listings (source, title, company, URL, salary, posted date)
+- **scores**: AI-generated relevance scores and rationale
+- **approvals**: Manual approval status (pending/approved/denied)
+- **applications**: Submission tracking and results
+
+### Testing
+
+Run job-hunter tests:
+```sh
+npm run test:job-hunter
+```
+
+Tests include:
+- TheirStack API client mocking and pagination validation
+- Response shape validation and error handling
+- Database repository CRUD operations
+- SQLite foreign key constraint enforcement
+
+##�📦 Deployment
 
 The site is configured for Netlify deployment:
 - Build command: `npm run build`

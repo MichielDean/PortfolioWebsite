@@ -11,7 +11,7 @@
  */
 
 import Database from 'better-sqlite3';
-import { runMigrations } from '../../job-hunter/db/migrations';
+import { runMigrations, initConnection } from '../../job-hunter/db/migrations';
 import {
   upsertJob,
   getJobById,
@@ -52,6 +52,17 @@ const jobB = {
   company: 'Globex',
   url: 'https://globex.com/jobs/002',
 };
+
+// ─── initConnection() ─────────────────────────────────────────────────────────
+
+describe('initConnection()', () => {
+  it('enables foreign key enforcement without calling runMigrations', () => {
+    const db = new Database(':memory:');
+    initConnection(db);
+    const result = db.pragma('foreign_keys', { simple: true });
+    expect(result).toBe(1);
+  });
+});
 
 // ─── runMigrations() ──────────────────────────────────────────────────────────
 
