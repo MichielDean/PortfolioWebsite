@@ -270,8 +270,7 @@ class ResumeCLI {
 
       // Generate PDF automatically
       console.log(`${colors.cyan}→ Generating PDF...${colors.reset}`);
-      const pdfCompanySuffix = options.company ? `_${options.company.toLowerCase().replace(/\s+/g, '_')}` : '';
-      const pdfFile = options.output?.replace('.html', '.pdf') || `./generated/resume${pdfCompanySuffix}.pdf`;
+      const pdfFile = options.output?.replace('.html', '.pdf') || `./generated/resume_${companySuffix}.pdf`;
       await this.generatePDF(html, pdfFile);
 
       console.log(`\n${colors.green}${colors.bright}✓ Resume Generated!${colors.reset}\n`);
