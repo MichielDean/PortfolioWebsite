@@ -41,30 +41,34 @@ export async function ingestJobs(
   let inserted = 0;
   let skipped = 0;
 
-  for (const job of jobs) {
-    if (checkExists.get(job.source, job.external_id)) {
-      skipped++;
-      continue;
-    }
+  const doInsert = db.transaction(() => {
+    for (const job of jobs) {
+      if (checkExists.get(job.source, job.external_id)) {
+        skipped++;
+        continue;
+      }
 
-    if (checkCompanyBlacklisted.get(job.company)) {
-      skipped++;
-      continue;
-    }
+      if (checkCompanyBlacklisted.get(job.company)) {
+        skipped++;
+        continue;
+      }
 
-    insertJob.run(
-      job.source,
-      job.ats_type,
-      job.external_id,
-      job.title,
-      job.company,
-      job.url,
-      job.salary_raw ?? null,
-      job.posted_at ?? null,
-      new Date().toISOString(),
-    );
-    inserted++;
-  }
+      insertJob.run(
+        job.source,
+        job.ats_type,
+        job.external_id,
+        job.title,
+        job.company,
+        job.url,
+        job.salary_raw ?? null,
+        job.posted_at ?? null,
+        new Date().toISOString(),
+      );
+      inserted++;
+    }
+  });
+
+  doInsert();
 
   return { inserted, skipped };
 }
@@ -74,10 +78,17 @@ export async function ingestJobs(
  * Returns aggregated inserted/skipped counts.
  */
 export async function runIngestion(db: Database.Database): Promise<IngestionResult> {
-  const [theirStackJobs, greenhouseJobs] = await Promise.all([
+  const results = await Promise.allSettled([
     fetchTheirStackJobs(),
     fetchGreenhouseJobs(GREENHOUSE_WATCHLIST),
   ]);
 
-  return ingestJobs(db, [...theirStackJobs, ...greenhouseJobs]);
+  const jobs: NormalizedJob[] = [];
+  for (const result of results) {
+    if (result.status === 'fulfilled') {
+      jobs.push(...result.value);
+    }
+  }
+
+  return ingestJobs(db, jobs);
 }

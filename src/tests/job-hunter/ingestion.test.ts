@@ -252,4 +252,39 @@ describe('runIngestion()', () => {
     expect(result).toEqual({ inserted: 1, skipped: 1 });
     expect(listJobs(db)).toHaveLength(1);
   });
+
+  it('Given TheirStack throws, When runIngestion is called, Then Greenhouse jobs are still ingested', async () => {
+    const db = makeDb();
+    mockFetchTheirStack.mockRejectedValue(new Error('TheirStack API unavailable'));
+    mockFetchGreenhouse.mockResolvedValue([jobB]);
+
+    const result = await runIngestion(db);
+
+    expect(result).toEqual({ inserted: 1, skipped: 0 });
+    expect(listJobs(db)).toHaveLength(1);
+    expect(listJobs(db)[0].source).toBe('greenhouse');
+  });
+
+  it('Given Greenhouse throws, When runIngestion is called, Then TheirStack jobs are still ingested', async () => {
+    const db = makeDb();
+    mockFetchTheirStack.mockResolvedValue([jobA]);
+    mockFetchGreenhouse.mockRejectedValue(new Error('Greenhouse API unavailable'));
+
+    const result = await runIngestion(db);
+
+    expect(result).toEqual({ inserted: 1, skipped: 0 });
+    expect(listJobs(db)).toHaveLength(1);
+    expect(listJobs(db)[0].source).toBe('theirstack');
+  });
+
+  it('Given both sources throw, When runIngestion is called, Then returns zero counts', async () => {
+    const db = makeDb();
+    mockFetchTheirStack.mockRejectedValue(new Error('TheirStack API unavailable'));
+    mockFetchGreenhouse.mockRejectedValue(new Error('Greenhouse API unavailable'));
+
+    const result = await runIngestion(db);
+
+    expect(result).toEqual({ inserted: 0, skipped: 0 });
+    expect(listJobs(db)).toHaveLength(0);
+  });
 });
