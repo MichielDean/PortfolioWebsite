@@ -247,6 +247,21 @@ describe('handleCallback() — approve flow', () => {
 
     expect(getJobById(db, jobId)?.blacklisted).toBe(0);
   });
+
+  test('Given a pending approval, When approve callback received and answerCallbackQuery throws network error, Then approve event is emitted before the error propagates', async () => {
+    const db = makeDb();
+    const jobId = seedJobWithPendingApproval(db);
+    jest.spyOn(global, 'fetch').mockRejectedValue(new TypeError('Network error'));
+    const emitter = new EventEmitter();
+    const approveSpy = jest.fn();
+    emitter.on('approve', approveSpy);
+
+    await expect(
+      handleCallback(db, 'token', emitter, 'cq-1', `approve:${jobId}`)
+    ).rejects.toThrow('Network error');
+
+    expect(approveSpy).toHaveBeenCalledWith(jobId);
+  });
 });
 
 // ─── handleCallback() — idempotency ──────────────────────────────────────────

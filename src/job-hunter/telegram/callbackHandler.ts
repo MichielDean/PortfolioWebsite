@@ -70,8 +70,8 @@ export async function handleCallback(
     return 'denied';
   } else {
     upsertApproval(db, { job_id: jobId, status: 'approved' });
-    await answerCallbackQuery(botToken, callbackQueryId, 'Approved \u2014 generating resume\u2026');
     emitter.emit('approve', jobId);
+    await answerCallbackQuery(botToken, callbackQueryId, 'Approved \u2014 generating resume\u2026');
     return 'approved';
   }
 }
