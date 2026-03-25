@@ -68,13 +68,12 @@ export async function handleCallback(
     blacklistJob(db, jobId);
     await answerCallbackQuery(botToken, callbackQueryId, 'Job denied and blacklisted');
     return 'denied';
+  } else {
+    upsertApproval(db, { job_id: jobId, status: 'approved' });
+    await answerCallbackQuery(botToken, callbackQueryId, 'Approved \u2014 generating resume\u2026');
+    emitter.emit('approve', jobId);
+    return 'approved';
   }
-
-  // approve
-  upsertApproval(db, { job_id: jobId, status: 'approved' });
-  await answerCallbackQuery(botToken, callbackQueryId, 'Approved \u2014 generating resume\u2026');
-  emitter.emit('approve', jobId);
-  return 'approved';
 }
 
 interface TelegramUpdate {
