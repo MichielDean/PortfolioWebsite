@@ -9,8 +9,6 @@ const JOB_TITLES = [
   'VP of QA',
 ];
 
-// ─── TheirStack API shapes ────────────────────────────────────────────────────
-
 export interface TheirStackJob {
   id: string | number;
   job_title: string;
@@ -30,14 +28,7 @@ interface TheirStackResponse {
   };
 }
 
-// ─── Normalization ────────────────────────────────────────────────────────────
-
-/**
- * Map a raw TheirStack job to the internal JobInput shape.
- *
- * salary_raw is formatted as "min-max", "min", "max", or null depending on
- * which salary fields are present in the source record.
- */
+// salary_raw is "min-max", "min", "max", or null depending on which salary fields are present.
 export function normalizeJob(job: TheirStackJob): JobInput {
   let salary_raw: string | null = null;
   if (job.min_annual_salary != null && job.max_annual_salary != null) {
@@ -60,17 +51,8 @@ export function normalizeJob(job: TheirStackJob): JobInput {
   };
 }
 
-// ─── API client ───────────────────────────────────────────────────────────────
-
-/**
- * Fetch all matching jobs from TheirStack, paginating to exhaustion.
- *
- * Requires THEIRSTACK_API_KEY to be set in the environment.
- * Query is scoped to remote-only jobs posted in the last day, filtered to the
- * four target job titles.
- *
- * Returns an array of normalized JobInput values ready for upsert.
- */
+// Requires THEIRSTACK_API_KEY. Fetches remote-only jobs posted in the last day for JOB_TITLES,
+// paginating to exhaustion.
 export async function fetchTheirStackJobs(): Promise<JobInput[]> {
   const apiKey = process.env.THEIRSTACK_API_KEY;
   if (!apiKey) {
