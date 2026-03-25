@@ -67,6 +67,22 @@ function mockFetch(ok = true): jest.SpyInstance {
   } as unknown as Response);
 }
 
+/** First call returns ok=true, all subsequent calls return ok=false. */
+function mockFetchPartialFailure(): jest.SpyInstance {
+  let callCount = 0;
+  return jest.spyOn(global, 'fetch').mockImplementation(() => {
+    callCount++;
+    const ok = callCount === 1;
+    return Promise.resolve({
+      ok,
+      status: ok ? 200 : 400,
+      statusText: ok ? 'OK' : 'Bad Request',
+      json: () => Promise.resolve(ok ? { ok: true } : { description: 'Bad Request' }),
+      text: () => Promise.resolve(''),
+    } as unknown as Response);
+  });
+}
+
 /** Create real temp PDF files and return their paths. */
 function makePdfFixtures(): TailorResult {
   const dir = os.tmpdir();
@@ -289,6 +305,43 @@ describe('handleApproval() — sendDocument failure', () => {
 
     await expect(handleApproval(db, 'token', 'chat-123', jobId, tailorFn)).rejects.toThrow();
     expect(getApplication(db, jobId)).toBeUndefined();
+    cleanPdfFixtures(fixtures);
+  });
+});
+
+// ─── handleApproval() — partial sendDocument failure ─────────────────────────
+//
+// Danger scenario: resume is sent successfully but the cover-letter send fails.
+// The user receives one document. Without a DB record the system has no memory of
+// the partial delivery, so a retry would duplicate the resume.
+// Fix (Issue 2): handler writes a 'partial_send' row on this path.
+
+describe('handleApproval() — partial sendDocument failure', () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  test('Given first sendDocument succeeds but second fails, When handleApproval called, Then throws', async () => {
+    const db = makeDb();
+    const jobId = seedJob(db);
+    const fixtures = makePdfFixtures();
+    const tailorFn = jest.fn().mockResolvedValue(fixtures);
+    mockFetchPartialFailure();
+
+    await expect(handleApproval(db, 'token', 'chat-123', jobId, tailorFn)).rejects.toThrow('sendDocument failed');
+    cleanPdfFixtures(fixtures);
+  });
+
+  test('Given first sendDocument succeeds but second fails, When handleApproval called, Then application row is written with result partial_send', async () => {
+    const db = makeDb();
+    const jobId = seedJob(db);
+    const fixtures = makePdfFixtures();
+    const tailorFn = jest.fn().mockResolvedValue(fixtures);
+    mockFetchPartialFailure();
+
+    await expect(handleApproval(db, 'token', 'chat-123', jobId, tailorFn)).rejects.toThrow();
+
+    const app = getApplication(db, jobId);
+    expect(app).toBeDefined();
+    expect(app!.result).toBe('partial_send');
     cleanPdfFixtures(fixtures);
   });
 });

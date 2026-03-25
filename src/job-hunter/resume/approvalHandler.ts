@@ -40,23 +40,45 @@ async function defaultTailorFn(
       '--company', company,
     ]);
 
+    // Drain stdout to prevent OS pipe buffer deadlock when the CLI writes extensively
+    child.stdout?.resume();
+
     child.stderr?.on('data', (data: Buffer) => {
       console.warn('resumeTailor stderr:', data.toString());
     });
 
+    // Kill the child and reject if it has not completed within 120 s
+    const timer = setTimeout(() => {
+      child.kill('SIGTERM');
+      reject(new Error('resumeTailor timed out after 120s'));
+    }, 120_000);
+
     child.on('close', (code: number | null) => {
+      clearTimeout(timer);
       if (code !== 0) {
         reject(new Error(`resumeTailor exited with code ${code}`));
         return;
       }
       const companySuffix = sanitizeCompany(company);
-      resolve({
-        resumePdf: `./generated/resume_${companySuffix}.pdf`,
-        coverLetterPdf: `./generated/cover-letter_${companySuffix}.pdf`,
-      });
+      const resumePdf = `./generated/resume_${companySuffix}.pdf`;
+      const coverLetterPdf = `./generated/cover-letter_${companySuffix}.pdf`;
+
+      if (!fs.existsSync(resumePdf)) {
+        reject(new Error(`PDF not generated: ${resumePdf}`));
+        return;
+      }
+      if (!fs.existsSync(coverLetterPdf)) {
+        reject(new Error(`PDF not generated: ${coverLetterPdf}`));
+        return;
+      }
+
+      resolve({ resumePdf, coverLetterPdf });
     });
 
-    child.on('error', reject);
+    child.on('error', (err: Error) => {
+      clearTimeout(timer);
+      reject(err);
+    });
   });
 }
 
@@ -79,7 +101,9 @@ async function sendDocument(
   });
 
   if (!response.ok) {
-    throw new Error(`sendDocument failed: ${response.status} ${response.statusText}`);
+    const body = await response.json().catch(() => ({})) as { description?: string };
+    const description = body.description ?? response.statusText;
+    throw new Error(`sendDocument failed: ${response.status} ${description}`);
   }
 }
 
@@ -106,8 +130,22 @@ export async function handleApproval(
   const { resumePdf, coverLetterPdf } = await tailorFn(job.title, job.company, job.url);
   const caption = `Resume and cover letter for ${job.title} at ${job.company}`;
 
+  // If the first send fails the whole operation fails cleanly — no DB row written.
   await sendDocument(botToken, chatId, resumePdf, caption);
-  await sendDocument(botToken, chatId, coverLetterPdf, caption);
+
+  // If the first succeeded but the second fails, record a partial_send row so the
+  // inconsistency is visible on retry (prevents the user receiving a duplicate resume).
+  try {
+    await sendDocument(botToken, chatId, coverLetterPdf, caption);
+  } catch (err) {
+    addApplication(db, {
+      job_id: jobId,
+      method: 'manual',
+      submitted_at: new Date().toISOString(),
+      result: 'partial_send',
+    });
+    throw err;
+  }
 
   addApplication(db, {
     job_id: jobId,
