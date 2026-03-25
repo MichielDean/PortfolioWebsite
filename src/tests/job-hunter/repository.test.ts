@@ -32,6 +32,7 @@ import {
 function makeDb(): Database.Database {
   const db = new Database(':memory:');
   runMigrations(db);
+  db.pragma('foreign_keys = ON');
   return db;
 }
 
@@ -75,6 +76,12 @@ describe('runMigrations()', () => {
       runMigrations(db);
       runMigrations(db);
     }).not.toThrow();
+  });
+
+  it('enables foreign key enforcement', () => {
+    const db = makeDb();
+    const result = db.pragma('foreign_keys', { simple: true });
+    expect(result).toBe(1);
   });
 
   it('enforces UNIQUE constraint on (source, external_id)', () => {
@@ -286,6 +293,24 @@ describe('addScore()', () => {
     const score = addScore(db, { job_id: job.id, score: 92.5, rationale: 'Near-perfect' });
     expect(score.score).toBe(92.5);
   });
+
+  it('upserts when called twice with the same job_id — updates score without duplicating rows', () => {
+    const db = makeDb();
+    const job = upsertJob(db, jobA);
+    addScore(db, { job_id: job.id, score: 50, rationale: 'First pass' });
+    const updated = addScore(db, { job_id: job.id, score: 75, rationale: 'Revised' });
+    expect(updated.score).toBe(75);
+    expect(updated.rationale).toBe('Revised');
+    const count = (db.prepare('SELECT COUNT(*) as c FROM scores').get() as { c: number }).c;
+    expect(count).toBe(1);
+  });
+
+  it('throws a foreign key error when job_id does not exist', () => {
+    const db = makeDb();
+    expect(() =>
+      addScore(db, { job_id: 9999, score: 80, rationale: 'Orphan' })
+    ).toThrow();
+  });
 });
 
 describe('getScore()', () => {
@@ -349,6 +374,13 @@ describe('upsertApproval()', () => {
       db.prepare('SELECT COUNT(*) as c FROM approvals').get() as { c: number }
     ).c;
     expect(count).toBe(1);
+  });
+
+  it('throws a foreign key error when job_id does not exist', () => {
+    const db = makeDb();
+    expect(() =>
+      upsertApproval(db, { job_id: 9999, status: 'pending' })
+    ).toThrow();
   });
 });
 
@@ -444,6 +476,24 @@ describe('addApplication()', () => {
       submitted_at: '2024-03-01T10:00:00.000Z',
     });
     expect(app.result).toBeNull();
+  });
+
+  it('upserts when called twice with the same job_id — updates application without duplicating rows', () => {
+    const db = makeDb();
+    const job = upsertJob(db, jobA);
+    addApplication(db, { job_id: job.id, method: 'greenhouse', submitted_at: '2024-03-01T10:00:00.000Z' });
+    const updated = addApplication(db, { job_id: job.id, method: 'manual', submitted_at: '2024-03-02T12:00:00.000Z', result: 'rejected' });
+    expect(updated.method).toBe('manual');
+    expect(updated.result).toBe('rejected');
+    const count = (db.prepare('SELECT COUNT(*) as c FROM applications').get() as { c: number }).c;
+    expect(count).toBe(1);
+  });
+
+  it('throws a foreign key error when job_id does not exist', () => {
+    const db = makeDb();
+    expect(() =>
+      addApplication(db, { job_id: 9999, method: 'manual', submitted_at: '2024-03-01T10:00:00.000Z' })
+    ).toThrow();
   });
 });
 

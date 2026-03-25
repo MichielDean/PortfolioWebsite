@@ -7,6 +7,7 @@ import Database from 'better-sqlite3';
  * so re-running against an existing schema is a no-op.
  */
 export function runMigrations(db: Database.Database): void {
+  db.pragma('foreign_keys = ON');
   db.exec(`
     CREATE TABLE IF NOT EXISTS jobs (
       id          INTEGER PRIMARY KEY AUTOINCREMENT,

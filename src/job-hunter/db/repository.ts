@@ -89,6 +89,10 @@ export function addScore(db: Database.Database, input: ScoreInput): Score {
   const scored_at = new Date().toISOString();
   db.prepare(`
     INSERT INTO scores (job_id, score, rationale, scored_at) VALUES (?, ?, ?, ?)
+    ON CONFLICT(job_id) DO UPDATE SET
+      score     = excluded.score,
+      rationale = excluded.rationale,
+      scored_at = excluded.scored_at
   `).run(input.job_id, input.score, input.rationale, scored_at);
   return db.prepare('SELECT * FROM scores WHERE job_id = ?').get(input.job_id) as Score;
 }
@@ -145,6 +149,10 @@ export function getApproval(db: Database.Database, jobId: number): Approval | un
 export function addApplication(db: Database.Database, input: ApplicationInput): Application {
   db.prepare(`
     INSERT INTO applications (job_id, method, submitted_at, result) VALUES (?, ?, ?, ?)
+    ON CONFLICT(job_id) DO UPDATE SET
+      method       = excluded.method,
+      submitted_at = excluded.submitted_at,
+      result       = excluded.result
   `).run(input.job_id, input.method, input.submitted_at, input.result ?? null);
   return db.prepare('SELECT * FROM applications WHERE job_id = ?').get(input.job_id) as Application;
 }
