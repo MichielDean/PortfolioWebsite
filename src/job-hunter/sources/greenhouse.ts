@@ -12,10 +12,6 @@ export interface GreenhouseJob {
   absolute_url: string;
 }
 
-interface GreenhouseResponse {
-  jobs: GreenhouseJob[];
-}
-
 // Returns true if the title contains any target role string (case-insensitive).
 export function matchesTargetRole(title: string, roles: string[] = TARGET_ROLES): boolean {
   const lower = title.toLowerCase();
@@ -58,13 +54,12 @@ export async function fetchGreenhouseJobs(
       );
     }
 
-    const raw = (await response.json()) as { jobs?: unknown };
-    if (!Array.isArray(raw.jobs)) {
+    const { jobs } = (await response.json()) as { jobs?: unknown };
+    if (!Array.isArray(jobs)) {
       throw new Error(`Unexpected Greenhouse response shape for ${token}`);
     }
 
-    const data = raw as unknown as GreenhouseResponse;
-    const matched = data.jobs.filter(
+    const matched = (jobs as GreenhouseJob[]).filter(
       (job) => matchesTargetRole(job.title) && isRemote(job),
     );
     all.push(...matched.map((job) => normalizeJob(job, token)));
