@@ -141,6 +141,44 @@ export function getApproval(db: Database.Database, jobId: number): Approval | un
   return db.prepare('SELECT * FROM approvals WHERE job_id = ?').get(jobId) as Approval | undefined;
 }
 
+// ─── Approvals — eligible unnotified ──────────────────────────────────────────
+
+/**
+ * A job row joined with its score, ready for Telegram notification.
+ * Returned by `getEligibleUnnotifiedJobs`.
+ */
+export interface EligibleJob {
+  id: number;
+  title: string;
+  company: string;
+  url: string;
+  salary_raw: string | null;
+  posted_at: string | null;
+  score: number;
+  rationale: string;
+}
+
+/**
+ * Return jobs whose score is >= minScore (default 6) and that have no
+ * approval row yet. These are the jobs the Telegram notifier should send.
+ */
+export function getEligibleUnnotifiedJobs(
+  db: Database.Database,
+  minScore = 6,
+): EligibleJob[] {
+  return db.prepare(`
+    SELECT j.id, j.title, j.company, j.url, j.salary_raw, j.posted_at,
+           s.score, s.rationale
+    FROM jobs j
+    JOIN scores s ON s.job_id = j.id
+    LEFT JOIN approvals a ON a.job_id = j.id
+    WHERE s.score >= ?
+      AND a.job_id IS NULL
+      AND j.blacklisted = 0
+    ORDER BY j.id
+  `).all(minScore) as EligibleJob[];
+}
+
 // ─── Applications ─────────────────────────────────────────────────────────────
 
 /**
