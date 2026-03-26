@@ -101,9 +101,9 @@ export async function runCallbackPoller(
 
   const totals: CallbackHandlerResult = { approved: 0, denied: 0, ignored: 0 };
   let offset = 0;
-  const backoff = () => new Promise<void>(r => {
-    const t = setTimeout(r, 5000);
-    signal?.addEventListener('abort', () => { clearTimeout(t); r(); }, { once: true });
+  const backoff = (): Promise<void> => new Promise<void>((resolve) => {
+    const timer = setTimeout(resolve, 5000);
+    signal?.addEventListener('abort', () => { clearTimeout(timer); resolve(); }, { once: true });
   });
 
   while (!signal?.aborted) {
