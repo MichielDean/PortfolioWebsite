@@ -437,4 +437,30 @@ describe('startProcess()', () => {
     const registeredEvents = processOnSpy.mock.calls.map(c => c[0]);
     expect(registeredEvents).not.toContain('unhandledRejection');
   });
+
+  it('Given SIGINT fires twice, When shutdown handler is invoked twice, Then db.close() is called only once', async () => {
+    const processOnSpy = process.on as jest.MockedFunction<typeof process.on>;
+
+    await startProcess({ runNow: false });
+
+    const sigintCall = processOnSpy.mock.calls.find(c => c[0] === 'SIGINT');
+    const sigintHandler = sigintCall?.[1] as (...args: unknown[]) => void;
+    sigintHandler();
+    sigintHandler();
+
+    expect(mockDbClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('Given SIGTERM fires twice, When shutdown handler is invoked twice, Then db.close() is called only once', async () => {
+    const processOnSpy = process.on as jest.MockedFunction<typeof process.on>;
+
+    await startProcess({ runNow: false });
+
+    const sigtermCall = processOnSpy.mock.calls.find(c => c[0] === 'SIGTERM');
+    const sigtermHandler = sigtermCall?.[1] as (...args: unknown[]) => void;
+    sigtermHandler();
+    sigtermHandler();
+
+    expect(mockDbClose).toHaveBeenCalledTimes(1);
+  });
 });

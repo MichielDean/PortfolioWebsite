@@ -77,9 +77,12 @@ export async function startProcess(options: StartOptions = {}): Promise<void> {
   const emitter = new EventEmitter();
   const controller = new AbortController();
   let cronTask: ReturnType<typeof cron.schedule> | undefined;
+  let shuttingDown = false;
 
   // Graceful shutdown on SIGINT / SIGTERM
   const shutdown = (): void => {
+    if (shuttingDown) return;
+    shuttingDown = true;
     console.log('[job-hunter] Shutting down...');
     cronTask?.stop();
     controller.abort();
