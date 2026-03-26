@@ -584,6 +584,87 @@ describe('runCallbackPoller() — resilient to malformed response body', () => {
   });
 });
 
+// ─── runCallbackPoller() — backoff abort-listener cleanup ────────────────────
+
+describe('runCallbackPoller() — backoff abort-listener cleanup', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
+  test('Given fetch fails and backoff timer fires, When timer resolves, Then removeEventListener is called for the abort listener', async () => {
+    jest.useFakeTimers();
+
+    const removeListenerSpy = jest.spyOn(AbortSignal.prototype, 'removeEventListener');
+
+    let fetchCallCount = 0;
+    jest.spyOn(global, 'fetch').mockImplementation((_url, opts) => {
+      fetchCallCount++;
+      if (fetchCallCount === 1) {
+        return Promise.reject(new Error('Network error'));
+      }
+      // Second call: hang until signal aborts so the loop terminates cleanly
+      return new Promise<Response>((_resolve, reject) => {
+        (opts as RequestInit | undefined)?.signal?.addEventListener(
+          'abort',
+          () => reject(new DOMException('Aborted', 'AbortError')),
+          { once: true },
+        );
+      });
+    });
+
+    const db = makeDb();
+    const controller = new AbortController();
+    const pollerPromise = runCallbackPoller(db, new EventEmitter(), 'mytoken', controller.signal);
+
+    // Advance past the 5 second backoff timer
+    await jest.advanceTimersByTimeAsync(5001);
+
+    // After the timer fires, the timer callback must call removeEventListener
+    expect(removeListenerSpy).toHaveBeenCalledWith('abort', expect.any(Function));
+
+    // Tear down: abort to unblock the hanging second fetch
+    controller.abort();
+    await pollerPromise.catch(() => {});
+  });
+
+  test('Given multiple backoff cycles via timeout, When backoffs complete, Then removeEventListener is called once per cycle', async () => {
+    jest.useFakeTimers();
+
+    const removeListenerSpy = jest.spyOn(AbortSignal.prototype, 'removeEventListener');
+
+    let fetchCallCount = 0;
+    jest.spyOn(global, 'fetch').mockImplementation((_url, opts) => {
+      fetchCallCount++;
+      if (fetchCallCount <= 2) {
+        return Promise.reject(new Error('Network error'));
+      }
+      return new Promise<Response>((_resolve, reject) => {
+        (opts as RequestInit | undefined)?.signal?.addEventListener(
+          'abort',
+          () => reject(new DOMException('Aborted', 'AbortError')),
+          { once: true },
+        );
+      });
+    });
+
+    const db = makeDb();
+    const controller = new AbortController();
+    const pollerPromise = runCallbackPoller(db, new EventEmitter(), 'mytoken', controller.signal);
+
+    // Advance through two complete backoff cycles
+    await jest.advanceTimersByTimeAsync(5001);
+    await jest.advanceTimersByTimeAsync(5001);
+
+    // Each timer-resolved backoff must call removeEventListener to clean up its listener
+    const abortRemoveCalls = removeListenerSpy.mock.calls.filter(([type]) => type === 'abort');
+    expect(abortRemoveCalls.length).toBeGreaterThanOrEqual(2);
+
+    controller.abort();
+    await pollerPromise.catch(() => {});
+  });
+});
+
 // ─── runCallbackPoller() — processes updates ─────────────────────────────────
 
 describe('runCallbackPoller() — dispatches callback_query updates', () => {
