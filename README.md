@@ -368,3 +368,86 @@ The site is configured for Netlify deployment:
 - Node version: 20
 
 The build automatically runs tests before creating the production bundle.
+
+### Job Hunter Daemon (PM2)
+
+The job-hunter daemon runs the complete end-to-end job discovery and application pipeline on a schedule.
+
+**Local Testing:**
+```sh
+# Run one immediate cycle (useful for testing)
+npm run job-hunter:now
+
+# Or using tsx directly with --run-now flag
+npm run job-hunter -- --run-now
+```
+
+**Production Deployment with PM2:**
+
+1. **Install PM2 globally** (if not already installed):
+```sh
+npm install -g pm2
+```
+
+2. **Set environment variables**:
+```sh
+# Required for Telegram notifications and approval flow
+export TELEGRAM_BOT_TOKEN="your-bot-token-here"
+export TELEGRAM_CHAT_ID="your-chat-id-here"
+export THEIRSTACK_API_KEY="your-api-key-here"
+
+# Optional: customize database location (defaults to ./job-hunter.db)
+export JOB_HUNTER_DB="/home/lobsterdog/.local/share/job-hunter/jobs.db"
+```
+
+3. **Start the daemon**:
+```sh
+pm2 start ecosystem.config.cjs
+pm2 save        # Save process state for auto-restart on reboot
+pm2 startup     # Generate systemd unit to auto-start on boot
+```
+
+4. **Monitor and manage**:
+```sh
+pm2 logs job-hunter        # View live logs
+pm2 status job-hunter      # Check process status
+pm2 restart job-hunter     # Restart the daemon
+pm2 stop job-hunter        # Stop the daemon
+pm2 delete job-hunter      # Remove from PM2
+```
+
+**One-shot test run via PM2:**
+```sh
+pm2 start ecosystem.config.cjs --only job-hunter --env production -- --run-now
+```
+
+**Configuration:**
+
+The ecosystem.config.cjs file defines:
+- **Process name:** `job-hunter`
+- **Script runner:** `tsx` (TypeScript executor, no separate compile step)
+- **Concurrency:** 1 instance (single daemon)
+- **Restart:** Automatic on crash
+- **Memory limit:** 200MB (restart if exceeded)
+- **Logs:** Merged stdout/stderr to `logs/job-hunter-{out,error}.log`
+
+**Daily Schedule:**
+
+The daemon automatically runs the complete pipeline daily at **08:00 UTC**:
+1. Fetch fresh job listings from TheirStack and Greenhouse
+2. Store new jobs in SQLite database
+3. Score each job with Claude AI
+4. Notify via Telegram for high-scoring matches
+5. Listen for user button clicks (approve/deny)
+6. Generate tailored resume on approval
+7. Send PDFs to user
+8. Auto-submit applications to ATS or request manual submission
+
+**Graceful Shutdown:**
+
+The daemon handles SIGTERM and SIGINT gracefully:
+- Stops the cron scheduler
+- Closes the database connection properly (WAL checkpoint)
+- Aborts in-flight requests
+- Removes Telegram polling listeners
+- Exits cleanly without forcing PM2 to SIGKILL
