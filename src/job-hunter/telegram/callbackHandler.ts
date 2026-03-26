@@ -151,7 +151,7 @@ export async function runCallbackPoller(
         offset = update.update_id + 1;
       }
     } catch (err) {
-      console.warn('getUpdates response parse error:', err);
+      console.warn('getUpdates callback processing error:', err);
       await backoff();
       continue;
     }
