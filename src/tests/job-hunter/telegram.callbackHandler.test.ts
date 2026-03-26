@@ -451,6 +451,33 @@ describe('runCallbackPoller() — missing credentials', () => {
   });
 });
 
+// ─── runCallbackPoller() — abort-aware backoff ───────────────────────────────
+
+describe('runCallbackPoller() — abort-aware backoff', () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  test('Given fetch error, When signal aborted during backoff, Then poller exits without waiting 5s', async () => {
+    const db = makeDb();
+    const controller = new AbortController();
+
+    jest.spyOn(global, 'fetch').mockRejectedValue(new TypeError('Network error'));
+
+    const pollerPromise = runCallbackPoller(db, new EventEmitter(), 'mytoken', controller.signal);
+
+    // Flush microtask queue to let the fetch rejection reach the backoff await
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // Abort — the abort listener on the backoff timer should resolve it immediately
+    controller.abort();
+
+    // Should resolve without needing a 5s timer advancement
+    const result = await pollerPromise;
+    expect(result).toEqual({ approved: 0, denied: 0, ignored: 0 });
+  }, 500 /* fail fast if backoff does not respect the abort signal */);
+});
+
 // ─── runCallbackPoller() — resilient to malformed response body ──────────────
 
 describe('runCallbackPoller() — resilient to malformed response body', () => {

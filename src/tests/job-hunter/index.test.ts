@@ -17,9 +17,9 @@ jest.mock('../../job-hunter/telegram/notifier');
 jest.mock('../../job-hunter/telegram/callbackHandler');
 jest.mock('../../job-hunter/resume/approvalHandler');
 jest.mock('../../job-hunter/db/migrations');
-jest.mock('better-sqlite3', () => jest.fn().mockImplementation(() => ({})));
+jest.mock('better-sqlite3', () => jest.fn());
 
-import type Database from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import * as nodeCron from 'node-cron';
 import { runCycle, startProcess, CRON_SCHEDULE } from '../../job-hunter/index';
 import { runIngestion } from '../../job-hunter/ingestion';
@@ -257,9 +257,14 @@ describe('runCycle()', () => {
 // ─── startProcess() ──────────────────────────────────────────────────────────
 
 describe('startProcess()', () => {
+  let mockDbClose: jest.Mock;
+
   beforeEach(() => {
     jest.resetAllMocks();
     jest.spyOn(process, 'on').mockReturnValue(process);
+
+    mockDbClose = jest.fn();
+    (Database as unknown as jest.Mock).mockReturnValue({ close: mockDbClose });
 
     mockRunIngestion.mockResolvedValue({ inserted: 0, skipped: 0 });
     mockRunScoring.mockResolvedValue({ scored: 0, eligible: [] });
@@ -370,5 +375,38 @@ describe('startProcess()', () => {
     const registeredEvents = processOnSpy.mock.calls.map(c => c[0]);
     expect(registeredEvents).toContain('SIGINT');
     expect(registeredEvents).toContain('SIGTERM');
+  });
+
+  it('Given SIGINT fires, When shutdown handler runs, Then db.close() is called', async () => {
+    const processOnSpy = process.on as jest.MockedFunction<typeof process.on>;
+
+    await startProcess({ runNow: false });
+
+    const sigintCall = processOnSpy.mock.calls.find(c => c[0] === 'SIGINT');
+    const sigintHandler = sigintCall?.[1] as (...args: unknown[]) => void;
+    sigintHandler();
+
+    expect(mockDbClose).toHaveBeenCalled();
+  });
+
+  it('Given SIGTERM fires, When shutdown handler runs, Then db.close() is called', async () => {
+    const processOnSpy = process.on as jest.MockedFunction<typeof process.on>;
+
+    await startProcess({ runNow: false });
+
+    const sigtermCall = processOnSpy.mock.calls.find(c => c[0] === 'SIGTERM');
+    const sigtermHandler = sigtermCall?.[1] as (...args: unknown[]) => void;
+    sigtermHandler();
+
+    expect(mockDbClose).toHaveBeenCalled();
+  });
+
+  it('Given any options, When called, Then no unhandledRejection handler is registered', async () => {
+    const processOnSpy = process.on as jest.MockedFunction<typeof process.on>;
+
+    await startProcess({ runNow: false });
+
+    const registeredEvents = processOnSpy.mock.calls.map(c => c[0]);
+    expect(registeredEvents).not.toContain('unhandledRejection');
   });
 });

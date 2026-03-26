@@ -81,14 +81,10 @@ export async function startProcess(options: StartOptions = {}): Promise<void> {
   const shutdown = (): void => {
     console.log('[job-hunter] Shutting down...');
     controller.abort();
+    db.close();
   };
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
-
-  // Prevent transient unhandled rejections from crashing the process
-  process.on('unhandledRejection', (reason) => {
-    console.warn('[job-hunter] Unhandled rejection:', reason);
-  });
 
   // Register approval handler (synchronous — listens for 'approve' events)
   runApprovalHandler(db, emitter);
