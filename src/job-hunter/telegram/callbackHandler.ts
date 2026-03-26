@@ -101,7 +101,11 @@ export async function runCallbackPoller(
 
   const totals: CallbackHandlerResult = { approved: 0, denied: 0, ignored: 0 };
   let offset = 0;
-  const backoff = () => new Promise<void>(r => setTimeout(r, 5000));
+  const backoff = (): Promise<void> => new Promise<void>((resolve) => {
+    const onAbort = () => { clearTimeout(timer); resolve(); };
+    const timer = setTimeout(() => { signal?.removeEventListener('abort', onAbort); resolve(); }, 5000);
+    signal?.addEventListener('abort', onAbort, { once: true });
+  });
 
   while (!signal?.aborted) {
     let response: Response;
@@ -125,8 +129,20 @@ export async function runCallbackPoller(
       continue;
     }
 
+    let body: { ok: boolean; description?: string; result: TelegramUpdate[] };
     try {
-      const body = (await response.json()) as { ok: boolean; result: TelegramUpdate[] };
+      body = (await response.json()) as { ok: boolean; description?: string; result: TelegramUpdate[] };
+    } catch (err) {
+      console.warn('getUpdates response parse error:', err);
+      await backoff();
+      continue;
+    }
+
+    if (!body.ok) {
+      throw new Error(`Telegram getUpdates error: ${body.description ?? 'unknown error'}`);
+    }
+
+    try {
       for (const update of body.result) {
         if (update.callback_query) {
           const cq = update.callback_query;
@@ -136,7 +152,7 @@ export async function runCallbackPoller(
         offset = update.update_id + 1;
       }
     } catch (err) {
-      console.warn('getUpdates response parse error:', err);
+      console.warn('getUpdates callback processing error:', err);
       await backoff();
       continue;
     }
