@@ -288,6 +288,56 @@ The approval handler:
 - Requires environment variables: `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
 - Requires the compiled resume tailor CLI at `dist/resume-cli/resume/cli/resumeTailor.js` (built via `npm run build`)
 
+**Auto-Apply Engine**:
+```typescript
+import { runApplyEngine } from './job-hunter/apply/engine';
+import { getApprovedApplications } from './job-hunter/db';
+import Database from 'better-sqlite3';
+
+const db = new Database('jobs.db');
+
+// Auto-submit applications to Greenhouse or Lever ATS
+const approved = getApprovedApplications(db);
+for (const app of approved) {
+  const job = getJobById(db, app.job_id);
+  await runApplyEngine(
+    db,
+    process.env.TELEGRAM_BOT_TOKEN!,
+    process.env.TELEGRAM_CHAT_ID!,
+    job.id,
+    './generated/resume.pdf',
+    './generated/cover_letter.pdf',
+    {
+      firstName: 'Your',
+      lastName: 'Name',
+      email: 'your.email@example.com',
+    },
+  );
+}
+```
+
+The apply engine:
+- **Greenhouse ATS**: POSTs to `https://boards-api.greenhouse.io/v1/applications` with multipart form containing name, email, job ID, and resume PDF
+- **Lever ATS**: POSTs to `https://api.lever.co/v0/postings/{id}/apply` with JSON-formatted applicant data and resume PDF
+- **On success (HTTP 200/201)**: Records application with result='submitted' and sends Telegram confirmation message
+- **On ATS failure**: Gracefully falls back to manual application mode: sends message with direct job URL and attaches both resume and cover letter PDFs for manual submission
+- **On unknown ATS type**: Defaults to manual fallback mode (applies to job boards without API integration)
+- **Error Resilience**: Telegram notification failures are logged but don't block the application record — ensures data integrity even if notifications fail
+- Requires environment variables: `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
+
+### Complete Job Hunter Pipeline
+
+End-to-end workflow (typically run hourly or daily via cron):
+
+1. **Discover**: Fetch fresh job listings from TheirStack and configured Greenhouse boards
+2. **Store**: Upsert jobs into the database
+3. **Score**: Run Claude AI to score each job (6+ eligible for notification)
+4. **Notify**: Send high-scoring jobs to Telegram with Approve/Deny buttons
+5. **Listen**: Poll for user button clicks via Telegram callback handler
+6. **Generate**: On approval, spawn resume tailor CLI to generate customized PDFs
+7. **Send PDFs**: Transmit resume and cover letter to user via Telegram
+8. **Auto-apply**: Submit application directly to ATS or request manual submission as fallback
+
 ### Database Schema
 
 - **jobs**: Core job listings (source, title, company, URL, salary, posted date)
