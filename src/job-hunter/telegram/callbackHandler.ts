@@ -128,8 +128,20 @@ export async function runCallbackPoller(
       continue;
     }
 
+    let body: { ok: boolean; description?: string; result: TelegramUpdate[] };
     try {
-      const body = (await response.json()) as { ok: boolean; result: TelegramUpdate[] };
+      body = (await response.json()) as { ok: boolean; description?: string; result: TelegramUpdate[] };
+    } catch (err) {
+      console.warn('getUpdates response parse error:', err);
+      await backoff();
+      continue;
+    }
+
+    if (!body.ok) {
+      throw new Error(`Telegram getUpdates error: ${body.description ?? 'unknown error'}`);
+    }
+
+    try {
       for (const update of body.result) {
         if (update.callback_query) {
           const cq = update.callback_query;

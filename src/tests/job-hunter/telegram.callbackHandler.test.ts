@@ -478,6 +478,42 @@ describe('runCallbackPoller() — abort-aware backoff', () => {
   }, 500 /* fail fast if backoff does not respect the abort signal */);
 });
 
+// ─── runCallbackPoller() — body.ok=false (auth/fatal error) ─────────────────
+
+describe('runCallbackPoller() — body.ok=false', () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  test('Given HTTP 200 with body.ok=false and description, When poller receives it, Then rejects with Telegram description', async () => {
+    const db = makeDb();
+    const controller = new AbortController();
+
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ ok: false, description: 'Unauthorized' }),
+      text: () => Promise.resolve(''),
+    } as unknown as Response);
+
+    await expect(
+      runCallbackPoller(db, new EventEmitter(), 'mytoken', controller.signal),
+    ).rejects.toThrow('Unauthorized');
+  });
+
+  test('Given HTTP 200 with body.ok=false and no description, When poller receives it, Then rejects with a generic error', async () => {
+    const db = makeDb();
+    const controller = new AbortController();
+
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ ok: false }),
+      text: () => Promise.resolve(''),
+    } as unknown as Response);
+
+    await expect(
+      runCallbackPoller(db, new EventEmitter(), 'mytoken', controller.signal),
+    ).rejects.toThrow(/Telegram getUpdates error/);
+  });
+});
+
 // ─── runCallbackPoller() — resilient to malformed response body ──────────────
 
 describe('runCallbackPoller() — resilient to malformed response body', () => {

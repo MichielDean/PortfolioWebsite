@@ -401,6 +401,34 @@ describe('startProcess()', () => {
     expect(mockDbClose).toHaveBeenCalled();
   });
 
+  it('Given SIGINT fires, When shutdown handler runs, Then cron task.stop() is called', async () => {
+    const mockStop = jest.fn();
+    mockCronSchedule.mockReturnValue({ start: jest.fn(), stop: mockStop } as unknown as nodeCron.ScheduledTask);
+    const processOnSpy = process.on as jest.MockedFunction<typeof process.on>;
+
+    await startProcess({ runNow: false });
+
+    const sigintCall = processOnSpy.mock.calls.find(c => c[0] === 'SIGINT');
+    const sigintHandler = sigintCall?.[1] as (...args: unknown[]) => void;
+    sigintHandler();
+
+    expect(mockStop).toHaveBeenCalled();
+  });
+
+  it('Given SIGTERM fires, When shutdown handler runs, Then cron task.stop() is called', async () => {
+    const mockStop = jest.fn();
+    mockCronSchedule.mockReturnValue({ start: jest.fn(), stop: mockStop } as unknown as nodeCron.ScheduledTask);
+    const processOnSpy = process.on as jest.MockedFunction<typeof process.on>;
+
+    await startProcess({ runNow: false });
+
+    const sigtermCall = processOnSpy.mock.calls.find(c => c[0] === 'SIGTERM');
+    const sigtermHandler = sigtermCall?.[1] as (...args: unknown[]) => void;
+    sigtermHandler();
+
+    expect(mockStop).toHaveBeenCalled();
+  });
+
   it('Given any options, When called, Then no unhandledRejection handler is registered', async () => {
     const processOnSpy = process.on as jest.MockedFunction<typeof process.on>;
 

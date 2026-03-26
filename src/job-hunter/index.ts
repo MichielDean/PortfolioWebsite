@@ -76,10 +76,12 @@ export async function startProcess(options: StartOptions = {}): Promise<void> {
 
   const emitter = new EventEmitter();
   const controller = new AbortController();
+  let cronTask: ReturnType<typeof cron.schedule> | undefined;
 
   // Graceful shutdown on SIGINT / SIGTERM
   const shutdown = (): void => {
     console.log('[job-hunter] Shutting down...');
+    cronTask?.stop();
     controller.abort();
     db.close();
   };
@@ -100,7 +102,7 @@ export async function startProcess(options: StartOptions = {}): Promise<void> {
   }
 
   // Schedule daily 08:00 UTC pipeline
-  cron.schedule(
+  cronTask = cron.schedule(
     CRON_SCHEDULE,
     () => {
       runCycle(db).catch((err) => {
