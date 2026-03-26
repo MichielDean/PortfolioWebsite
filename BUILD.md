@@ -1,0 +1,52 @@
+# Build Guide
+
+## Prerequisites
+
+**Node.js** ≥ 20.11.1 and **npm** ≥ 10.2.4 are required.
+
+```bash
+node --version  # should be >= 20.11.1
+npm --version   # should be >= 10.2.4
+```
+
+**Environment variables** — copy to a `.env` file at the repo root:
+
+| Variable | Purpose |
+|---|---|
+| `ANTHROPIC_API_KEY` | Claude API key for resume tailoring |
+| `TELEGRAM_BOT_TOKEN` | Telegram bot token for job notifications |
+| `TELEGRAM_CHAT_ID` | Telegram chat ID for job notifications |
+| `THEIRSTACK_API_KEY` | TheirStack API key for job listings |
+| `JOB_HUNTER_DB` | Path to the SQLite database file (e.g. `./job-hunter.db`) |
+
+The portfolio site itself has no required env vars; the above are only needed to run the job-hunter pipeline.
+
+## Local Dev Setup
+
+```bash
+npm install       # install dependencies
+npm run dev       # start Vite dev server at http://localhost:5173
+```
+
+## Running Tests
+
+```bash
+npm test                          # all unit tests
+npm run test:watch                # watch mode
+npm run test:coverage             # with coverage report
+npm run test:resume               # resume-module tests only
+npm run test:job-hunter           # job-hunter tests only
+npm run test:e2e                  # end-to-end tests (requires built site)
+```
+
+## Deployment
+
+The site deploys to Netlify. Build output goes to `dist/`.
+
+```bash
+npm run build                     # typecheck + Vite production build
+netlify deploy --dir dist         # preview deploy
+netlify deploy --dir dist --prod  # production deploy
+```
+
+Netlify CI/CD runs `npm run build` automatically on push (see `netlify.toml`). The `prebuild` hook runs `npm test` before every build.
