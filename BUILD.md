@@ -9,11 +9,11 @@ node --version  # should be >= 20.11.1
 npm --version   # should be >= 10.2.4
 ```
 
-**Environment variables** — copy to a `.env` file at the repo root:
+**Environment variables** — export these in your shell before running the job-hunter pipeline (e.g. add to `~/.bashrc` / `~/.zshrc`, or `export VAR=value` in your terminal):
 
 | Variable | Purpose |
 |---|---|
-| `ANTHROPIC_API_KEY` | Claude API key for resume tailoring |
+| `ANTHROPIC_API_KEY` | Claude API key for job-hunter fit-scoring |
 | `TELEGRAM_BOT_TOKEN` | Telegram bot token for job notifications |
 | `TELEGRAM_CHAT_ID` | Telegram chat ID for job notifications |
 | `THEIRSTACK_API_KEY` | TheirStack API key for job listings |
