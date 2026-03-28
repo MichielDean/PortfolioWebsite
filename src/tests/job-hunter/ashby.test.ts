@@ -23,9 +23,8 @@ import type { AshbyJob, AshbyJobBoardResponse } from '../../job-hunter/sources/a
 function mockFetch(
   responses: Record<string, AshbyJobBoardResponse>,
 ): jest.SpyInstance {
-  return jest.spyOn(global, 'fetch').mockImplementation(async (_url, init) => {
-    const body = JSON.parse((init?.body as string) ?? '{}') as { jobBoardName?: string };
-    const boardName = body.jobBoardName ?? '';
+  return jest.spyOn(global, 'fetch').mockImplementation(async (url) => {
+    const boardName = String(url).split('/').pop() ?? '';
     const payload = responses[boardName] ?? { jobs: [] };
     return {
       ok: true,
@@ -34,11 +33,8 @@ function mockFetch(
   });
 }
 
-function makePage(
-  jobs: AshbyJob[],
-  nextCursor?: string | null,
-): AshbyJobBoardResponse {
-  return { jobs, nextCursor: nextCursor ?? null };
+function makePage(jobs: AshbyJob[]): AshbyJobBoardResponse {
+  return { jobs };
 }
 
 // ─── Test fixtures ────────────────────────────────────────────────────────────
@@ -46,7 +42,7 @@ function makePage(
 const remoteJob: AshbyJob = {
   id: 'ashby-uuid-1001',
   title: 'VP of Engineering',
-  publishedDate: '2025-03-20T00:00:00.000Z',
+  publishedAt: '2025-03-20T00:00:00.000Z',
   jobUrl: 'https://jobs.ashbyhq.com/acme/ashby-uuid-1001',
   isRemote: true,
   location: 'Remote',
@@ -55,7 +51,7 @@ const remoteJob: AshbyJob = {
 const onSiteJob: AshbyJob = {
   id: 'ashby-uuid-1002',
   title: 'VP of Engineering',
-  publishedDate: '2025-03-20T00:00:00.000Z',
+  publishedAt: '2025-03-20T00:00:00.000Z',
   jobUrl: 'https://jobs.ashbyhq.com/acme/ashby-uuid-1002',
   isRemote: false,
   location: 'San Francisco, CA',
@@ -64,7 +60,7 @@ const onSiteJob: AshbyJob = {
 const irrelevantRemoteJob: AshbyJob = {
   id: 'ashby-uuid-1003',
   title: 'Software Engineer',
-  publishedDate: '2025-03-20T00:00:00.000Z',
+  publishedAt: '2025-03-20T00:00:00.000Z',
   jobUrl: 'https://jobs.ashbyhq.com/acme/ashby-uuid-1003',
   isRemote: true,
   location: 'Remote',
@@ -73,7 +69,7 @@ const irrelevantRemoteJob: AshbyJob = {
 const remoteInLocationJob: AshbyJob = {
   id: 'ashby-uuid-1004',
   title: 'Director of Engineering',
-  publishedDate: '2025-03-21T00:00:00.000Z',
+  publishedAt: '2025-03-21T00:00:00.000Z',
   jobUrl: 'https://jobs.ashbyhq.com/notion/ashby-uuid-1004',
   isRemote: false,
   location: 'Remote - US',
@@ -82,7 +78,7 @@ const remoteInLocationJob: AshbyJob = {
 const jobWithSalary: AshbyJob = {
   id: 'ashby-uuid-2001',
   title: 'VP of Engineering',
-  publishedDate: '2025-03-20T00:00:00.000Z',
+  publishedAt: '2025-03-20T00:00:00.000Z',
   jobUrl: 'https://jobs.ashbyhq.com/globex/ashby-uuid-2001',
   isRemote: true,
   location: 'Remote',
@@ -187,12 +183,12 @@ describe('normalizeJob() — field mapping', () => {
     );
   });
 
-  it('maps publishedDate to posted_at', () => {
+  it('maps publishedAt to posted_at', () => {
     expect(normalizeJob(remoteJob, 'acme').posted_at).toBe('2025-03-20T00:00:00.000Z');
   });
 
-  it('sets posted_at to null when publishedDate is absent', () => {
-    const jobNoDate: AshbyJob = { ...remoteJob, publishedDate: undefined };
+  it('sets posted_at to null when publishedAt is absent', () => {
+    const jobNoDate: AshbyJob = { ...remoteJob, publishedAt: undefined };
     expect(normalizeJob(jobNoDate, 'acme').posted_at).toBeNull();
   });
 
@@ -289,96 +285,29 @@ describe('fetchAshbyJobs() — multi-company', () => {
   });
 });
 
-// ─── fetchAshbyJobs() — pagination ───────────────────────────────────────────
-
-describe('fetchAshbyJobs() — pagination', () => {
-  it('fetches the next page when nextCursor is present', async () => {
-    const page2Job: AshbyJob = {
-      ...remoteJob,
-      id: 'ashby-uuid-page2',
-      title: 'Senior Engineering Manager',
-    };
-    let callCount = 0;
-    jest.spyOn(global, 'fetch').mockImplementation(async (_url, init) => {
-      callCount++;
-      const body = JSON.parse((init?.body as string) ?? '{}') as { cursor?: string };
-      const hasCursor = !!body.cursor;
-      const jobs = hasCursor ? [page2Job] : [remoteJob];
-      return {
-        ok: true,
-        json: async () => makePage(jobs, hasCursor ? null : 'cursor-token'),
-      } as Response;
-    });
-
-    const jobs = await fetchAshbyJobs(['acme']);
-    expect(callCount).toBe(2);
-    expect(jobs).toHaveLength(2);
-    const ids = jobs.map((j) => j.external_id);
-    expect(ids).toContain('ashby-uuid-1001');
-    expect(ids).toContain('ashby-uuid-page2');
-  });
-
-  it('stops fetching when nextCursor is null', async () => {
-    const spy = mockFetch({ acme: makePage([remoteJob], null) });
-    await fetchAshbyJobs(['acme']);
-    expect(spy).toHaveBeenCalledTimes(1);
-  });
-
-  it('sends the cursor from the previous page on the next request', async () => {
-    const spy = jest.spyOn(global, 'fetch').mockImplementation(async (_url, init) => {
-      const body = JSON.parse((init?.body as string) ?? '{}') as { cursor?: string };
-      const hasCursor = !!body.cursor;
-      return {
-        ok: true,
-        json: async () => makePage([], hasCursor ? null : 'next-cursor'),
-      } as Response;
-    });
-
-    await fetchAshbyJobs(['acme']);
-    expect(spy).toHaveBeenCalledTimes(2);
-    const secondBody = JSON.parse(
-      (spy.mock.calls[1][1]?.body as string) ?? '{}',
-    ) as { cursor?: string };
-    expect(secondBody.cursor).toBe('next-cursor');
-  });
-});
-
 // ─── fetchAshbyJobs() — request shape ────────────────────────────────────────
 
 describe('fetchAshbyJobs() — request shape', () => {
-  it('sends a POST request to the Ashby job board endpoint', async () => {
+  it('sends a GET request with the board name appended to the URL path', async () => {
     const spy = mockFetch({ acme: makePage([]) });
     await fetchAshbyJobs(['acme']);
     const [url, init] = spy.mock.calls[0];
-    expect(String(url)).toContain('api.ashbyhq.com/posting-api/job-board');
-    expect((init as RequestInit).method).toBe('POST');
-  });
-
-  it('sends Content-Type: application/json header', async () => {
-    const spy = mockFetch({ acme: makePage([]) });
-    await fetchAshbyJobs(['acme']);
-    const [, init] = spy.mock.calls[0];
-    expect((init as RequestInit).headers).toMatchObject({
-      'Content-Type': 'application/json',
-    });
-  });
-
-  it('sends jobBoardName in the request body', async () => {
-    const spy = mockFetch({ acme: makePage([]) });
-    await fetchAshbyJobs(['acme']);
-    const [, init] = spy.mock.calls[0];
-    const body = JSON.parse((init as RequestInit).body as string) as Record<string, string>;
-    expect(body.jobBoardName).toBe('acme');
+    expect(String(url)).toContain('api.ashbyhq.com/posting-api/job-board/acme');
+    expect((init as RequestInit | undefined)?.method ?? 'GET').toBe('GET');
   });
 
   it('uses separate requests per company', async () => {
     const spy = mockFetch({ acme: makePage([]), notion: makePage([]) });
     await fetchAshbyJobs(['acme', 'notion']);
-    const bodies = spy.mock.calls.map(([, init]) =>
-      JSON.parse((init as RequestInit).body as string) as { jobBoardName: string },
-    );
-    expect(bodies.some((b) => b.jobBoardName === 'acme')).toBe(true);
-    expect(bodies.some((b) => b.jobBoardName === 'notion')).toBe(true);
+    const urls = spy.mock.calls.map(([url]) => String(url));
+    expect(urls.some((u) => u.endsWith('/acme'))).toBe(true);
+    expect(urls.some((u) => u.endsWith('/notion'))).toBe(true);
+  });
+
+  it('makes exactly one request per company in the watchlist', async () => {
+    const spy = mockFetch({ acme: makePage([]) });
+    await fetchAshbyJobs(['acme']);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -436,9 +365,8 @@ describe('fetchAshbyJobs() — error handling', () => {
 
   it('returns results from successful companies when one company fails (partial failure)', async () => {
     jest.spyOn(console, 'warn').mockImplementation(() => {});
-    jest.spyOn(global, 'fetch').mockImplementation(async (_url, init) => {
-      const body = JSON.parse((init?.body as string) ?? '{}') as { jobBoardName?: string };
-      if (body.jobBoardName === 'broken') {
+    jest.spyOn(global, 'fetch').mockImplementation(async (url) => {
+      if (String(url).endsWith('/broken')) {
         return { ok: false, status: 500, statusText: 'Internal Server Error' } as Response;
       }
       return {
