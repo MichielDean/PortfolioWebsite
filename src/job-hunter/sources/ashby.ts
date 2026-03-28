@@ -36,8 +36,7 @@ export function matchesTargetRole(title: string, roles: string[] = TARGET_ROLES)
 }
 
 export function isRemote(job: Pick<AshbyJob, 'isRemote' | 'location'>): boolean {
-  if (job.isRemote === true) return true;
-  return /remote/i.test(job.location ?? '');
+  return job.isRemote === true || /remote/i.test(job.location ?? '');
 }
 
 export function normalizeJob(job: AshbyJob, company: string): JobInput {

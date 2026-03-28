@@ -222,8 +222,8 @@ describe('normalizeJob() — field mapping', () => {
   });
 
   it('sets posted_at to null when publishedDate is absent', () => {
-    const jobNoDdate: AshbyJob = { ...remoteJob, publishedDate: undefined };
-    expect(normalizeJob(jobNoDdate, 'acme').posted_at).toBeNull();
+    const jobNoDate: AshbyJob = { ...remoteJob, publishedDate: undefined };
+    expect(normalizeJob(jobNoDate, 'acme').posted_at).toBeNull();
   });
 
   it('sets salary_raw to null when compensation is absent', () => {
