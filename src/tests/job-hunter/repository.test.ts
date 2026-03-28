@@ -37,7 +37,7 @@ function makeDb(): Database.Database {
 
 const jobA = {
   source: 'linkedin',
-  ats_type: 'greenhouse' as const,
+  ats_type: 'unknown' as const,
   external_id: 'job-001',
   title: 'Software Engineer',
   company: 'Acme Corp',
@@ -46,7 +46,7 @@ const jobA = {
 
 const jobB = {
   source: 'indeed',
-  ats_type: 'lever' as const,
+  ats_type: 'indeed' as const,
   external_id: 'job-002',
   title: 'Senior Engineer',
   company: 'Globex',
