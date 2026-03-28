@@ -148,17 +148,18 @@ export async function runApplyEngine(
     return;
   }
 
-  if (job.ats_type === 'greenhouse' || job.ats_type === 'lever') {
+  const atsType = job.ats_type as string;
+  if (atsType === 'greenhouse' || atsType === 'lever') {
     let atsSucceeded = false;
     try {
-      if (job.ats_type === 'greenhouse') {
+      if (atsType === 'greenhouse') {
         await applyGreenhouse(job, resumePdfPath, profile, fetchFn);
       } else {
         await applyLever(job, resumePdfPath, profile, fetchFn);
       }
       addApplication(db, {
         job_id: job.id,
-        method: job.ats_type,
+        method: atsType as import('../db/types.js').ApplicationMethod,
         submitted_at: new Date().toISOString(),
         result: 'submitted',
       });

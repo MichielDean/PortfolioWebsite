@@ -62,7 +62,7 @@ function mockExecFileFailure(exitCode: number, stderr = ''): void {
 
 const jobA: NormalizedJob = {
   source: 'greenhouse',
-  ats_type: 'greenhouse',
+  ats_type: 'unknown',
   external_id: 'gh-001',
   title: 'VP of Engineering',
   company: 'Acme Corp',
@@ -73,7 +73,7 @@ const jobA: NormalizedJob = {
 
 const jobB: NormalizedJob = {
   source: 'greenhouse',
-  ats_type: 'greenhouse',
+  ats_type: 'unknown',
   external_id: 'gh-101',
   title: 'Senior Engineering Manager',
   company: 'Globex',
@@ -84,7 +84,7 @@ const jobB: NormalizedJob = {
 
 const jobC: NormalizedJob = {
   source: 'greenhouse',
-  ats_type: 'greenhouse',
+  ats_type: 'unknown',
   external_id: 'gh-002',
   title: 'Director of Engineering',
   company: 'Initech',
