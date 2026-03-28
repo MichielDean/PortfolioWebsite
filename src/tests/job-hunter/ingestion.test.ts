@@ -14,11 +14,19 @@ jest.mock('child_process', () => ({
   execFile: jest.fn(),
 }));
 
+jest.mock('fs', () => ({
+  ...jest.requireActual<typeof import('fs')>('fs'),
+  existsSync: jest.fn(),
+}));
+
 import { execFile } from 'child_process';
+import * as fs from 'fs';
+import * as os from 'os';
+import path from 'path';
 import Database from 'better-sqlite3';
 import { runMigrations } from '../../job-hunter/db/migrations';
 import { blacklistJob, listJobs } from '../../job-hunter/db/repository';
-import { ingestJobs, runIngestion } from '../../job-hunter/ingestion';
+import { ingestJobs, runIngestion, resolveInterpreter } from '../../job-hunter/ingestion';
 import type { NormalizedJob } from '../../job-hunter/ingestion';
 
 const mockExecFile = execFile as jest.MockedFunction<typeof execFile>;
@@ -327,5 +335,65 @@ describe('runIngestion()', () => {
 
     expect(warnSpy).not.toHaveBeenCalled();
     warnSpy.mockRestore();
+  });
+
+  it('Given INGEST_PYTHON is set, When runIngestion is called, Then that interpreter is passed to execFile', async () => {
+    const db = makeDb();
+    process.env.INGEST_PYTHON = '/custom/python3.13';
+    mockExecFileSuccess('Inserted 2, skipped 1\n');
+
+    try {
+      await runIngestion(db, 'test.db');
+      expect(mockExecFile).toHaveBeenCalledWith(
+        '/custom/python3.13',
+        expect.any(Array),
+        expect.any(Function),
+      );
+    } finally {
+      delete process.env.INGEST_PYTHON;
+    }
+  });
+});
+
+// ─── resolveInterpreter() ─────────────────────────────────────────────────────
+
+const mockExistsSync = fs.existsSync as jest.MockedFunction<typeof fs.existsSync>;
+
+describe('resolveInterpreter()', () => {
+  const expectedVenvPath = path.join(
+    os.homedir(),
+    '.venv',
+    'jobhunter-sys',
+    'bin',
+    'python3',
+  );
+
+  beforeEach(() => {
+    delete process.env.INGEST_PYTHON;
+    mockExistsSync.mockReset();
+  });
+
+  it('Given INGEST_PYTHON is set, When resolveInterpreter is called, Then returns the env var value', () => {
+    process.env.INGEST_PYTHON = '/usr/local/bin/python3.13';
+    expect(resolveInterpreter()).toBe('/usr/local/bin/python3.13');
+  });
+
+  it('Given INGEST_PYTHON is set and venv exists, When resolveInterpreter is called, Then env var takes priority and existsSync is not called', () => {
+    process.env.INGEST_PYTHON = '/custom/python';
+    mockExistsSync.mockReturnValue(true);
+    expect(resolveInterpreter()).toBe('/custom/python');
+    expect(mockExistsSync).not.toHaveBeenCalled();
+  });
+
+  it('Given INGEST_PYTHON is not set and venv exists, When resolveInterpreter is called, Then returns the venv path', () => {
+    mockExistsSync.mockReturnValue(true);
+    const result = resolveInterpreter();
+    expect(result).toBe(expectedVenvPath);
+    expect(mockExistsSync).toHaveBeenCalledWith(expectedVenvPath);
+  });
+
+  it('Given INGEST_PYTHON is not set and venv does not exist, When resolveInterpreter is called, Then falls back to python3', () => {
+    mockExistsSync.mockReturnValue(false);
+    expect(resolveInterpreter()).toBe('python3');
   });
 });
