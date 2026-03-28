@@ -403,8 +403,6 @@ class TestIngest:
             assert set(site_name) == {'linkedin', 'zip_recruiter'}, (
                 f'Expected only linkedin and zip_recruiter, got {site_name}'
             )
-            assert 'indeed' not in site_name
-            assert 'google' not in site_name
 
     def test_scrape_jobs_called_with_results_wanted_40(self, tmp_path):
         """Given ingest is called, When scrape_jobs is invoked for each role,
