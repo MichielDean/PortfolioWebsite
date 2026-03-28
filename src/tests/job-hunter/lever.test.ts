@@ -14,7 +14,6 @@ import {
   fetchLeverJobs,
   isRemote,
   isValidLeverJobShape,
-  matchesTargetRole,
   normalizeJob,
 } from '../../job-hunter/sources/lever';
 import type { LeverApiPage, LeverJob } from '../../job-hunter/sources/lever';
@@ -91,35 +90,6 @@ const jobWithSalary: LeverJob = {
 
 afterEach(() => {
   jest.restoreAllMocks();
-});
-
-// ─── matchesTargetRole() ──────────────────────────────────────────────────────
-
-describe('matchesTargetRole()', () => {
-  it('returns true for an exact target role title', () => {
-    expect(matchesTargetRole('VP of Engineering')).toBe(true);
-  });
-
-  it('returns true for a title that contains the target role', () => {
-    expect(matchesTargetRole('Senior VP of Engineering')).toBe(true);
-  });
-
-  it('returns false for an unrelated title', () => {
-    expect(matchesTargetRole('Software Engineer')).toBe(false);
-  });
-
-  it('matches target roles case-insensitively', () => {
-    expect(matchesTargetRole('vp of engineering')).toBe(true);
-  });
-
-  it('returns false for an empty title', () => {
-    expect(matchesTargetRole('')).toBe(false);
-  });
-
-  it('uses a provided roles list instead of the default', () => {
-    expect(matchesTargetRole('Custom Role', ['Custom Role'])).toBe(true);
-    expect(matchesTargetRole('VP of Engineering', ['Custom Role'])).toBe(false);
-  });
 });
 
 // ─── isRemote() ───────────────────────────────────────────────────────────────

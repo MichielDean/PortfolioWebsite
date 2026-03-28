@@ -1,5 +1,5 @@
 import type { JobInput } from '../db/types';
-import { TARGET_ROLES } from '../config';
+import { matchesTargetRole } from '../config';
 import { ASHBY_WATCHLIST } from './sources.config';
 
 const API_URL = 'https://api.ashbyhq.com/posting-api/job-board';
@@ -28,11 +28,6 @@ export function isValidAshbyJobShape(element: unknown): element is AshbyJob {
   if (typeof element !== 'object' || element === null) return false;
   const e = element as Record<string, unknown>;
   return typeof e.id === 'string' && typeof e.title === 'string' && typeof e.jobUrl === 'string';
-}
-
-export function matchesTargetRole(title: string, roles: string[] = TARGET_ROLES): boolean {
-  const lower = title.toLowerCase();
-  return roles.some((role) => lower.includes(role.toLowerCase()));
 }
 
 export function isRemote(job: Pick<AshbyJob, 'isRemote' | 'location'>): boolean {

@@ -1,5 +1,6 @@
 import type { JobInput } from '../db/types';
-import { GREENHOUSE_WATCHLIST, TARGET_ROLES } from './greenhouse.config';
+import { GREENHOUSE_WATCHLIST } from './greenhouse.config';
+import { matchesTargetRole } from '../config';
 
 const API_BASE = 'https://boards-api.greenhouse.io/v1/boards';
 
@@ -25,11 +26,6 @@ function isValidGreenhouseJobShape(element: unknown): element is GreenhouseJob {
     e.location !== null &&
     typeof (e.location as Record<string, unknown>).name === 'string'
   );
-}
-
-export function matchesTargetRole(title: string, roles: string[] = TARGET_ROLES): boolean {
-  const lower = title.toLowerCase();
-  return roles.some((role) => lower.includes(role.toLowerCase()));
 }
 
 export function isRemote(job: Pick<GreenhouseJob, 'location' | 'content'>): boolean {

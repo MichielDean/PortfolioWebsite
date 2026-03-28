@@ -8,3 +8,8 @@ export const TARGET_ROLES: string[] = [
   'VP of Engineering',
   'VP of QA',
 ];
+
+export function matchesTargetRole(title: string, roles: string[] = TARGET_ROLES): boolean {
+  const lower = title.toLowerCase();
+  return roles.some((role) => lower.includes(role.toLowerCase()));
+}
