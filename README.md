@@ -187,6 +187,31 @@ const jobs = await fetchAshbyJobs(ASHBY_WATCHLIST);
 // Uses Ashby's public API (no authentication required)
 ```
 
+**Python Job Ingest Script (jobspy alternative)**:
+
+Alternatively, use the Python script to scrape jobs directly from jobspy-supported job boards (Indeed, LinkedIn, ZipRecruiter, Google):
+
+```bash
+# Install Python dependencies (one-time setup)
+pip3 install -r src/job-hunter/sources/requirements.txt
+
+# Run the ingest script
+python3 src/job-hunter/sources/ingest.py ./job-hunter.db
+
+# Or use environment variable for database path
+export JOB_HUNTER_DB=./job-hunter.db
+python3 src/job-hunter/sources/ingest.py
+```
+
+The script:
+- Scrapes jobs for 4 target roles: Director of Engineering, Senior Engineering Manager, VP of Engineering, VP of QA
+- Searches across Indeed, LinkedIn, ZipRecruiter, and Google
+- Filters for remote positions posted in the last 48 hours with 25 results per source per role
+- Writes one line to stdout on completion: `Inserted X, skipped Y`
+- Per-source errors are logged to stderr and don't halt the script — continues with other sources
+- Skips blacklisted jobs and duplicate (source, external_id) pairs
+- Returns exit code 0 on success
+
 **Fetch and ingest from all sources**:
 ```typescript
 import { runIngestion } from './job-hunter/ingestion';
