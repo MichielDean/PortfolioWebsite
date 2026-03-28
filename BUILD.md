@@ -9,6 +9,13 @@ node --version  # should be >= 20.11.1
 npm --version   # should be >= 10.2.4
 ```
 
+**Python** ≥ 3.9 is required only if you plan to run the Python job ingest script:
+
+```bash
+python3 --version  # should be >= 3.9
+pip3 install -r src/job-hunter/sources/requirements.txt
+```
+
 **Environment variables** — export these in your shell before running the job-hunter pipeline (e.g. add to `~/.bashrc` / `~/.zshrc`, or `export VAR=value` in your terminal):
 
 | Variable | Purpose |
