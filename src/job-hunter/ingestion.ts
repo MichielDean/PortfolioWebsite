@@ -1,9 +1,10 @@
 import type Database from 'better-sqlite3';
 import type { JobInput } from './db/types';
+import { fetchAshbyJobs } from './sources/ashby';
 import { fetchGreenhouseJobs } from './sources/greenhouse';
 import { GREENHOUSE_WATCHLIST } from './sources/greenhouse.config';
 import { fetchLeverJobs } from './sources/lever';
-import { LEVER_WATCHLIST } from './sources/sources.config';
+import { ASHBY_WATCHLIST, LEVER_WATCHLIST } from './sources/sources.config';
 
 /** Normalized form accepted by ingestJobs(). */
 export type NormalizedJob = JobInput;
@@ -80,6 +81,7 @@ export async function runIngestion(db: Database.Database): Promise<IngestionResu
   const results = await Promise.allSettled([
     fetchGreenhouseJobs(GREENHOUSE_WATCHLIST),
     fetchLeverJobs(LEVER_WATCHLIST),
+    fetchAshbyJobs(ASHBY_WATCHLIST),
   ]);
 
   for (const r of results) {

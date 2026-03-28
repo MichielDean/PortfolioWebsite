@@ -1,4 +1,4 @@
-export type AtsType = 'greenhouse' | 'lever' | 'workday' | 'icims' | 'taleo' | 'unknown';
+export type AtsType = 'greenhouse' | 'lever' | 'ashby' | 'workday' | 'icims' | 'taleo' | 'unknown';
 export type ApprovalStatus = 'pending' | 'approved' | 'denied';
 export type ApplicationMethod = 'greenhouse' | 'lever' | 'manual';
 
