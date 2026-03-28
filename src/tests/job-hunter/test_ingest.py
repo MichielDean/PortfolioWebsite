@@ -391,6 +391,31 @@ class TestIngest:
 
         assert inserted == 1
 
+    def test_scrape_jobs_called_with_linkedin_and_zip_recruiter_only(self, tmp_path):
+        """Given ingest is called, When scrape_jobs is invoked for each role,
+        Then site_name contains only linkedin and zip_recruiter."""
+        db_path = str(tmp_path / 'test.db')
+        with patch('ingest.scrape_jobs', return_value=pd.DataFrame()) as mock_scrape:
+            ingest(db_path)
+        assert mock_scrape.call_count > 0
+        for call in mock_scrape.call_args_list:
+            site_name = call.kwargs['site_name']
+            assert set(site_name) == {'linkedin', 'zip_recruiter'}, (
+                f'Expected only linkedin and zip_recruiter, got {site_name}'
+            )
+            assert 'indeed' not in site_name
+            assert 'google' not in site_name
+
+    def test_scrape_jobs_called_with_results_wanted_40(self, tmp_path):
+        """Given ingest is called, When scrape_jobs is invoked for each role,
+        Then results_wanted is 40."""
+        db_path = str(tmp_path / 'test.db')
+        with patch('ingest.scrape_jobs', return_value=pd.DataFrame()) as mock_scrape:
+            ingest(db_path)
+        assert mock_scrape.call_count > 0
+        for call in mock_scrape.call_args_list:
+            assert call.kwargs['results_wanted'] == 40
+
     def test_busy_timeout_pragma_is_set_on_ingest_connection(self, tmp_path):
         """When ingest() opens its SQLite connection, Then it executes PRAGMA busy_timeout = 5000."""
         from unittest.mock import MagicMock, call, patch as mock_patch
