@@ -139,7 +139,9 @@ export async function runCallbackPoller(
     }
 
     if (!body.ok) {
-      throw new Error(`Telegram getUpdates error: ${body.description ?? 'unknown error'}`);
+      console.warn(`Telegram getUpdates error: ${body.description ?? 'unknown error'}`);
+      await backoff();
+      continue;
     }
 
     try {

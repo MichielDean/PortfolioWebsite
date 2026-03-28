@@ -11,6 +11,7 @@
  */
 
 jest.mock('../../job-hunter/sources/greenhouse');
+jest.mock('../../job-hunter/sources/lever');
 
 import Database from 'better-sqlite3';
 import { runMigrations } from '../../job-hunter/db/migrations';
@@ -18,8 +19,10 @@ import { blacklistJob, listJobs } from '../../job-hunter/db/repository';
 import { ingestJobs, runIngestion } from '../../job-hunter/ingestion';
 import type { NormalizedJob } from '../../job-hunter/ingestion';
 import { fetchGreenhouseJobs } from '../../job-hunter/sources/greenhouse';
+import { fetchLeverJobs } from '../../job-hunter/sources/lever';
 
 const mockFetchGreenhouse = fetchGreenhouseJobs as jest.MockedFunction<typeof fetchGreenhouseJobs>;
+const mockFetchLever = fetchLeverJobs as jest.MockedFunction<typeof fetchLeverJobs>;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -189,11 +192,25 @@ describe('ingestJobs()', () => {
   });
 });
 
+const leverJobA: NormalizedJob = {
+  source: 'lever',
+  ats_type: 'lever',
+  external_id: 'lv-uuid-001',
+  title: 'VP of Engineering',
+  company: 'acme',
+  url: 'https://jobs.lever.co/acme/lv-uuid-001',
+  salary_raw: null,
+  posted_at: '2025-03-20T00:00:00.000Z',
+};
+
 // ─── runIngestion() ───────────────────────────────────────────────────────────
 
 describe('runIngestion()', () => {
   beforeEach(() => {
     mockFetchGreenhouse.mockReset();
+    mockFetchLever.mockReset();
+    mockFetchGreenhouse.mockResolvedValue([]);
+    mockFetchLever.mockResolvedValue([]);
   });
 
   it('Given Greenhouse returns jobs, When runIngestion is called, Then all are ingested', async () => {
@@ -253,5 +270,46 @@ describe('runIngestion()', () => {
 
     expect(warnSpy).toHaveBeenCalledWith('Job source fetch failed:', error);
     warnSpy.mockRestore();
+  });
+
+  it('Given runIngestion is called, Then Lever source is queried', async () => {
+    const db = makeDb();
+
+    await runIngestion(db);
+
+    expect(mockFetchLever).toHaveBeenCalledTimes(1);
+  });
+
+  it('Given Lever returns jobs and Greenhouse is empty, When runIngestion is called, Then Lever jobs are ingested', async () => {
+    const db = makeDb();
+    mockFetchLever.mockResolvedValue([leverJobA]);
+
+    const result = await runIngestion(db);
+
+    expect(result).toEqual({ inserted: 1, skipped: 0 });
+    expect(listJobs(db)).toHaveLength(1);
+    expect(listJobs(db)[0].source).toBe('lever');
+  });
+
+  it('Given both sources return jobs, When runIngestion is called, Then all are ingested', async () => {
+    const db = makeDb();
+    mockFetchGreenhouse.mockResolvedValue([jobA]);
+    mockFetchLever.mockResolvedValue([leverJobA]);
+
+    const result = await runIngestion(db);
+
+    expect(result).toEqual({ inserted: 2, skipped: 0 });
+    expect(listJobs(db)).toHaveLength(2);
+  });
+
+  it('Given Lever throws, When runIngestion is called, Then Greenhouse jobs are still ingested', async () => {
+    const db = makeDb();
+    mockFetchGreenhouse.mockResolvedValue([jobA]);
+    mockFetchLever.mockRejectedValue(new Error('Lever API unavailable'));
+
+    const result = await runIngestion(db);
+
+    expect(result).toEqual({ inserted: 1, skipped: 0 });
+    expect(listJobs(db)).toHaveLength(1);
   });
 });

@@ -478,39 +478,78 @@ describe('runCallbackPoller() — abort-aware backoff', () => {
   }, 500 /* fail fast if backoff does not respect the abort signal */);
 });
 
-// ─── runCallbackPoller() — body.ok=false (auth/fatal error) ─────────────────
+// ─── runCallbackPoller() — body.ok=false backs off and continues ─────────────
 
 describe('runCallbackPoller() — body.ok=false', () => {
-  afterEach(() => jest.restoreAllMocks());
-
-  test('Given HTTP 200 with body.ok=false and description, When poller receives it, Then rejects with Telegram description', async () => {
-    const db = makeDb();
-    const controller = new AbortController();
-
-    jest.spyOn(global, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ ok: false, description: 'Unauthorized' }),
-      text: () => Promise.resolve(''),
-    } as unknown as Response);
-
-    await expect(
-      runCallbackPoller(db, new EventEmitter(), 'mytoken', controller.signal),
-    ).rejects.toThrow('Unauthorized');
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
   });
 
-  test('Given HTTP 200 with body.ok=false and no description, When poller receives it, Then rejects with a generic error', async () => {
+  test('Given HTTP 200 with body.ok=false and description, When poller receives it, Then warns with description and continues polling', async () => {
+    jest.useFakeTimers();
     const db = makeDb();
     const controller = new AbortController();
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    let callCount = 0;
 
-    jest.spyOn(global, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ ok: false }),
-      text: () => Promise.resolve(''),
-    } as unknown as Response);
+    jest.spyOn(global, 'fetch').mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) {
+        return {
+          ok: true,
+          json: () => Promise.resolve({ ok: false, description: 'Unauthorized' }),
+          text: () => Promise.resolve(''),
+        } as unknown as Response;
+      }
+      controller.abort();
+      return {
+        ok: true,
+        json: () => Promise.resolve({ ok: true, result: [] }),
+        text: () => Promise.resolve(''),
+      } as unknown as Response;
+    });
 
-    await expect(
-      runCallbackPoller(db, new EventEmitter(), 'mytoken', controller.signal),
-    ).rejects.toThrow(/Telegram getUpdates error/);
+    const pollerPromise = runCallbackPoller(db, new EventEmitter(), 'mytoken', controller.signal);
+    await jest.advanceTimersByTimeAsync(6000);
+    const result = await pollerPromise;
+
+    expect(result).toEqual({ approved: 0, denied: 0, ignored: 0 });
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Unauthorized'));
+    expect(callCount).toBe(2);
+  });
+
+  test('Given HTTP 200 with body.ok=false and no description, When poller receives it, Then warns with generic message and continues polling', async () => {
+    jest.useFakeTimers();
+    const db = makeDb();
+    const controller = new AbortController();
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    let callCount = 0;
+
+    jest.spyOn(global, 'fetch').mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) {
+        return {
+          ok: true,
+          json: () => Promise.resolve({ ok: false }),
+          text: () => Promise.resolve(''),
+        } as unknown as Response;
+      }
+      controller.abort();
+      return {
+        ok: true,
+        json: () => Promise.resolve({ ok: true, result: [] }),
+        text: () => Promise.resolve(''),
+      } as unknown as Response;
+    });
+
+    const pollerPromise = runCallbackPoller(db, new EventEmitter(), 'mytoken', controller.signal);
+    await jest.advanceTimersByTimeAsync(6000);
+    const result = await pollerPromise;
+
+    expect(result).toEqual({ approved: 0, denied: 0, ignored: 0 });
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('unknown error'));
+    expect(callCount).toBe(2);
   });
 });
 
