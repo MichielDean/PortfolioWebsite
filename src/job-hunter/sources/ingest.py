@@ -56,7 +56,7 @@ def ensure_schema(conn: sqlite3.Connection) -> None:
     ''')
     try:
         conn.execute('ALTER TABLE jobs ADD COLUMN description TEXT')
-    except Exception:
+    except sqlite3.OperationalError:
         pass  # Column already exists — no-op
     conn.commit()
 
@@ -138,8 +138,6 @@ def ingest(db_path: str) -> tuple[int, int]:
                     skipped += 1
                     continue
 
-                title_val = row.get('title')
-                company_val = row.get('company')
                 description_val = row.get('description')
                 description = None if pd.isna(description_val) else description_val
                 salary_raw = format_salary(row)
@@ -147,7 +145,9 @@ def ingest(db_path: str) -> tuple[int, int]:
                 date_posted = row.get('date_posted')
                 posted_at = None if pd.isna(date_posted) else str(date_posted)
 
+                title_val = row.get('title')
                 title_str = '' if pd.isna(title_val) else str(title_val)
+                company_val = row.get('company')
                 company_str = '' if pd.isna(company_val) else str(company_val)
 
                 cur = conn.execute(
