@@ -152,7 +152,7 @@ describe('runCycle()', () => {
 
   describe('error recovery', () => {
     it('Given ingestion throws, When called, Then the cycle resolves without throwing', async () => {
-      mockRunIngestion.mockRejectedValue(new Error('TheirStack unavailable'));
+      mockRunIngestion.mockRejectedValue(new Error('ingestion failed'));
       mockRunScoring.mockResolvedValue({ scored: 0, eligible: [] });
       mockRunNotifier.mockResolvedValue({ notified: 0, skipped: 0 });
 
@@ -160,7 +160,7 @@ describe('runCycle()', () => {
     });
 
     it('Given ingestion throws, When called, Then scoring still runs', async () => {
-      mockRunIngestion.mockRejectedValue(new Error('TheirStack unavailable'));
+      mockRunIngestion.mockRejectedValue(new Error('ingestion failed'));
       mockRunScoring.mockResolvedValue({ scored: 0, eligible: [] });
       mockRunNotifier.mockResolvedValue({ notified: 0, skipped: 0 });
 
@@ -170,7 +170,7 @@ describe('runCycle()', () => {
     });
 
     it('Given ingestion throws, When called, Then notifier still runs', async () => {
-      mockRunIngestion.mockRejectedValue(new Error('TheirStack unavailable'));
+      mockRunIngestion.mockRejectedValue(new Error('ingestion failed'));
       mockRunScoring.mockResolvedValue({ scored: 0, eligible: [] });
       mockRunNotifier.mockResolvedValue({ notified: 0, skipped: 0 });
 
@@ -180,7 +180,7 @@ describe('runCycle()', () => {
     });
 
     it('Given ingestion throws, When called, Then the error is logged via console.warn', async () => {
-      const err = new Error('TheirStack unavailable');
+      const err = new Error('ingestion failed');
       mockRunIngestion.mockRejectedValue(err);
       mockRunScoring.mockResolvedValue({ scored: 0, eligible: [] });
       mockRunNotifier.mockResolvedValue({ notified: 0, skipped: 0 });

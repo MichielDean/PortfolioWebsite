@@ -16,7 +16,6 @@ npm --version   # should be >= 10.2.4
 | `ANTHROPIC_API_KEY` | Claude API key for job-hunter fit-scoring |
 | `TELEGRAM_BOT_TOKEN` | Telegram bot token for job notifications |
 | `TELEGRAM_CHAT_ID` | Telegram chat ID for job notifications |
-| `THEIRSTACK_API_KEY` | TheirStack API key for job listings |
 | `JOB_HUNTER_DB` | Path to the SQLite database file (e.g. `./job-hunter.db`) |
 
 The portfolio site itself has no required env vars; the above are only needed to run the job-hunter pipeline.

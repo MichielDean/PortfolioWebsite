@@ -1,6 +1,5 @@
 import type Database from 'better-sqlite3';
 import type { JobInput } from './db/types';
-import { fetchTheirStackJobs } from './sources/theirstack';
 import { fetchGreenhouseJobs } from './sources/greenhouse';
 import { GREENHOUSE_WATCHLIST } from './sources/greenhouse.config';
 
@@ -72,12 +71,11 @@ export async function ingestJobs(
 }
 
 /**
- * Fetch jobs from TheirStack and Greenhouse, then ingest them into the DB.
+ * Fetch jobs from Greenhouse, then ingest them into the DB.
  * Returns aggregated inserted/skipped counts.
  */
 export async function runIngestion(db: Database.Database): Promise<IngestionResult> {
   const results = await Promise.allSettled([
-    fetchTheirStackJobs(),
     fetchGreenhouseJobs(GREENHOUSE_WATCHLIST),
   ]);
 

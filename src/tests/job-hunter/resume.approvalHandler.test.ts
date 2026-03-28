@@ -43,9 +43,9 @@ function seedJob(
   overrides: { title?: string; company?: string; url?: string } = {},
 ): number {
   const job = upsertJob(db, {
-    source: 'theirstack',
-    ats_type: 'unknown',
-    external_id: `ts-${Math.random()}`,
+    source: 'greenhouse',
+    ats_type: 'greenhouse',
+    external_id: `gh-${Math.random()}`,
     title: overrides.title ?? 'Staff Engineer',
     company: overrides.company ?? 'Acme Corp',
     url: overrides.url ?? 'https://acme.com/jobs/123',

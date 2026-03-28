@@ -108,26 +108,16 @@ This will generate:
 A backend subsystem for automating remote job discovery, scoring, and application tracking.
 
 ### Features
-- **Multiple Job Sources**: Integrates with both TheirStack API and Greenhouse job boards
+- **Greenhouse Integration**: Fetches jobs from configured Greenhouse company boards
 - **Remote Job Filtering**: Automatically fetches remote engineering positions (Director of Engineering, Senior Engineering Manager, VP of Engineering, VP of QA)
 - **SQLite Database**: Persistent storage for jobs, scores, approvals, and application tracking
 - **Daily Updates**: Configurable to fetch jobs posted in the last X days (defaults to 1 day)
-- **Pagination**: Safely handles large result sets with built-in guardrails (MAX_PAGES=50)
 - **Response Validation**: Validates external API responses before processing
 - **Partial Failure Resilience**: Company board failures don't discard results from other sources
 
 ### Setup
 
-1. **Get a TheirStack API Key**:
-   - Sign up at [TheirStack](https://theirstack.com)
-   - Generate an API key from your account settings
-
-2. **Configure Environment**:
-```sh
-export THEIRSTACK_API_KEY="your-api-key-here"
-```
-
-3. **Configure Greenhouse Watchlist** (Optional):
+1. **Configure Greenhouse Watchlist** (Optional):
    Edit `src/job-hunter/sources/greenhouse.config.ts` to add company board tokens:
 ```typescript
 export const GREENHOUSE_WATCHLIST: string[] = [
@@ -140,14 +130,6 @@ export const GREENHOUSE_WATCHLIST: string[] = [
 
 ### Usage
 
-**Fetch jobs from TheirStack**:
-```typescript
-import { fetchTheirStackJobs } from './job-hunter/sources/theirstack';
-
-const jobs = await fetchTheirStackJobs();
-// Returns normalized array of JobInput objects
-```
-
 **Fetch jobs from Greenhouse**:
 ```typescript
 import { fetchGreenhouseJobs } from './job-hunter/sources/greenhouse';
@@ -155,18 +137,6 @@ import { fetchGreenhouseJobs } from './job-hunter/sources/greenhouse';
 const jobs = await fetchGreenhouseJobs();
 // Returns normalized array of JobInput objects from all configured boards
 // Automatically filters for remote positions in target roles
-```
-
-**Combine Multiple Sources**:
-```typescript
-import { fetchTheirStackJobs } from './job-hunter/sources/theirstack';
-import { fetchGreenhouseJobs } from './job-hunter/sources/greenhouse';
-
-const [theirStackJobs, greenhouseJobs] = await Promise.all([
-  fetchTheirStackJobs(),
-  fetchGreenhouseJobs(),
-]);
-const allJobs = [...theirStackJobs, ...greenhouseJobs];
 ```
 
 **Database Operations**:
@@ -329,7 +299,7 @@ The apply engine:
 
 End-to-end workflow (typically run hourly or daily via cron):
 
-1. **Discover**: Fetch fresh job listings from TheirStack and configured Greenhouse boards
+1. **Discover**: Fetch fresh job listings from configured Greenhouse boards
 2. **Store**: Upsert jobs into the database
 3. **Score**: Run Claude AI to score each job (6+ eligible for notification)
 4. **Notify**: Send high-scoring jobs to Telegram with Approve/Deny buttons
@@ -353,7 +323,6 @@ npm run test:job-hunter
 ```
 
 Tests include:
-- TheirStack API client mocking and pagination validation
 - Greenhouse board polling with multiple company sources
 - Response shape validation and error handling
 - Per-company error isolation and partial failure recovery
@@ -394,7 +363,6 @@ npm install -g pm2
 # Required for Telegram notifications and approval flow
 export TELEGRAM_BOT_TOKEN="your-bot-token-here"
 export TELEGRAM_CHAT_ID="your-chat-id-here"
-export THEIRSTACK_API_KEY="your-api-key-here"
 
 # Optional: customize database location (defaults to ./job-hunter.db)
 export JOB_HUNTER_DB="/home/lobsterdog/.local/share/job-hunter/jobs.db"
@@ -434,7 +402,7 @@ The ecosystem.config.cjs file defines:
 **Daily Schedule:**
 
 The daemon automatically runs the complete pipeline daily at **08:00 UTC**:
-1. Fetch fresh job listings from TheirStack and Greenhouse
+1. Fetch fresh job listings from configured Greenhouse boards
 2. Store new jobs in SQLite database
 3. Score each job with Claude AI
 4. Notify via Telegram for high-scoring matches

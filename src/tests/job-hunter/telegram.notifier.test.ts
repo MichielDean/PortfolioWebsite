@@ -38,9 +38,9 @@ function seedJobWithScore(
   score = 8,
 ): number {
   const job = upsertJob(db, {
-    source: 'theirstack',
-    ats_type: 'unknown',
-    external_id: `ts-${Math.random()}`,
+    source: 'greenhouse',
+    ats_type: 'greenhouse',
+    external_id: `gh-${Math.random()}`,
     title: 'VP of Engineering',
     company: 'Acme Corp',
     url: 'https://acme.com/jobs/1',
@@ -149,9 +149,9 @@ describe('getEligibleUnnotifiedJobs()', () => {
   test('Given an eligible job, When called, Then result row includes all required fields', () => {
     const db = makeDb();
     const job = upsertJob(db, {
-      source: 'theirstack',
-      ats_type: 'unknown',
-      external_id: 'ts-999',
+      source: 'greenhouse',
+      ats_type: 'greenhouse',
+      external_id: 'gh-999',
       title: 'Director of Engineering',
       company: 'TechCorp',
       url: 'https://techcorp.io/jobs/42',
