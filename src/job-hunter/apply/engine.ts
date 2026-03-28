@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import Database from 'better-sqlite3';
 import { getJobById, addApplication } from '../db/index.js';
-import type { Job } from '../db/index.js';
+import type { Job, ApplicationMethod } from '../db/index.js';
 
 const GREENHOUSE_APPLY_URL = 'https://boards-api.greenhouse.io/v1/applications';
 const LEVER_APPLY_BASE = 'https://api.lever.co/v0/postings';
@@ -159,7 +159,7 @@ export async function runApplyEngine(
       }
       addApplication(db, {
         job_id: job.id,
-        method: atsType as import('../db/types.js').ApplicationMethod,
+        method: atsType as ApplicationMethod,
         submitted_at: new Date().toISOString(),
         result: 'submitted',
       });
