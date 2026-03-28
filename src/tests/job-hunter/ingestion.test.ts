@@ -2,7 +2,7 @@
  * Tests for the job ingestion layer.
  *
  * Uses an in-memory SQLite DB for fast, isolated, deterministic tests.
- * External source function (fetchGreenhouseJobs) is mocked for runIngestion() tests.
+ * External source functions are mocked for runIngestion() tests.
  *
  * Structure follows Given / When / Then:
  *   Given: DB state and input jobs
@@ -12,15 +12,18 @@
 
 jest.mock('../../job-hunter/sources/greenhouse');
 jest.mock('../../job-hunter/sources/lever');
+jest.mock('../../job-hunter/sources/ashby');
 
 import Database from 'better-sqlite3';
 import { runMigrations } from '../../job-hunter/db/migrations';
 import { blacklistJob, listJobs } from '../../job-hunter/db/repository';
 import { ingestJobs, runIngestion } from '../../job-hunter/ingestion';
 import type { NormalizedJob } from '../../job-hunter/ingestion';
+import { fetchAshbyJobs } from '../../job-hunter/sources/ashby';
 import { fetchGreenhouseJobs } from '../../job-hunter/sources/greenhouse';
 import { fetchLeverJobs } from '../../job-hunter/sources/lever';
 
+const mockFetchAshby = fetchAshbyJobs as jest.MockedFunction<typeof fetchAshbyJobs>;
 const mockFetchGreenhouse = fetchGreenhouseJobs as jest.MockedFunction<typeof fetchGreenhouseJobs>;
 const mockFetchLever = fetchLeverJobs as jest.MockedFunction<typeof fetchLeverJobs>;
 
@@ -203,12 +206,25 @@ const leverJobA: NormalizedJob = {
   posted_at: '2025-03-20T00:00:00.000Z',
 };
 
+const ashbyJobA: NormalizedJob = {
+  source: 'ashby',
+  ats_type: 'ashby',
+  external_id: 'ashby-uuid-001',
+  title: 'VP of Engineering',
+  company: 'acme',
+  url: 'https://jobs.ashbyhq.com/acme/ashby-uuid-001',
+  salary_raw: null,
+  posted_at: '2025-03-20T00:00:00.000Z',
+};
+
 // ─── runIngestion() ───────────────────────────────────────────────────────────
 
 describe('runIngestion()', () => {
   beforeEach(() => {
+    mockFetchAshby.mockReset();
     mockFetchGreenhouse.mockReset();
     mockFetchLever.mockReset();
+    mockFetchAshby.mockResolvedValue([]);
     mockFetchGreenhouse.mockResolvedValue([]);
     mockFetchLever.mockResolvedValue([]);
   });
@@ -311,5 +327,56 @@ describe('runIngestion()', () => {
 
     expect(result).toEqual({ inserted: 1, skipped: 0 });
     expect(listJobs(db)).toHaveLength(1);
+  });
+
+  it('Given runIngestion is called, Then Ashby source is queried', async () => {
+    const db = makeDb();
+
+    await runIngestion(db);
+
+    expect(mockFetchAshby).toHaveBeenCalledTimes(1);
+  });
+
+  it('Given Ashby returns jobs and other sources are empty, When runIngestion is called, Then Ashby jobs are ingested', async () => {
+    const db = makeDb();
+    mockFetchAshby.mockResolvedValue([ashbyJobA]);
+
+    const result = await runIngestion(db);
+
+    expect(result).toEqual({ inserted: 1, skipped: 0 });
+    expect(listJobs(db)).toHaveLength(1);
+    expect(listJobs(db)[0].source).toBe('ashby');
+  });
+
+  it('Given all three sources return jobs, When runIngestion is called, Then all are ingested', async () => {
+    const db = makeDb();
+    mockFetchGreenhouse.mockResolvedValue([jobA]);
+    mockFetchLever.mockResolvedValue([leverJobA]);
+    mockFetchAshby.mockResolvedValue([ashbyJobA]);
+
+    const result = await runIngestion(db);
+
+    expect(result).toEqual({ inserted: 3, skipped: 0 });
+    expect(listJobs(db)).toHaveLength(3);
+  });
+
+  it('Given Ashby throws, When runIngestion is called, Then other source jobs are still ingested', async () => {
+    const db = makeDb();
+    mockFetchGreenhouse.mockResolvedValue([jobA]);
+    mockFetchAshby.mockRejectedValue(new Error('Ashby API unavailable'));
+
+    const result = await runIngestion(db);
+
+    expect(result).toEqual({ inserted: 1, skipped: 0 });
+    expect(listJobs(db)).toHaveLength(1);
+  });
+
+  it('Given empty Ashby watchlist, When runIngestion is called, Then no errors and zero Ashby jobs', async () => {
+    const db = makeDb();
+    mockFetchAshby.mockResolvedValue([]);
+
+    const result = await runIngestion(db);
+
+    expect(result).toEqual({ inserted: 0, skipped: 0 });
   });
 });
