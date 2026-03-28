@@ -2,30 +2,26 @@
  * Tests for the job ingestion layer.
  *
  * Uses an in-memory SQLite DB for fast, isolated, deterministic tests.
- * External source functions are mocked for runIngestion() tests.
+ * child_process.execFile is mocked for runIngestion() tests.
  *
  * Structure follows Given / When / Then:
- *   Given: DB state and input jobs
+ *   Given: DB state and input jobs (or execFile mock configuration)
  *   When:  ingestJobs() or runIngestion() is called
  *   Then:  returned counts and DB state match expectations
  */
 
-jest.mock('../../job-hunter/sources/greenhouse');
-jest.mock('../../job-hunter/sources/lever');
-jest.mock('../../job-hunter/sources/ashby');
+jest.mock('child_process', () => ({
+  execFile: jest.fn(),
+}));
 
+import { execFile } from 'child_process';
 import Database from 'better-sqlite3';
 import { runMigrations } from '../../job-hunter/db/migrations';
 import { blacklistJob, listJobs } from '../../job-hunter/db/repository';
 import { ingestJobs, runIngestion } from '../../job-hunter/ingestion';
 import type { NormalizedJob } from '../../job-hunter/ingestion';
-import { fetchAshbyJobs } from '../../job-hunter/sources/ashby';
-import { fetchGreenhouseJobs } from '../../job-hunter/sources/greenhouse';
-import { fetchLeverJobs } from '../../job-hunter/sources/lever';
 
-const mockFetchAshby = fetchAshbyJobs as jest.MockedFunction<typeof fetchAshbyJobs>;
-const mockFetchGreenhouse = fetchGreenhouseJobs as jest.MockedFunction<typeof fetchGreenhouseJobs>;
-const mockFetchLever = fetchLeverJobs as jest.MockedFunction<typeof fetchLeverJobs>;
+const mockExecFile = execFile as jest.MockedFunction<typeof execFile>;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -33,6 +29,35 @@ function makeDb(): Database.Database {
   const db = new Database(':memory:');
   runMigrations(db);
   return db;
+}
+
+/** Configure mockExecFile to call its callback with the given stdout. */
+function mockExecFileSuccess(stdout: string): void {
+  mockExecFile.mockImplementation(
+    (_file: unknown, _args: unknown, callback: unknown) => {
+      (callback as (err: null, stdout: string, stderr: string) => void)(
+        null,
+        stdout,
+        '',
+      );
+      return undefined as never;
+    },
+  );
+}
+
+/** Configure mockExecFile to call its callback with a non-zero error. */
+function mockExecFileFailure(exitCode: number, stderr = ''): void {
+  mockExecFile.mockImplementation(
+    (_file: unknown, _args: unknown, callback: unknown) => {
+      const err = Object.assign(new Error('Command failed'), { code: exitCode });
+      (callback as (err: Error, stdout: string, stderr: string) => void)(
+        err,
+        '',
+        stderr,
+      );
+      return undefined as never;
+    },
+  );
 }
 
 const jobA: NormalizedJob = {
@@ -195,188 +220,112 @@ describe('ingestJobs()', () => {
   });
 });
 
-const leverJobA: NormalizedJob = {
-  source: 'lever',
-  ats_type: 'lever',
-  external_id: 'lv-uuid-001',
-  title: 'VP of Engineering',
-  company: 'acme',
-  url: 'https://jobs.lever.co/acme/lv-uuid-001',
-  salary_raw: null,
-  posted_at: '2025-03-20T00:00:00.000Z',
-};
-
-const ashbyJobA: NormalizedJob = {
-  source: 'ashby',
-  ats_type: 'ashby',
-  external_id: 'ashby-uuid-001',
-  title: 'VP of Engineering',
-  company: 'acme',
-  url: 'https://jobs.ashbyhq.com/acme/ashby-uuid-001',
-  salary_raw: null,
-  posted_at: '2025-03-20T00:00:00.000Z',
-};
-
 // ─── runIngestion() ───────────────────────────────────────────────────────────
 
 describe('runIngestion()', () => {
   beforeEach(() => {
-    mockFetchAshby.mockReset();
-    mockFetchGreenhouse.mockReset();
-    mockFetchLever.mockReset();
-    mockFetchAshby.mockResolvedValue([]);
-    mockFetchGreenhouse.mockResolvedValue([]);
-    mockFetchLever.mockResolvedValue([]);
+    mockExecFile.mockReset();
   });
 
-  it('Given Greenhouse returns jobs, When runIngestion is called, Then all are ingested', async () => {
+  it('Given ingest.py outputs "Inserted 5, skipped 2", When runIngestion is called, Then returns parsed counts', async () => {
     const db = makeDb();
-    mockFetchGreenhouse.mockResolvedValue([jobA, jobB]);
+    mockExecFileSuccess('Inserted 5, skipped 2\n');
 
-    const result = await runIngestion(db);
+    const result = await runIngestion(db, '/tmp/test.db');
 
-    expect(result).toEqual({ inserted: 2, skipped: 0 });
-    expect(listJobs(db)).toHaveLength(2);
+    expect(result).toEqual({ inserted: 5, skipped: 2 });
   });
 
-  it('Given runIngestion is called, Then Greenhouse source is queried', async () => {
+  it('Given ingest.py outputs "Inserted 0, skipped 0", When runIngestion is called, Then returns zero counts', async () => {
     const db = makeDb();
-    mockFetchGreenhouse.mockResolvedValue([]);
+    mockExecFileSuccess('Inserted 0, skipped 0\n');
 
-    await runIngestion(db);
+    const result = await runIngestion(db, '/tmp/test.db');
 
-    expect(mockFetchGreenhouse).toHaveBeenCalledTimes(1);
-  });
-
-  it('Given a duplicate run, When runIngestion is called twice with same data, Then second run inserts 0 rows', async () => {
-    const db = makeDb();
-    mockFetchGreenhouse.mockResolvedValue([jobA, jobB]);
-
-    await runIngestion(db);
-    const second = await runIngestion(db);
-
-    expect(second).toEqual({ inserted: 0, skipped: 2 });
-  });
-
-  it('Given empty source, When runIngestion is called, Then returns zero counts', async () => {
-    const db = makeDb();
-    mockFetchGreenhouse.mockResolvedValue([]);
-
-    const result = await runIngestion(db);
     expect(result).toEqual({ inserted: 0, skipped: 0 });
   });
 
-  it('Given Greenhouse throws, When runIngestion is called, Then returns zero counts', async () => {
+  it('Given a dbPath, When runIngestion is called, Then execFile is invoked with the dbPath as an argument', async () => {
     const db = makeDb();
-    mockFetchGreenhouse.mockRejectedValue(new Error('Greenhouse API unavailable'));
+    mockExecFileSuccess('Inserted 3, skipped 1\n');
 
-    const result = await runIngestion(db);
+    await runIngestion(db, '/data/jobs.db');
 
-    expect(result).toEqual({ inserted: 0, skipped: 0 });
-    expect(listJobs(db)).toHaveLength(0);
+    expect(mockExecFile).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.arrayContaining(['/data/jobs.db']),
+      expect.any(Function),
+    );
   });
 
-  it('Given Greenhouse throws, When runIngestion is called, Then the error is logged via console.warn', async () => {
+  it('Given a dbPath, When runIngestion is called, Then execFile is invoked with a path containing ingest.py', async () => {
     const db = makeDb();
-    const error = new Error('Greenhouse API unavailable');
-    mockFetchGreenhouse.mockRejectedValue(error);
+    mockExecFileSuccess('Inserted 1, skipped 0\n');
+
+    await runIngestion(db, 'test.db');
+
+    const [file, args] = mockExecFile.mock.calls[0];
+    const fullInvocation = [file, ...(args as string[])].join(' ');
+    expect(fullInvocation).toContain('ingest.py');
+  });
+
+  it('Given ingest.py exits with non-zero, When runIngestion is called, Then the rejection propagates', async () => {
+    const db = makeDb();
+    mockExecFileFailure(1, 'Error: DB not found');
+
+    await expect(runIngestion(db, 'missing.db')).rejects.toThrow();
+  });
+
+  it('Given ingest.py produces unexpected output, When runIngestion is called, Then it throws', async () => {
+    const db = makeDb();
+    mockExecFileSuccess('Something went wrong\n');
+
+    await expect(runIngestion(db, 'test.db')).rejects.toThrow(
+      /unexpected output/i,
+    );
+  });
+
+  it('Given ingest.py outputs with extra whitespace, When runIngestion is called, Then counts are parsed correctly', async () => {
+    const db = makeDb();
+    mockExecFileSuccess('  Inserted 10, skipped 3  \n');
+
+    const result = await runIngestion(db, 'test.db');
+
+    expect(result).toEqual({ inserted: 10, skipped: 3 });
+  });
+
+  it('Given ingest.py writes to stderr, When runIngestion is called, Then stderr is logged via console.warn', async () => {
+    const db = makeDb();
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-    await runIngestion(db);
+    mockExecFile.mockImplementation(
+      (_file: unknown, _args: unknown, callback: unknown) => {
+        (callback as (err: null, stdout: string, stderr: string) => void)(
+          null,
+          'Inserted 0, skipped 0\n',
+          'Warning: scraping issue on linkedin\n',
+        );
+        return undefined as never;
+      },
+    );
 
-    expect(warnSpy).toHaveBeenCalledWith('Job source fetch failed:', error);
+    await runIngestion(db, 'test.db');
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.stringContaining('scraping issue on linkedin'),
+    );
     warnSpy.mockRestore();
   });
 
-  it('Given runIngestion is called, Then Lever source is queried', async () => {
+  it('Given ingest.py writes no stderr, When runIngestion is called, Then console.warn is not called', async () => {
     const db = makeDb();
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    mockExecFileSuccess('Inserted 1, skipped 0\n');
 
-    await runIngestion(db);
+    await runIngestion(db, 'test.db');
 
-    expect(mockFetchLever).toHaveBeenCalledTimes(1);
-  });
-
-  it('Given Lever returns jobs and Greenhouse is empty, When runIngestion is called, Then Lever jobs are ingested', async () => {
-    const db = makeDb();
-    mockFetchLever.mockResolvedValue([leverJobA]);
-
-    const result = await runIngestion(db);
-
-    expect(result).toEqual({ inserted: 1, skipped: 0 });
-    expect(listJobs(db)).toHaveLength(1);
-    expect(listJobs(db)[0].source).toBe('lever');
-  });
-
-  it('Given both sources return jobs, When runIngestion is called, Then all are ingested', async () => {
-    const db = makeDb();
-    mockFetchGreenhouse.mockResolvedValue([jobA]);
-    mockFetchLever.mockResolvedValue([leverJobA]);
-
-    const result = await runIngestion(db);
-
-    expect(result).toEqual({ inserted: 2, skipped: 0 });
-    expect(listJobs(db)).toHaveLength(2);
-  });
-
-  it('Given Lever throws, When runIngestion is called, Then Greenhouse jobs are still ingested', async () => {
-    const db = makeDb();
-    mockFetchGreenhouse.mockResolvedValue([jobA]);
-    mockFetchLever.mockRejectedValue(new Error('Lever API unavailable'));
-
-    const result = await runIngestion(db);
-
-    expect(result).toEqual({ inserted: 1, skipped: 0 });
-    expect(listJobs(db)).toHaveLength(1);
-  });
-
-  it('Given runIngestion is called, Then Ashby source is queried', async () => {
-    const db = makeDb();
-
-    await runIngestion(db);
-
-    expect(mockFetchAshby).toHaveBeenCalledTimes(1);
-  });
-
-  it('Given Ashby returns jobs and other sources are empty, When runIngestion is called, Then Ashby jobs are ingested', async () => {
-    const db = makeDb();
-    mockFetchAshby.mockResolvedValue([ashbyJobA]);
-
-    const result = await runIngestion(db);
-
-    expect(result).toEqual({ inserted: 1, skipped: 0 });
-    expect(listJobs(db)).toHaveLength(1);
-    expect(listJobs(db)[0].source).toBe('ashby');
-  });
-
-  it('Given all three sources return jobs, When runIngestion is called, Then all are ingested', async () => {
-    const db = makeDb();
-    mockFetchGreenhouse.mockResolvedValue([jobA]);
-    mockFetchLever.mockResolvedValue([leverJobA]);
-    mockFetchAshby.mockResolvedValue([ashbyJobA]);
-
-    const result = await runIngestion(db);
-
-    expect(result).toEqual({ inserted: 3, skipped: 0 });
-    expect(listJobs(db)).toHaveLength(3);
-  });
-
-  it('Given Ashby throws, When runIngestion is called, Then other source jobs are still ingested', async () => {
-    const db = makeDb();
-    mockFetchGreenhouse.mockResolvedValue([jobA]);
-    mockFetchAshby.mockRejectedValue(new Error('Ashby API unavailable'));
-
-    const result = await runIngestion(db);
-
-    expect(result).toEqual({ inserted: 1, skipped: 0 });
-    expect(listJobs(db)).toHaveLength(1);
-  });
-
-  it('Given empty Ashby watchlist, When runIngestion is called, Then no errors and zero Ashby jobs', async () => {
-    const db = makeDb();
-    mockFetchAshby.mockResolvedValue([]);
-
-    const result = await runIngestion(db);
-
-    expect(result).toEqual({ inserted: 0, skipped: 0 });
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 });

@@ -1,6 +1,15 @@
 import type { JobInput } from '../db/types';
 import { matchesTargetRole } from '../config';
-import { ASHBY_WATCHLIST } from './sources.config';
+
+export const ASHBY_WATCHLIST = [
+  'snowflake',
+  'confluent',
+  'openai',
+  'deel',
+  'ramp',
+  'cohere',
+  'benchling',
+];
 
 const API_BASE_URL = 'https://api.ashbyhq.com/posting-api/job-board';
 

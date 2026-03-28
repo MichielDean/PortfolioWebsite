@@ -64,12 +64,11 @@ npx tsc --project src/resume/tsconfig.json
 ## Job Hunter Pipeline
 
 **Repo location:** `src/job-hunter/`
-**Sources:** Greenhouse, Lever (free, no API key), Ashby (free, no API key)
+**Source:** Python ingest.py script using jobspy (Indeed, LinkedIn, ZipRecruiter, Google)
 **Target roles:** Director of Engineering, Senior Engineering Manager, VP of Engineering, VP of QA
 
-The pipeline runs on lobsterdog (not Netlify — that's a static site). No env vars needed for ingestion.
+The pipeline runs on lobsterdog (not Netlify — that's a static site). Required env vars for full pipeline: `ANTHROPIC_API_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
 
 ### Status
-- TheirStack removed (was paid, now gone)
-- Lever + Ashby sources: droplets po-566g3 / po-175jx in flight
-- Watchlist expansion: po-1dmsc (blocked on Lever + Ashby)
+- ingest.py: primary ingestion method (droplet po-54o85) ✅ deployed
+- Greenhouse, Lever, Ashby sources: retired (replaced by jobspy)

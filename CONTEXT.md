@@ -1,14 +1,26 @@
 # Context
 
-## Item: po-566g3
+## Item: po-54o85
 
-**Title:** Add Lever ingestion source and wire into ingestion.ts
+**Title:** Integrate ingest.py: schema migration, type update, ingestion.ts wiring, retire old scrapers
 **Status:** in_progress
 **Priority:** 2
 
 ### Description
 
-Implement a Lever fetcher using the unauthenticated public postings endpoint (`api.lever.co/v0/postings/{company}`). Normalize results to `JobInput` (source='lever', ats_type='lever', external_id from posting id, title, company, url, salary_raw from text field if present, posted_at from createdAt). Handle pagination. Add unit tests with fixture responses. Add an exported `LEVER_WATCHLIST: string[]` to `sources.config.ts` (rename from `greenhouse.config.ts` if needed), initially empty. Update `ingestion.ts` to iterate `LEVER_WATCHLIST` and call the Lever fetcher alongside the existing Greenhouse call. Acceptance: ingestion compiles and runs end-to-end with no env vars required; an empty watchlist produces no errors.
+Five coordinated changes:
+
+(1) migrations.ts — add to runMigrations(): ALTER TABLE jobs ADD COLUMN description TEXT (guard against 'duplicate column' error so it is idempotent).
+
+(2) db/types.ts — add description: string | null to the Job interface.
+
+(3) ingestion.ts — update runIngestion() signature to accept (db: Database.Database, dbPath: string). Replace Greenhouse/Lever exec logic with a single shell-exec of src/job-hunter/sources/ingest.py, passing dbPath as argv[1]. Parse 'Inserted X, skipped Y' from stdout for logging. Propagate non-zero exit as an error. Update the call site in index.ts to pass dbPath (resolved from the same path used to open the DB connection).
+
+(4) Delete these files: greenhouse.ts, greenhouse.config.ts, lever.ts, sources.config.ts. Remove their imports and any scheduler references.
+
+(5) Update the scoring prompt to include the description field when non-null, with a graceful fallback when null.
+
+Acceptance: full pipeline runs end-to-end with ingest.py as the sole source; relevant roles surface in Telegram notifications; scoring and Telegram notifier behavior otherwise unchanged.
 
 ## Current Step: docs
 
@@ -23,35 +35,31 @@ Do not proceed to implementation until you have read and understood each issue.
 
 ### Issue 1 (from: reviewer)
 
-Finding: src/job-hunter/sources/lever.ts:117-118 — Infinite pagination loop. If Lever API returns hasNext:true but next is undefined/absent, cursor stays undefined and the same first page is re-fetched in an infinite loop. Fix: add 'if (hasNext && \!cursor) break;' after setting cursor.
+Finding 1: src/job-hunter/sources/ingest.py:134-139 — LOGIC ERROR: Missing company-level blacklist check. The Python ingest path only checks if the exact (source, external_id) is blacklisted, but does not check if ANY job from the same company is blacklisted. The TypeScript ingestJobs() correctly does this (ingestion.ts:41-43). Since ingest.py is now the primary ingestion path, company-level blacklisting is broken. Fix: add query 'SELECT 1 FROM jobs WHERE company = ? AND blacklisted = 1 LIMIT 1' before the INSERT and skip the row if it matches.
 
 ### Issue 2 (from: reviewer)
 
-Finding: src/job-hunter/index.ts:122 — require.main === module will fail at runtime. package.json has "type": "module" and tsconfig.app.json uses "module": "ESNext", so tsx runs index.ts as ESM. In ESM, the CJS 'module' global is not defined, causing a ReferenceError that crashes the daemon or silently skips startProcess(). Fix: use the ESM pattern: import { fileURLToPath } from 'node:url'; if (process.argv[1] === fileURLToPath(import.meta.url)) {
+Finding 2: src/job-hunter/ingestion.ts:6-13 — MISSING ERROR HANDLING: execFileAsync discards stderr. The execFile callback receives (error, stdout, stderr) but only stdout is captured. When ingest.py encounters scraping failures (line 123 prints to stderr), those diagnostics vanish. If all 4 role scrapes fail, the caller sees {inserted:0, skipped:0} with zero visibility into the cause. Fix: capture stderr in the callback and log it via console.warn when non-empty.
 
 ### Issue 3 (from: reviewer)
 
-Finding: src/job-hunter/telegram/callbackHandler.ts:141-143 — Telegram body.ok===false permanently kills the poller. This throw escapes the while loop, terminates runCallbackPoller forever, and the caller only logs and never restarts. A single transient Telegram API error (e.g. rate limit 429 with {ok:false}) disables callback handling for the life of the process. Fix: replace throw with console.warn + await backoff() + continue, matching the HTTP error handling pattern at lines 126-129.
+Finding 3: src/job-hunter/db/migrations.ts:8-10 and src/job-hunter/sources/ingest.py:94 — RACE CONDITION: No SQLite busy_timeout set on either connection. The Node.js callback poller (long-running background loop performing DB writes for approve/deny actions) and the Python ingest.py subprocess (which opens its own sqlite3 connection for writes) can contend on the same DB file. Without busy_timeout, SQLITE_BUSY is thrown immediately with no retry. A user's Telegram approve/deny action during an ingest run will be silently lost. Fix: add PRAGMA busy_timeout = 5000 in both initConnection() and ingest.py after sqlite3.connect().
 
 ### Issue 4 (from: reviewer)
 
-Finding (Verify): src/job-hunter/apply/engine.ts:57 — Lever apply URL likely missing company slug. URL is constructed as https://api.lever.co/v0/postings/{external_id}/apply but the Lever API requires {company} in the path: https://api.lever.co/v0/postings/{company}/{external_id}/apply. The test at apply.engine.test.ts:266 asserts the same wrong URL. Fix: include job.company in the path.
+♻ 3 findings. (1) ingest.py:134-139 — missing company-level blacklist check; only checks exact (source, external_id) pair, not company, so blacklisted companies' new jobs are still inserted. (2) ingestion.ts:6-13 — execFileAsync discards stderr from ingest.py, losing all scraping error diagnostics. (3) migrations.ts:8-10 and ingest.py:94 — no PRAGMA busy_timeout on either SQLite connection; concurrent access from callback poller and ingest.py subprocess will throw SQLITE_BUSY immediately, silently losing user approve/deny actions.
 
 ### Issue 5 (from: reviewer)
 
-♻ 4 findings. (1) lever.ts:117-118 — infinite pagination loop when hasNext:true but next is undefined. (2) index.ts:122 — require.main===module throws ReferenceError in ESM (package.json has type:module). (3) callbackHandler.ts:141-143 — Telegram body.ok===false permanently kills the poller instead of backing off. (4) engine.ts:57 — Lever apply URL likely missing company slug in path (Verify against Lever API docs).
+Phase 1 — All 4 prior issues verified RESOLVED: (1) company-level blacklist check present at ingest.py:137-142 with tests. (2) stderr capture present at ingestion.ts:9 with tests. (3) busy_timeout=5000 present at migrations.ts:10 and ingest.py:95 with tests. (4) Duplicate of 1-3.
 
 ### Issue 6 (from: reviewer)
 
-Phase 1: All 4 prior issues verified RESOLVED. (1) lever.ts:119 has hasNext&&\!cursor break guard. (2) index.ts:125 has typeof require==='undefined' ESM guard. (3) callbackHandler.ts:141-144 uses warn+backoff+continue instead of throw. (4) engine.ts:57 URL includes job.company slug, test asserts corrected URL.
+Phase 2 — Fresh adversarial review: no new findings. Checked SQL injection (all parameterized), command injection (execFile/spawn with arrays), XSS (HTML escaping in notifier), prompt injection (sanitizeField + data tags), resource leaks (finally blocks), error handling (per-phase try/catch, backoff, partial-send tracking), concurrency (busy_timeout + idempotency guards), logic correctness (parameter counts, dedup, blacklist). All 41 changed files reviewed.
 
 ### Issue 7 (from: reviewer)
 
-Phase 2: Fresh adversarial review — no new findings. Code demonstrates consistent error handling, proper API response validation, prompt injection defense-in-depth, correct resource cleanup, and comprehensive test coverage across pagination, error paths, partial failures, and edge cases.
-
-### Issue 8 (from: reviewer)
-
-No findings. All 4 prior issues verified resolved. Fresh adversarial review found no security vulnerabilities, logic errors, missing error handling, missing tests, API contract violations, or resource leaks.
+No findings. All 3 prior issues verified resolved with tests. Fresh adversarial review of full diff (41 files, 8353 insertions) found no security vulnerabilities, logic errors, missing error handling, API contract violations, or resource leaks.
 
 ---
 
@@ -59,19 +67,19 @@ No findings. All 4 prior issues verified resolved. Fresh adversarial review foun
 
 ### From: reviewer
 
-No findings. All 4 prior issues verified resolved. Fresh adversarial review found no security vulnerabilities, logic errors, missing error handling, missing tests, API contract violations, or resource leaks.
+No findings. All 3 prior issues verified resolved with tests. Fresh adversarial review of full diff (41 files, 8353 insertions) found no security vulnerabilities, logic errors, missing error handling, API contract violations, or resource leaks.
 
 ### From: reviewer
 
-Phase 2: Fresh adversarial review — no new findings. Code demonstrates consistent error handling, proper API response validation, prompt injection defense-in-depth, correct resource cleanup, and comprehensive test coverage across pagination, error paths, partial failures, and edge cases.
+Phase 2 — Fresh adversarial review: no new findings. Checked SQL injection (all parameterized), command injection (execFile/spawn with arrays), XSS (HTML escaping in notifier), prompt injection (sanitizeField + data tags), resource leaks (finally blocks), error handling (per-phase try/catch, backoff, partial-send tracking), concurrency (busy_timeout + idempotency guards), logic correctness (parameter counts, dedup, blacklist). All 41 changed files reviewed.
 
 ### From: reviewer
 
-Phase 1: All 4 prior issues verified RESOLVED. (1) lever.ts:119 has hasNext&&\!cursor break guard. (2) index.ts:125 has typeof require==='undefined' ESM guard. (3) callbackHandler.ts:141-144 uses warn+backoff+continue instead of throw. (4) engine.ts:57 URL includes job.company slug, test asserts corrected URL.
+Phase 1 — All 4 prior issues verified RESOLVED: (1) company-level blacklist check present at ingest.py:137-142 with tests. (2) stderr capture present at ingestion.ts:9 with tests. (3) busy_timeout=5000 present at migrations.ts:10 and ingest.py:95 with tests. (4) Duplicate of 1-3.
 
 ### From: simplifier
 
-No simplifications required — code is already clear and idiomatic. Reviewed lever.ts (fetcher, pagination guard, normalizer), index.ts (ESM/CJS guard), callbackHandler.ts (backoff+continue fix), engine.ts (URL fix), ingestion.ts, sources.config.ts, and all associated tests. All 385 job-hunter tests pass.
+Simplified ingest.py: removed redundant per-job blacklist check (SELECT blacklisted FROM jobs WHERE source=? AND external_id=?). The check was superseded by the company-level blacklist check added in the previous fix — any blacklisted job belongs to a company with blacklisted=1, so the company check covers it; INSERT OR IGNORE handles non-blacklisted duplicates. Also hoisted company extraction before the company check to fail fast before parsing salary/description/date. 7 lines deleted, no behaviour change. Tests: 346 TS + 32 Python all pass.
 
 <available_skills>
   <skill>
@@ -91,16 +99,16 @@ No simplifications required — code is already clear and idiomatic. Reviewed le
 When your work is done, signal your outcome using the `ct` CLI:
 
 **Pass (work complete, move to next step):**
-    ct droplet pass po-566g3
+    ct droplet pass po-54o85
 
 **Recirculate (needs rework — send back upstream):**
-    ct droplet recirculate po-566g3
-    ct droplet recirculate po-566g3 --to implement
+    ct droplet recirculate po-54o85
+    ct droplet recirculate po-54o85 --to implement
 
 **Block (genuinely blocked, cannot proceed):**
-    ct droplet block po-566g3
+    ct droplet block po-54o85
 
 Add notes before signaling:
-    ct droplet note po-566g3 "What you did / found"
+    ct droplet note po-54o85 "What you did / found"
 
 The `ct` binary is on your PATH.

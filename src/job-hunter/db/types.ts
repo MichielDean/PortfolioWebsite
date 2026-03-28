@@ -17,6 +17,7 @@ export interface Job {
   posted_at: string | null;
   fetched_at: string;
   blacklisted: number;
+  description: string | null;
 }
 
 export interface Score {
