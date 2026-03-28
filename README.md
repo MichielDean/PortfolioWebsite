@@ -109,6 +109,7 @@ A backend subsystem for automating remote job discovery, scoring, and applicatio
 
 ### Features
 - **Greenhouse Integration**: Fetches jobs from configured Greenhouse company boards
+- **Lever Integration**: Fetches jobs from configured Lever company boards
 - **Remote Job Filtering**: Automatically fetches remote engineering positions (Director of Engineering, Senior Engineering Manager, VP of Engineering, VP of QA)
 - **SQLite Database**: Persistent storage for jobs, scores, approvals, and application tracking
 - **Daily Updates**: Configurable to fetch jobs posted in the last X days (defaults to 1 day)
@@ -128,6 +129,18 @@ export const GREENHOUSE_WATCHLIST: string[] = [
 ```
    The watchlist can be extended without code changes — just add new tokens to the array.
 
+2. **Configure Lever Watchlist** (Optional):
+   Edit `src/job-hunter/sources/sources.config.ts` to add company slugs:
+```typescript
+export const LEVER_WATCHLIST: string[] = [
+  'acme',      // ACME Corp careers board
+  'techcorp',  // TechCorp careers board
+  // Add more company slugs as needed
+];
+```
+   The watchlist can be extended without code changes — just add new slugs to the array.
+   Lever uses public company slugs (found in the URL: `lever.co/jobs/{slug}`) instead of tokens.
+
 ### Usage
 
 **Fetch jobs from Greenhouse**:
@@ -137,6 +150,31 @@ import { fetchGreenhouseJobs } from './job-hunter/sources/greenhouse';
 const jobs = await fetchGreenhouseJobs();
 // Returns normalized array of JobInput objects from all configured boards
 // Automatically filters for remote positions in target roles
+```
+
+**Fetch jobs from Lever**:
+```typescript
+import { fetchLeverJobs } from './job-hunter/sources/lever';
+import { LEVER_WATCHLIST } from './job-hunter/sources/sources.config';
+
+const jobs = await fetchLeverJobs(LEVER_WATCHLIST);
+// Returns normalized array of JobInput objects from all configured company boards
+// Automatically filters for remote positions in target roles
+// Uses Lever's public API (no authentication required)
+```
+
+**Fetch and ingest from all sources**:
+```typescript
+import { runIngestion } from './job-hunter/ingestion';
+import Database from 'better-sqlite3';
+
+const db = new Database('jobs.db');
+const result = await runIngestion(db);
+// Fetches from both Greenhouse and Lever boards in parallel
+// Deduplicates by (source, external_id)
+// Skips jobs from blacklisted companies
+// Returns { inserted: number, skipped: number }
+console.log(`Ingested: ${result.inserted}, Skipped: ${result.skipped}`);
 ```
 
 **Database Operations**:

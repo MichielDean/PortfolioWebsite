@@ -256,14 +256,14 @@ describe('runApplyEngine() — Greenhouse happy path', () => {
 describe('runApplyEngine() — Lever happy path', () => {
   test('Given a Lever job, When runApplyEngine called, Then POSTs to the Lever postings apply endpoint', async () => {
     const db = makeDb();
-    const jobId = seedJob(db, { ats_type: 'lever', external_id: 'lever-abc-123' });
+    const jobId = seedJob(db, { ats_type: 'lever', external_id: 'lever-abc-123', company: 'acme' });
     const fixtures = makePdfFixtures();
     const fetchMock = allSuccessFetch();
 
     await runApplyEngine(db, 'token', 'chat-123', jobId, fixtures.resumePdf, fixtures.coverLetterPdf, TEST_PROFILE, fetchMock);
 
     const firstUrl = (fetchMock.mock.calls[0] as [string, RequestInit])[0];
-    expect(firstUrl).toBe('https://api.lever.co/v0/postings/lever-abc-123/apply');
+    expect(firstUrl).toBe('https://api.lever.co/v0/postings/acme/lever-abc-123/apply');
     cleanPdfFixtures(fixtures);
   });
 

@@ -54,7 +54,7 @@ async function applyLever(
   }));
   appendPdf(form, 'resume', resumePdfPath);
 
-  const response = await fetchFn(`${LEVER_APPLY_BASE}/${job.external_id}/apply`, { method: 'POST', body: form });
+  const response = await fetchFn(`${LEVER_APPLY_BASE}/${job.company}/${job.external_id}/apply`, { method: 'POST', body: form });
 
   if (response.status !== 200 && response.status !== 201) {
     const body = await response.json().catch(() => ({})) as { message?: string };
