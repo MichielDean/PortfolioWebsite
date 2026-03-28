@@ -56,8 +56,9 @@ def ensure_schema(conn: sqlite3.Connection) -> None:
     ''')
     try:
         conn.execute('ALTER TABLE jobs ADD COLUMN description TEXT')
-    except sqlite3.OperationalError:
-        pass  # Column already exists — no-op
+    except sqlite3.OperationalError as e:
+        if 'duplicate column name' not in str(e):
+            raise
     conn.commit()
 
 

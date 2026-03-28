@@ -107,6 +107,22 @@ class TestEnsureSchema:
                 " VALUES ('indeed', 'unknown', 'http://x.com', 'T2', 'C2', 'http://x.com', '2026-01-02')"
             )
 
+    def test_ensure_schema_reraises_non_duplicate_column_operational_error(self):
+        """Given conn.execute raises OperationalError('database is locked') on ALTER TABLE,
+        When ensure_schema is called, Then the OperationalError propagates."""
+        from unittest.mock import MagicMock
+
+        conn = MagicMock()
+
+        def execute_side_effect(sql, *args, **kwargs):
+            if 'ALTER TABLE' in sql:
+                raise sqlite3.OperationalError('database is locked')
+
+        conn.execute.side_effect = execute_side_effect
+
+        with pytest.raises(sqlite3.OperationalError, match='database is locked'):
+            ensure_schema(conn)
+
 
 # ─────────────────────────────────────────────────────────────
 # format_salary
