@@ -293,4 +293,39 @@ describe('runIngestion()', () => {
 
     expect(result).toEqual({ inserted: 10, skipped: 3 });
   });
+
+  it('Given ingest.py writes to stderr, When runIngestion is called, Then stderr is logged via console.warn', async () => {
+    const db = makeDb();
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    mockExecFile.mockImplementation(
+      (_file: unknown, _args: unknown, callback: unknown) => {
+        (callback as (err: null, stdout: string, stderr: string) => void)(
+          null,
+          'Inserted 0, skipped 0\n',
+          'Warning: scraping issue on linkedin\n',
+        );
+        return undefined as never;
+      },
+    );
+
+    await runIngestion(db, 'test.db');
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.stringContaining('scraping issue on linkedin'),
+    );
+    warnSpy.mockRestore();
+  });
+
+  it('Given ingest.py writes no stderr, When runIngestion is called, Then console.warn is not called', async () => {
+    const db = makeDb();
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    mockExecFileSuccess('Inserted 1, skipped 0\n');
+
+    await runIngestion(db, 'test.db');
+
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
 });

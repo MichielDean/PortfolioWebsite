@@ -342,6 +342,70 @@ class TestIngest:
         assert inserted == 0
         assert skipped == 0
 
+    def test_skips_new_job_from_blacklisted_company(self, tmp_path):
+        """Given a blacklisted job from Acme Corp is in DB,
+        When a new Acme Corp job (different URL) is ingested,
+        Then the new job is skipped due to company-level blacklist."""
+        db_path = str(tmp_path / 'test.db')
+        conn = make_db(db_path)
+        conn.execute(
+            'INSERT INTO jobs (source, ats_type, external_id, title, company, url, fetched_at, blacklisted)'
+            " VALUES ('indeed', 'unknown', 'https://indeed.com/job/1', 'VP of Engineering',"
+            " 'Acme Corp', 'https://indeed.com/job/1', '2026-01-01', 1)",
+        )
+        conn.commit()
+        conn.close()
+
+        new_row = make_row(
+            site='linkedin',
+            job_url='https://linkedin.com/job/999',
+            company='Acme Corp',
+        )
+        df = make_df(new_row)
+        with patch('ingest.scrape_jobs', return_value=df):
+            inserted, skipped = ingest(db_path)
+
+        assert inserted == 0
+        assert skipped == 4  # 4 roles × 1 new-URL row each
+
+    def test_non_blacklisted_company_not_affected_by_other_company_blacklist(self, tmp_path):
+        """Given Acme Corp is blacklisted, When a Globex job is ingested, Then Globex job is inserted."""
+        db_path = str(tmp_path / 'test.db')
+        conn = make_db(db_path)
+        conn.execute(
+            'INSERT INTO jobs (source, ats_type, external_id, title, company, url, fetched_at, blacklisted)'
+            " VALUES ('indeed', 'unknown', 'https://indeed.com/job/1', 'VP of Engineering',"
+            " 'Acme Corp', 'https://indeed.com/job/1', '2026-01-01', 1)",
+        )
+        conn.commit()
+        conn.close()
+
+        globex_row = make_row(
+            site='linkedin',
+            job_url='https://linkedin.com/job/200',
+            company='Globex',
+        )
+        df = make_df(globex_row)
+        with patch('ingest.scrape_jobs', return_value=df):
+            inserted, skipped = ingest(db_path)
+
+        assert inserted == 1
+
+    def test_busy_timeout_pragma_is_set_on_ingest_connection(self, tmp_path):
+        """When ingest() opens its SQLite connection, Then it executes PRAGMA busy_timeout = 5000."""
+        from unittest.mock import MagicMock, call, patch as mock_patch
+        db_path = str(tmp_path / 'test.db')
+
+        mock_conn = MagicMock()
+
+        with mock_patch('ingest.sqlite3.connect', return_value=mock_conn):
+            with mock_patch('ingest.ensure_schema'):
+                with mock_patch('ingest.scrape_jobs', return_value=pd.DataFrame()):
+                    ingest(db_path)
+
+        execute_calls = [c.args[0] for c in mock_conn.execute.call_args_list]
+        assert 'PRAGMA busy_timeout = 5000' in execute_calls
+
 
 # ─────────────────────────────────────────────────────────────
 # get_db_path

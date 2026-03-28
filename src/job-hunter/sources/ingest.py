@@ -92,6 +92,7 @@ def format_salary(row: pd.Series) -> str | None:
 def ingest(db_path: str) -> tuple[int, int]:
     """Fetch jobs for all roles, insert into the DB, return (inserted, skipped)."""
     conn = sqlite3.connect(db_path)
+    conn.execute('PRAGMA busy_timeout = 5000')
     try:
         ensure_schema(conn)
 
@@ -150,6 +151,15 @@ def ingest(db_path: str) -> tuple[int, int]:
                 title_str = '' if pd.isna(title_val) else str(title_val)
                 company_val = row.get('company')
                 company_str = '' if pd.isna(company_val) else str(company_val)
+
+                # Skip if company is blacklisted
+                company_bl = conn.execute(
+                    'SELECT 1 FROM jobs WHERE company = ? AND blacklisted = 1 LIMIT 1',
+                    (company_str,),
+                ).fetchone()
+                if company_bl is not None:
+                    skipped += 1
+                    continue
 
                 cur = conn.execute(
                     insert_stmt,

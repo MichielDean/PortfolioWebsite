@@ -5,7 +5,8 @@ import type { JobInput } from './db/types';
 
 function execFileAsync(file: string, args: string[]): Promise<string> {
   return new Promise((resolve, reject) => {
-    execFile(file, args, (err, stdout) => {
+    execFile(file, args, (err, stdout, stderr) => {
+      if (stderr) { console.warn('[ingest.py stderr]', stderr.trim()); }
       if (err) { reject(err); return; }
       resolve(stdout);
     });
