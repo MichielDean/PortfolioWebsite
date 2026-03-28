@@ -1,5 +1,5 @@
 import type { JobInput } from '../db/types';
-import { TARGET_ROLES } from '../config';
+import { matchesTargetRole } from '../config';
 import { LEVER_WATCHLIST } from './sources.config';
 
 const API_BASE = 'https://api.lever.co/v0/postings';
@@ -44,11 +44,6 @@ export function isValidLeverJobShape(element: unknown): element is LeverJob {
     typeof e.categories === 'object' &&
     e.categories !== null
   );
-}
-
-export function matchesTargetRole(title: string, roles: string[] = TARGET_ROLES): boolean {
-  const lower = title.toLowerCase();
-  return roles.some((role) => lower.includes(role.toLowerCase()));
 }
 
 export function isRemote(job: Pick<LeverJob, 'categories' | 'description'>): boolean {

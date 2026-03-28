@@ -110,6 +110,7 @@ A backend subsystem for automating remote job discovery, scoring, and applicatio
 ### Features
 - **Greenhouse Integration**: Fetches jobs from configured Greenhouse company boards
 - **Lever Integration**: Fetches jobs from configured Lever company boards
+- **Ashby Integration**: Fetches jobs from configured Ashby job boards
 - **Remote Job Filtering**: Automatically fetches remote engineering positions (Director of Engineering, Senior Engineering Manager, VP of Engineering, VP of QA)
 - **SQLite Database**: Persistent storage for jobs, scores, approvals, and application tracking
 - **Daily Updates**: Configurable to fetch jobs posted in the last X days (defaults to 1 day)
@@ -141,6 +142,18 @@ export const LEVER_WATCHLIST: string[] = [
    The watchlist can be extended without code changes — just add new slugs to the array.
    Lever uses public company slugs (found in the URL: `lever.co/jobs/{slug}`) instead of tokens.
 
+3. **Configure Ashby Watchlist** (Optional):
+   Edit `src/job-hunter/sources/sources.config.ts` to add job board names:
+```typescript
+export const ASHBY_WATCHLIST: string[] = [
+  'acme-careers',      // ACME Corp job board
+  'techcorp-jobs',     // TechCorp job board
+  // Add more company job board names as needed
+];
+```
+   The watchlist can be extended without code changes — just add new job board names to the array.
+   Ashby uses public job board names (found in the Ashby URL) instead of tokens or slugs. No authentication is required.
+
 ### Usage
 
 **Fetch jobs from Greenhouse**:
@@ -163,6 +176,17 @@ const jobs = await fetchLeverJobs(LEVER_WATCHLIST);
 // Uses Lever's public API (no authentication required)
 ```
 
+**Fetch jobs from Ashby**:
+```typescript
+import { fetchAshbyJobs } from './job-hunter/sources/ashby';
+import { ASHBY_WATCHLIST } from './job-hunter/sources/sources.config';
+
+const jobs = await fetchAshbyJobs(ASHBY_WATCHLIST);
+// Returns normalized array of JobInput objects from all configured job boards
+// Automatically filters for remote positions in target roles
+// Uses Ashby's public API (no authentication required)
+```
+
 **Fetch and ingest from all sources**:
 ```typescript
 import { runIngestion } from './job-hunter/ingestion';
@@ -170,7 +194,7 @@ import Database from 'better-sqlite3';
 
 const db = new Database('jobs.db');
 const result = await runIngestion(db);
-// Fetches from both Greenhouse and Lever boards in parallel
+// Fetches from Greenhouse, Lever, and Ashby boards in parallel
 // Deduplicates by (source, external_id)
 // Skips jobs from blacklisted companies
 // Returns { inserted: number, skipped: number }
@@ -337,7 +361,7 @@ The apply engine:
 
 End-to-end workflow (typically run hourly or daily via cron):
 
-1. **Discover**: Fetch fresh job listings from configured Greenhouse boards
+1. **Discover**: Fetch fresh job listings from configured Greenhouse, Lever, and Ashby boards
 2. **Store**: Upsert jobs into the database
 3. **Score**: Run Claude AI to score each job (6+ eligible for notification)
 4. **Notify**: Send high-scoring jobs to Telegram with Approve/Deny buttons
@@ -440,7 +464,7 @@ The ecosystem.config.cjs file defines:
 **Daily Schedule:**
 
 The daemon automatically runs the complete pipeline daily at **08:00 UTC**:
-1. Fetch fresh job listings from configured Greenhouse boards
+1. Fetch fresh job listings from configured Greenhouse, Lever, and Ashby boards
 2. Store new jobs in SQLite database
 3. Score each job with Claude AI
 4. Notify via Telegram for high-scoring matches
