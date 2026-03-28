@@ -52,7 +52,7 @@ export function matchesTargetRole(title: string, roles: string[] = TARGET_ROLES)
 }
 
 export function isRemote(job: Pick<LeverJob, 'categories' | 'description'>): boolean {
-  const location = (job.categories as LeverCategories).location ?? '';
+  const location = job.categories.location ?? '';
   return /remote/i.test(location) || /remote/i.test(job.description);
 }
 
