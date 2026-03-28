@@ -1,14 +1,14 @@
 # Context
 
-## Item: po-oehvm
+## Item: po-566g3
 
-**Title:** Remove TheirStack ingestion source and API key requirement
+**Title:** Add Lever ingestion source and wire into ingestion.ts
 **Status:** in_progress
 **Priority:** 2
 
 ### Description
 
-Delete the TheirStack source file and all references to it throughout the codebase. Remove THEIRSTACK_API_KEY from env var requirements, README, .env.example, and any config or loader files. Update runIngestion to no longer call the TheirStack fetcher. Acceptance: `grep -r TheirStack` returns nothing; ingestion runs without any API keys set.
+Implement a Lever fetcher using the unauthenticated public postings endpoint (`api.lever.co/v0/postings/{company}`). Normalize results to `JobInput` (source='lever', ats_type='lever', external_id from posting id, title, company, url, salary_raw from text field if present, posted_at from createdAt). Handle pagination. Add unit tests with fixture responses. Add an exported `LEVER_WATCHLIST: string[]` to `sources.config.ts` (rename from `greenhouse.config.ts` if needed), initially empty. Update `ingestion.ts` to iterate `LEVER_WATCHLIST` and call the Lever fetcher alongside the existing Greenhouse call. Acceptance: ingestion compiles and runs end-to-end with no env vars required; an empty watchlist produces no errors.
 
 ## Current Step: implement
 
@@ -39,16 +39,16 @@ Delete the TheirStack source file and all references to it throughout the codeba
 When your work is done, signal your outcome using the `ct` CLI:
 
 **Pass (work complete, move to next step):**
-    ct droplet pass po-oehvm
+    ct droplet pass po-566g3
 
 **Recirculate (needs rework — send back upstream):**
-    ct droplet recirculate po-oehvm
-    ct droplet recirculate po-oehvm --to implement
+    ct droplet recirculate po-566g3
+    ct droplet recirculate po-566g3 --to implement
 
 **Block (genuinely blocked, cannot proceed):**
-    ct droplet block po-oehvm
+    ct droplet block po-566g3
 
 Add notes before signaling:
-    ct droplet note po-oehvm "What you did / found"
+    ct droplet note po-566g3 "What you did / found"
 
 The `ct` binary is on your PATH.
