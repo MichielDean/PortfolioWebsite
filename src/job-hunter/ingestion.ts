@@ -1,4 +1,6 @@
 import { execFile } from 'child_process';
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import type Database from 'better-sqlite3';
 import type { JobInput } from './db/types';
@@ -81,6 +83,33 @@ export async function ingestJobs(
 }
 
 /**
+ * Returns the Python interpreter to use for running ingest.py.
+ * Resolution order:
+ *   1. INGEST_PYTHON env var (if set)
+ *   2. ~/.venv/jobhunter-sys/bin/python3 (if present on disk)
+ *   3. 'python3' system fallback
+ *
+ * The venv is preferred because jobspy's regex wheel fails to build on
+ * Python 3.14+; the venv is expected to use Python 3.13.
+ */
+export function resolveInterpreter(): string {
+  if (process.env.INGEST_PYTHON) {
+    return process.env.INGEST_PYTHON;
+  }
+  const venvPython = path.join(
+    os.homedir(),
+    '.venv',
+    'jobhunter-sys',
+    'bin',
+    'python3',
+  );
+  if (fs.existsSync(venvPython)) {
+    return venvPython;
+  }
+  return 'python3';
+}
+
+/**
  * Run the Python ingest.py scraper as a subprocess, passing the database path
  * as the first argument. Parses "Inserted X, skipped Y" from stdout and
  * returns the counts. Propagates non-zero exit as a rejection.
@@ -90,7 +119,8 @@ export async function runIngestion(
   dbPath: string,
 ): Promise<IngestionResult> {
   const scriptPath = path.join(__dirname, 'sources', 'ingest.py');
-  const stdout = await execFileAsync('python3', [scriptPath, dbPath]);
+  const interpreter = resolveInterpreter();
+  const stdout = await execFileAsync(interpreter, [scriptPath, dbPath]);
 
   const match = stdout.match(/Inserted (\d+), skipped (\d+)/);
   if (!match) {
