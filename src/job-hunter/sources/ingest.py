@@ -91,78 +91,80 @@ def format_salary(row: pd.Series) -> str | None:
 def ingest(db_path: str) -> tuple[int, int]:
     """Fetch jobs for all roles, insert into the DB, return (inserted, skipped)."""
     conn = sqlite3.connect(db_path)
-    ensure_schema(conn)
+    try:
+        ensure_schema(conn)
 
-    inserted = 0
-    skipped = 0
-    fetched_at = datetime.now(timezone.utc).isoformat()
+        inserted = 0
+        skipped = 0
+        fetched_at = datetime.now(timezone.utc).isoformat()
 
-    insert_stmt = '''
-        INSERT OR IGNORE INTO jobs
-            (source, ats_type, external_id, title, company, url,
-             salary_raw, posted_at, fetched_at, description, blacklisted)
-        VALUES (?, 'unknown', ?, ?, ?, ?, ?, ?, ?, ?, 0)
-    '''
+        insert_stmt = '''
+            INSERT OR IGNORE INTO jobs
+                (source, ats_type, external_id, title, company, url,
+                 salary_raw, posted_at, fetched_at, description, blacklisted)
+            VALUES (?, 'unknown', ?, ?, ?, ?, ?, ?, ?, ?, 0)
+        '''
 
-    for role in ROLES:
-        try:
-            df = scrape_jobs(
-                site_name=['indeed', 'linkedin', 'zip_recruiter', 'google'],
-                search_term=role,
-                location='United States',
-                results_wanted=25,
-                hours_old=48,
-                is_remote=True,
-                linkedin_fetch_description=True,
-                verbose=0,
-                description_format='markdown',
-            )
-        except Exception as exc:
-            print(f'Error scraping {role!r}: {exc}', file=sys.stderr)
-            continue
-
-        for _, row in df.iterrows():
-            source = row.get('site', '')
-            external_id = row.get('job_url', '')
-            if not source or not external_id:
-                skipped += 1
+        for role in ROLES:
+            try:
+                df = scrape_jobs(
+                    site_name=['indeed', 'linkedin', 'zip_recruiter', 'google'],
+                    search_term=role,
+                    location='United States',
+                    results_wanted=25,
+                    hours_old=48,
+                    is_remote=True,
+                    linkedin_fetch_description=True,
+                    verbose=0,
+                    description_format='markdown',
+                )
+            except Exception as exc:
+                print(f'Error scraping {role!r}: {exc}', file=sys.stderr)
                 continue
 
-            # Skip if this (source, external_id) is blacklisted
-            existing = conn.execute(
-                'SELECT blacklisted FROM jobs WHERE source = ? AND external_id = ?',
-                (source, external_id),
-            ).fetchone()
-            if existing is not None and existing[0] == 1:
-                skipped += 1
-                continue
+            for _, row in df.iterrows():
+                source = row.get('site', '')
+                external_id = row.get('job_url', '')
+                if not source or not external_id or pd.isna(source) or pd.isna(external_id):
+                    skipped += 1
+                    continue
 
-            title_val = row.get('title')
-            company_val = row.get('company')
-            description_val = row.get('description')
-            description = None if pd.isna(description_val) else description_val
-            salary_raw = format_salary(row)
+                # Skip if this (source, external_id) is blacklisted
+                existing = conn.execute(
+                    'SELECT blacklisted FROM jobs WHERE source = ? AND external_id = ?',
+                    (source, external_id),
+                ).fetchone()
+                if existing is not None and existing[0] == 1:
+                    skipped += 1
+                    continue
 
-            date_posted = row.get('date_posted')
-            posted_at = None if pd.isna(date_posted) else str(date_posted)
+                title_val = row.get('title')
+                company_val = row.get('company')
+                description_val = row.get('description')
+                description = None if pd.isna(description_val) else description_val
+                salary_raw = format_salary(row)
 
-            title_str = '' if pd.isna(title_val) else str(title_val)
-            company_str = '' if pd.isna(company_val) else str(company_val)
+                date_posted = row.get('date_posted')
+                posted_at = None if pd.isna(date_posted) else str(date_posted)
 
-            cur = conn.execute(
-                insert_stmt,
-                (source, external_id, title_str, company_str, external_id,
-                 salary_raw, posted_at, fetched_at, description),
-            )
-            if cur.rowcount == 1:
-                inserted += 1
-            else:
-                skipped += 1
+                title_str = '' if pd.isna(title_val) else str(title_val)
+                company_str = '' if pd.isna(company_val) else str(company_val)
 
-        conn.commit()
+                cur = conn.execute(
+                    insert_stmt,
+                    (source, external_id, title_str, company_str, external_id,
+                     salary_raw, posted_at, fetched_at, description),
+                )
+                if cur.rowcount == 1:
+                    inserted += 1
+                else:
+                    skipped += 1
 
-    conn.close()
-    return inserted, skipped
+            conn.commit()
+
+        return inserted, skipped
+    finally:
+        conn.close()
 
 
 def main() -> None:

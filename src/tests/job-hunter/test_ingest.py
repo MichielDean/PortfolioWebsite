@@ -304,6 +304,28 @@ class TestIngest:
         assert inserted == 1
         assert skipped > 0
 
+    def test_nan_site_or_url_skips_row(self, tmp_path):
+        """Given rows with NaN site or NaN job_url, When ingesting, Then rows are skipped."""
+        db_path = str(tmp_path / 'test.db')
+        nan_site_row = make_row(site=float('nan'), job_url='https://indeed.com/job/1')
+        nan_url_row = make_row(site='indeed', job_url=float('nan'))
+        good_row = make_row(site='indeed', job_url='https://indeed.com/job/3')
+        df = make_df(nan_site_row, nan_url_row, good_row)
+        with patch('ingest.scrape_jobs', return_value=df):
+            inserted, skipped = ingest(db_path)
+        # good_row inserted once (first role), then dedup-skipped for remaining 3 roles
+        assert inserted == 1
+        # NaN rows: 2 per role × 4 roles = 8 skipped; dedup: 3 more skipped
+        assert skipped == 11
+
+    def test_empty_dataframe_returns_zero_inserted_skipped(self, tmp_path):
+        """Given scrape_jobs returns empty DataFrame, When ingesting, Then inserted=0, skipped=0."""
+        db_path = str(tmp_path / 'test.db')
+        with patch('ingest.scrape_jobs', return_value=pd.DataFrame()):
+            inserted, skipped = ingest(db_path)
+        assert inserted == 0
+        assert skipped == 0
+
 
 # ─────────────────────────────────────────────────────────────
 # get_db_path
