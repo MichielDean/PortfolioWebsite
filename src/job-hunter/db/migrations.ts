@@ -56,4 +56,13 @@ export function runMigrations(db: Database.Database): void {
       result       TEXT
     );
   `);
+
+  // Idempotent column addition — guard against 'duplicate column name' on re-runs.
+  try {
+    db.exec('ALTER TABLE jobs ADD COLUMN description TEXT');
+  } catch (err: unknown) {
+    if (!(err instanceof Error) || !err.message.includes('duplicate column name')) {
+      throw err;
+    }
+  }
 }
