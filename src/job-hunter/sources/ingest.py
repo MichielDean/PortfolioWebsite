@@ -97,7 +97,6 @@ def ingest(db_path: str) -> tuple[int, int]:
     skipped = 0
     fetched_at = datetime.now(timezone.utc).isoformat()
 
-    check_blacklisted = conn.cursor()
     insert_stmt = '''
         INSERT OR IGNORE INTO jobs
             (source, ats_type, external_id, title, company, url,
@@ -130,18 +129,18 @@ def ingest(db_path: str) -> tuple[int, int]:
                 continue
 
             # Skip if this (source, external_id) is blacklisted
-            check_blacklisted.execute(
+            existing = conn.execute(
                 'SELECT blacklisted FROM jobs WHERE source = ? AND external_id = ?',
                 (source, external_id),
-            )
-            existing = check_blacklisted.fetchone()
+            ).fetchone()
             if existing is not None and existing[0] == 1:
                 skipped += 1
                 continue
 
             title_val = row.get('title')
             company_val = row.get('company')
-            description = None if pd.isna(row.get('description')) else row.get('description')
+            description_val = row.get('description')
+            description = None if pd.isna(description_val) else description_val
             salary_raw = format_salary(row)
 
             date_posted = row.get('date_posted')
