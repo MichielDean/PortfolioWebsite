@@ -2,7 +2,7 @@ import type { JobInput } from '../db/types';
 import { matchesTargetRole } from '../config';
 import { ASHBY_WATCHLIST } from './sources.config';
 
-const API_URL = 'https://api.ashbyhq.com/posting-api/job-board';
+const API_BASE_URL = 'https://api.ashbyhq.com/posting-api/job-board';
 
 export interface AshbyCompensation {
   compensationTierSummary?: string | null;
@@ -11,7 +11,7 @@ export interface AshbyCompensation {
 export interface AshbyJob {
   id: string;
   title: string;
-  publishedDate?: string | null;
+  publishedAt?: string | null;
   jobUrl: string;
   isRemote?: boolean | null;
   location?: string | null;
@@ -20,7 +20,6 @@ export interface AshbyJob {
 
 export interface AshbyJobBoardResponse {
   jobs: AshbyJob[];
-  nextCursor?: string | null;
 }
 
 // Skips malformed listings to prevent null-dereference in isRemote().
@@ -43,7 +42,7 @@ export function normalizeJob(job: AshbyJob, company: string): JobInput {
     company,
     url: job.jobUrl,
     salary_raw: job.compensation?.compensationTierSummary ?? null,
-    posted_at: job.publishedDate ?? null,
+    posted_at: job.publishedAt ?? null,
   };
 }
 
@@ -55,39 +54,26 @@ export async function fetchAshbyJobs(
 
   for (const boardName of watchlist) {
     try {
-      let cursor: string | undefined;
+      const response = await fetch(`${API_BASE_URL}/${boardName}`);
 
-      do {
-        const body: Record<string, string> = { jobBoardName: boardName };
-        if (cursor) body.cursor = cursor;
+      if (!response.ok) {
+        console.warn(
+          `Ashby: skipping ${boardName} — ${response.status} ${response.statusText}`,
+        );
+        continue;
+      }
 
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
+      const page = (await response.json()) as AshbyJobBoardResponse;
 
-        if (!response.ok) {
-          console.warn(
-            `Ashby: skipping ${boardName} — ${response.status} ${response.statusText}`,
-          );
-          break;
-        }
+      if (!Array.isArray(page.jobs)) {
+        console.warn(`Ashby: skipping ${boardName} — unexpected response shape`);
+        continue;
+      }
 
-        const page = (await response.json()) as AshbyJobBoardResponse;
-
-        if (!Array.isArray(page.jobs)) {
-          console.warn(`Ashby: skipping ${boardName} — unexpected response shape`);
-          break;
-        }
-
-        const matched = page.jobs
-          .filter(isValidAshbyJobShape)
-          .filter((job) => matchesTargetRole(job.title) && isRemote(job));
-        all.push(...matched.map((job) => normalizeJob(job, boardName)));
-
-        cursor = page.nextCursor ?? undefined;
-      } while (cursor);
+      const matched = page.jobs
+        .filter(isValidAshbyJobShape)
+        .filter((job) => matchesTargetRole(job.title) && isRemote(job));
+      all.push(...matched.map((job) => normalizeJob(job, boardName)));
     } catch (err) {
       console.warn(`Ashby: skipping ${boardName} — ${(err as Error).message}`);
     }
