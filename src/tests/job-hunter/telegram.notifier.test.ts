@@ -39,7 +39,7 @@ function seedJobWithScore(
 ): number {
   const job = upsertJob(db, {
     source: 'greenhouse',
-    ats_type: 'greenhouse',
+    ats_type: 'unknown',
     external_id: `gh-${Math.random()}`,
     title: 'VP of Engineering',
     company: 'Acme Corp',
@@ -150,7 +150,7 @@ describe('getEligibleUnnotifiedJobs()', () => {
     const db = makeDb();
     const job = upsertJob(db, {
       source: 'greenhouse',
-      ats_type: 'greenhouse',
+      ats_type: 'unknown',
       external_id: 'gh-999',
       title: 'Director of Engineering',
       company: 'TechCorp',
@@ -179,7 +179,7 @@ describe('getEligibleUnnotifiedJobs()', () => {
     const db = makeDb();
     const job = upsertJob(db, {
       source: 'greenhouse',
-      ats_type: 'greenhouse',
+      ats_type: 'unknown',
       external_id: 'gh-1',
       title: 'VP of Engineering',
       company: 'Acme',

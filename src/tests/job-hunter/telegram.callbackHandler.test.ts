@@ -37,7 +37,7 @@ function makeDb(): Database.Database {
 function seedJobWithPendingApproval(db: Database.Database): number {
   const job = upsertJob(db, {
     source: 'greenhouse',
-    ats_type: 'greenhouse',
+    ats_type: 'unknown',
     external_id: `gh-${Math.random()}`,
     title: 'VP of Engineering',
     company: 'Acme Corp',
@@ -57,7 +57,7 @@ function seedJobWithPendingApproval(db: Database.Database): number {
 function seedJobWithoutApproval(db: Database.Database): number {
   const job = upsertJob(db, {
     source: 'greenhouse',
-    ats_type: 'greenhouse',
+    ats_type: 'unknown',
     external_id: `gh-${Math.random()}`,
     title: 'Engineer',
     company: 'Acme',

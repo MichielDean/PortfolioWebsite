@@ -55,7 +55,7 @@ function seedJob(
 ): Job {
   return upsertJob(db, {
     source: 'greenhouse',
-    ats_type: 'greenhouse',
+    ats_type: 'unknown',
     external_id: `gh-${Math.random()}`,
     title: 'VP of Engineering',
     company: 'Acme Corp',
