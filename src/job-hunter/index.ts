@@ -21,11 +21,11 @@ export const CRON_SCHEDULE = '0 8 * * *';
  * not prevent subsequent phases from running. Errors are logged via
  * console.warn and the cycle resolves normally.
  */
-export async function runCycle(db: Database.Database): Promise<void> {
+export async function runCycle(db: Database.Database, dbPath: string): Promise<void> {
   console.log('[job-hunter] Starting pipeline cycle...');
 
   try {
-    const result = await runIngestion(db);
+    const result = await runIngestion(db, dbPath);
     console.log(`[job-hunter] Ingestion: ${result.inserted} inserted, ${result.skipped} skipped`);
   } catch (err) {
     console.warn('[job-hunter] Ingestion failed:', err);
@@ -101,14 +101,14 @@ export async function startProcess(options: StartOptions = {}): Promise<void> {
 
   // Immediate cycle if requested (useful for testing / one-shot runs)
   if (runNow) {
-    await runCycle(db);
+    await runCycle(db, dbPath);
   }
 
   // Schedule daily 08:00 UTC pipeline
   cronTask = cron.schedule(
     CRON_SCHEDULE,
     () => {
-      runCycle(db).catch((err) => {
+      runCycle(db, dbPath).catch((err) => {
         console.warn('[job-hunter] Scheduled cycle failed:', err);
       });
     },

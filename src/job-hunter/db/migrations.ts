@@ -7,6 +7,7 @@ import Database from 'better-sqlite3';
  */
 export function initConnection(db: Database.Database): void {
   db.pragma('foreign_keys = ON');
+  db.pragma('busy_timeout = 5000');
 }
 
 /**
@@ -56,4 +57,13 @@ export function runMigrations(db: Database.Database): void {
       result       TEXT
     );
   `);
+
+  // Idempotent column addition — guard against 'duplicate column name' on re-runs.
+  try {
+    db.exec('ALTER TABLE jobs ADD COLUMN description TEXT');
+  } catch (err: unknown) {
+    if (!(err instanceof Error) || !err.message.includes('duplicate column name')) {
+      throw err;
+    }
+  }
 }

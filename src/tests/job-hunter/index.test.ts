@@ -62,14 +62,14 @@ describe('runCycle()', () => {
   });
 
   describe('happy path', () => {
-    it('Given all phases succeed, When called, Then ingestion is invoked with the db', async () => {
+    it('Given all phases succeed, When called, Then ingestion is invoked with the db and dbPath', async () => {
       mockRunIngestion.mockResolvedValue({ inserted: 1, skipped: 0 });
       mockRunScoring.mockResolvedValue({ scored: 1, eligible: [] });
       mockRunNotifier.mockResolvedValue({ notified: 1, skipped: 0 });
 
-      await runCycle(db);
+      await runCycle(db, 'test.db');
 
-      expect(mockRunIngestion).toHaveBeenCalledWith(db);
+      expect(mockRunIngestion).toHaveBeenCalledWith(db, 'test.db');
     });
 
     it('Given all phases succeed, When called, Then scoring is invoked with the db', async () => {
@@ -77,7 +77,7 @@ describe('runCycle()', () => {
       mockRunScoring.mockResolvedValue({ scored: 0, eligible: [] });
       mockRunNotifier.mockResolvedValue({ notified: 0, skipped: 0 });
 
-      await runCycle(db);
+      await runCycle(db, 'test.db');
 
       expect(mockRunScoring).toHaveBeenCalledWith(db);
     });
@@ -87,7 +87,7 @@ describe('runCycle()', () => {
       mockRunScoring.mockResolvedValue({ scored: 0, eligible: [] });
       mockRunNotifier.mockResolvedValue({ notified: 0, skipped: 0 });
 
-      await runCycle(db);
+      await runCycle(db, 'test.db');
 
       expect(mockRunNotifier).toHaveBeenCalledWith(db);
     });
@@ -107,7 +107,7 @@ describe('runCycle()', () => {
         return { notified: 0, skipped: 0 };
       });
 
-      await runCycle(db);
+      await runCycle(db, 'test.db');
 
       expect(callOrder).toEqual(['ingest', 'score', 'notify']);
     });
@@ -118,7 +118,7 @@ describe('runCycle()', () => {
       mockRunNotifier.mockResolvedValue({ notified: 1, skipped: 0 });
       const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 
-      await runCycle(db);
+      await runCycle(db, 'test.db');
 
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('5 inserted'));
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('2 skipped'));
@@ -131,7 +131,7 @@ describe('runCycle()', () => {
       mockRunNotifier.mockResolvedValue({ notified: 0, skipped: 0 });
       const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 
-      await runCycle(db);
+      await runCycle(db, 'test.db');
 
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('4 scored'));
       logSpy.mockRestore();
@@ -143,7 +143,7 @@ describe('runCycle()', () => {
       mockRunNotifier.mockResolvedValue({ notified: 3, skipped: 1 });
       const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 
-      await runCycle(db);
+      await runCycle(db, 'test.db');
 
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('3 notified'));
       logSpy.mockRestore();
@@ -156,7 +156,7 @@ describe('runCycle()', () => {
       mockRunScoring.mockResolvedValue({ scored: 0, eligible: [] });
       mockRunNotifier.mockResolvedValue({ notified: 0, skipped: 0 });
 
-      await expect(runCycle(db)).resolves.toBeUndefined();
+      await expect(runCycle(db, 'test.db')).resolves.toBeUndefined();
     });
 
     it('Given ingestion throws, When called, Then scoring still runs', async () => {
@@ -164,7 +164,7 @@ describe('runCycle()', () => {
       mockRunScoring.mockResolvedValue({ scored: 0, eligible: [] });
       mockRunNotifier.mockResolvedValue({ notified: 0, skipped: 0 });
 
-      await runCycle(db);
+      await runCycle(db, 'test.db');
 
       expect(mockRunScoring).toHaveBeenCalled();
     });
@@ -174,7 +174,7 @@ describe('runCycle()', () => {
       mockRunScoring.mockResolvedValue({ scored: 0, eligible: [] });
       mockRunNotifier.mockResolvedValue({ notified: 0, skipped: 0 });
 
-      await runCycle(db);
+      await runCycle(db, 'test.db');
 
       expect(mockRunNotifier).toHaveBeenCalled();
     });
@@ -186,7 +186,7 @@ describe('runCycle()', () => {
       mockRunNotifier.mockResolvedValue({ notified: 0, skipped: 0 });
       const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      await runCycle(db);
+      await runCycle(db, 'test.db');
 
       expect(warnSpy).toHaveBeenCalledWith('[job-hunter] Ingestion failed:', err);
       warnSpy.mockRestore();
@@ -197,7 +197,7 @@ describe('runCycle()', () => {
       mockRunScoring.mockRejectedValue(new Error('Claude API rate limited'));
       mockRunNotifier.mockResolvedValue({ notified: 0, skipped: 0 });
 
-      await expect(runCycle(db)).resolves.toBeUndefined();
+      await expect(runCycle(db, 'test.db')).resolves.toBeUndefined();
     });
 
     it('Given scoring throws, When called, Then notifier still runs', async () => {
@@ -205,7 +205,7 @@ describe('runCycle()', () => {
       mockRunScoring.mockRejectedValue(new Error('Claude API rate limited'));
       mockRunNotifier.mockResolvedValue({ notified: 0, skipped: 0 });
 
-      await runCycle(db);
+      await runCycle(db, 'test.db');
 
       expect(mockRunNotifier).toHaveBeenCalled();
     });
@@ -217,7 +217,7 @@ describe('runCycle()', () => {
       mockRunNotifier.mockResolvedValue({ notified: 0, skipped: 0 });
       const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      await runCycle(db);
+      await runCycle(db, 'test.db');
 
       expect(warnSpy).toHaveBeenCalledWith('[job-hunter] Scoring failed:', err);
       warnSpy.mockRestore();
@@ -228,7 +228,7 @@ describe('runCycle()', () => {
       mockRunScoring.mockResolvedValue({ scored: 0, eligible: [] });
       mockRunNotifier.mockRejectedValue(new Error('Telegram API down'));
 
-      await expect(runCycle(db)).resolves.toBeUndefined();
+      await expect(runCycle(db, 'test.db')).resolves.toBeUndefined();
     });
 
     it('Given notifier throws, When called, Then the error is logged via console.warn', async () => {
@@ -238,7 +238,7 @@ describe('runCycle()', () => {
       mockRunNotifier.mockRejectedValue(err);
       const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      await runCycle(db);
+      await runCycle(db, 'test.db');
 
       expect(warnSpy).toHaveBeenCalledWith('[job-hunter] Notifier failed:', err);
       warnSpy.mockRestore();
@@ -249,7 +249,7 @@ describe('runCycle()', () => {
       mockRunScoring.mockRejectedValue(new Error('scoring error'));
       mockRunNotifier.mockRejectedValue(new Error('notify error'));
 
-      await expect(runCycle(db)).resolves.toBeUndefined();
+      await expect(runCycle(db, 'test.db')).resolves.toBeUndefined();
     });
   });
 });

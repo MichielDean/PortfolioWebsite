@@ -1,8 +1,8 @@
 /**
  * Tests for shared job-hunter configuration utilities.
  *
- * matchesTargetRole() is used by all source fetchers (Greenhouse, Lever, Ashby)
- * and is defined once here to avoid triple test surface for identical logic.
+ * matchesTargetRole() is used by the Python ingest.py script to filter jobs
+ * for target roles (Director of Engineering, Senior Engineering Manager, VP of Engineering, VP of QA).
  *
  * Structure follows Given / When / Then thinking:
  *   Given: a job title and optional roles list

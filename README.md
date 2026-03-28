@@ -108,86 +108,39 @@ This will generate:
 A backend subsystem for automating remote job discovery, scoring, and application tracking.
 
 ### Features
-- **Greenhouse Integration**: Fetches jobs from configured Greenhouse company boards
-- **Lever Integration**: Fetches jobs from configured Lever company boards
-- **Ashby Integration**: Fetches jobs from configured Ashby job boards
-- **Remote Job Filtering**: Automatically fetches remote engineering positions (Director of Engineering, Senior Engineering Manager, VP of Engineering, VP of QA)
+- **Job Discovery**: Scrapes jobs for 4 target roles (Director of Engineering, Senior Engineering Manager, VP of Engineering, VP of QA)
+- **Remote Job Filtering**: Automatically filters for remote positions only
+- **Multi-Source Scraping**: Searches across Indeed, LinkedIn, ZipRecruiter, and Google simultaneously
 - **SQLite Database**: Persistent storage for jobs, scores, approvals, and application tracking
-- **Daily Updates**: Configurable to fetch jobs posted in the last X days (defaults to 1 day)
-- **Response Validation**: Validates external API responses before processing
-- **Partial Failure Resilience**: Company board failures don't discard results from other sources
+- **AI-Powered Scoring**: Claude API integration for fit-scoring each job
+- **Telegram Notifications**: Sends new high-scoring jobs to Telegram with approve/deny buttons
+- **Resume Generation**: Auto-generates tailored resume and cover letter on approval
+- **Auto-Apply**: Submits applications directly to ATS (Greenhouse, Lever) or requests manual submission
+- **Graceful Error Handling**: Partial scraper failures don't halt the pipeline — continues with other sources
 
 ### Setup
 
-1. **Configure Greenhouse Watchlist** (Optional):
-   Edit `src/job-hunter/sources/greenhouse.config.ts` to add company board tokens:
-```typescript
-export const GREENHOUSE_WATCHLIST: string[] = [
-  'stripe',    // Stripe careers board
-  'notion',    // Notion careers board
-  // Add more company tokens as needed
-];
+**Install Python dependencies** (one-time setup):
+```bash
+pip3 install -r src/job-hunter/sources/requirements.txt
 ```
-   The watchlist can be extended without code changes — just add new tokens to the array.
-
-2. **Configure Lever Watchlist** (Optional):
-   Edit `src/job-hunter/sources/sources.config.ts` to add company slugs:
-```typescript
-export const LEVER_WATCHLIST: string[] = [
-  'acme',      // ACME Corp careers board
-  'techcorp',  // TechCorp careers board
-  // Add more company slugs as needed
-];
-```
-   The watchlist can be extended without code changes — just add new slugs to the array.
-   Lever uses public company slugs (found in the URL: `lever.co/jobs/{slug}`) instead of tokens.
-
-3. **Configure Ashby Watchlist** (Optional):
-   Edit `src/job-hunter/sources/sources.config.ts` to add job board names:
-```typescript
-export const ASHBY_WATCHLIST: string[] = [
-  'acme-careers',      // ACME Corp job board
-  'techcorp-jobs',     // TechCorp job board
-  // Add more company job board names as needed
-];
-```
-   The watchlist can be extended without code changes — just add new job board names to the array.
-   Ashby uses public job board names (found in the Ashby URL) instead of tokens or slugs. No authentication is required.
 
 ### Usage
 
-**Fetch jobs from Greenhouse**:
-```typescript
-import { fetchGreenhouseJobs } from './job-hunter/sources/greenhouse';
+**Run the job ingest script**:
 
-const jobs = await fetchGreenhouseJobs();
-// Returns normalized array of JobInput objects from all configured boards
-// Automatically filters for remote positions in target roles
+The Python ingest script scrapes jobs from jobspy-supported job boards:
+
+```bash
+# Run the ingest script
+python3 src/job-hunter/sources/ingest.py ./job-hunter.db
+
+# Or use environment variable for database path
+export JOB_HUNTER_DB=./job-hunter.db
+python3 src/job-hunter/sources/ingest.py
 ```
 
-**Fetch jobs from Lever**:
-```typescript
-import { fetchLeverJobs } from './job-hunter/sources/lever';
-import { LEVER_WATCHLIST } from './job-hunter/sources/sources.config';
-
-const jobs = await fetchLeverJobs(LEVER_WATCHLIST);
-// Returns normalized array of JobInput objects from all configured company boards
-// Automatically filters for remote positions in target roles
-// Uses Lever's public API (no authentication required)
-```
-
-**Fetch jobs from Ashby**:
-```typescript
-import { fetchAshbyJobs } from './job-hunter/sources/ashby';
-import { ASHBY_WATCHLIST } from './job-hunter/sources/sources.config';
-
-const jobs = await fetchAshbyJobs(ASHBY_WATCHLIST);
-// Returns normalized array of JobInput objects from all configured job boards
-// Automatically filters for remote positions in target roles
-// Uses Ashby's public API (no authentication required)
-```
-
-**Python Job Ingest Script (jobspy alternative)**:
+The script:
 
 Alternatively, use the Python script to scrape jobs directly from jobspy-supported job boards (Indeed, LinkedIn, ZipRecruiter, Google):
 
@@ -212,14 +165,14 @@ The script:
 - Skips blacklisted jobs and duplicate (source, external_id) pairs
 - Returns exit code 0 on success
 
-**Fetch and ingest from all sources**:
+**Run ingestion from TypeScript**:
 ```typescript
 import { runIngestion } from './job-hunter/ingestion';
 import Database from 'better-sqlite3';
 
 const db = new Database('jobs.db');
-const result = await runIngestion(db);
-// Fetches from Greenhouse, Lever, and Ashby boards in parallel
+const result = await runIngestion(db, './job-hunter.db');
+// Runs the Python ingest.py subprocess
 // Deduplicates by (source, external_id)
 // Skips jobs from blacklisted companies
 // Returns { inserted: number, skipped: number }
@@ -384,9 +337,9 @@ The apply engine:
 
 ### Complete Job Hunter Pipeline
 
-End-to-end workflow (typically run hourly or daily via cron):
+End-to-end workflow (typically run daily at 08:00 UTC via cron):
 
-1. **Discover**: Fetch fresh job listings from configured Greenhouse, Lever, and Ashby boards
+1. **Discover**: Fetch fresh job listings from job boards via Python ingest.py script
 2. **Store**: Upsert jobs into the database
 3. **Score**: Run Claude AI to score each job (6+ eligible for notification)
 4. **Notify**: Send high-scoring jobs to Telegram with Approve/Deny buttons
@@ -410,10 +363,12 @@ npm run test:job-hunter
 ```
 
 Tests include:
-- Greenhouse board polling with multiple company sources
-- Response shape validation and error handling
-- Per-company error isolation and partial failure recovery
-- Database repository CRUD operations
+- Python ingest.py scraper with job deduplication and blacklist filtering
+- Database repository CRUD operations with transaction handling
+- Job scoring with Claude AI integration
+- Telegram notifications and button callback handling
+- Resume generation and PDF submission
+- Auto-apply engine with ATS fallback mode
 - SQLite foreign key constraint enforcement
 
 ##�📦 Deployment
@@ -489,7 +444,7 @@ The ecosystem.config.cjs file defines:
 **Daily Schedule:**
 
 The daemon automatically runs the complete pipeline daily at **08:00 UTC**:
-1. Fetch fresh job listings from configured Greenhouse, Lever, and Ashby boards
+1. Fetch fresh job listings from job boards via Python ingest.py script
 2. Store new jobs in SQLite database
 3. Score each job with Claude AI
 4. Notify via Telegram for high-scoring matches

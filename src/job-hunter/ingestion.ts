@@ -1,10 +1,17 @@
+import { execFile } from 'child_process';
+import path from 'path';
 import type Database from 'better-sqlite3';
 import type { JobInput } from './db/types';
-import { fetchAshbyJobs } from './sources/ashby';
-import { fetchGreenhouseJobs } from './sources/greenhouse';
-import { GREENHOUSE_WATCHLIST } from './sources/greenhouse.config';
-import { fetchLeverJobs } from './sources/lever';
-import { ASHBY_WATCHLIST, LEVER_WATCHLIST } from './sources/sources.config';
+
+function execFileAsync(file: string, args: string[]): Promise<string> {
+  return new Promise((resolve, reject) => {
+    execFile(file, args, (err, stdout, stderr) => {
+      if (stderr) { console.warn('[ingest.py stderr]', stderr.trim()); }
+      if (err) { reject(err); return; }
+      resolve(stdout);
+    });
+  });
+}
 
 /** Normalized form accepted by ingestJobs(). */
 export type NormalizedJob = JobInput;
@@ -74,22 +81,24 @@ export async function ingestJobs(
 }
 
 /**
- * Fetch jobs from all sources, then ingest them into the DB.
- * Returns aggregated inserted/skipped counts.
+ * Run the Python ingest.py scraper as a subprocess, passing the database path
+ * as the first argument. Parses "Inserted X, skipped Y" from stdout and
+ * returns the counts. Propagates non-zero exit as a rejection.
  */
-export async function runIngestion(db: Database.Database): Promise<IngestionResult> {
-  const results = await Promise.allSettled([
-    fetchGreenhouseJobs(GREENHOUSE_WATCHLIST),
-    fetchLeverJobs(LEVER_WATCHLIST),
-    fetchAshbyJobs(ASHBY_WATCHLIST),
-  ]);
+export async function runIngestion(
+  _db: Database.Database,
+  dbPath: string,
+): Promise<IngestionResult> {
+  const scriptPath = path.join(__dirname, 'sources', 'ingest.py');
+  const stdout = await execFileAsync('python3', [scriptPath, dbPath]);
 
-  for (const r of results) {
-    if (r.status === 'rejected') {
-      console.warn('Job source fetch failed:', r.reason);
-    }
+  const match = stdout.match(/Inserted (\d+), skipped (\d+)/);
+  if (!match) {
+    throw new Error(`Unexpected output from ingest.py: ${stdout.trim()}`);
   }
 
-  const jobs = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
-  return ingestJobs(db, jobs);
+  return {
+    inserted: parseInt(match[1], 10),
+    skipped: parseInt(match[2], 10),
+  };
 }

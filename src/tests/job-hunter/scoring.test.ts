@@ -133,6 +133,34 @@ describe('buildScoringPrompt()', () => {
     expect(prompt).not.toContain('Salary:');
   });
 
+  it('Given a job with a non-null description, When buildScoringPrompt is called, Then prompt includes the description', () => {
+    const db = makeDb();
+    const base = seedJob(db);
+    const job = { ...base, description: 'Lead a team of 20 engineers building distributed systems.' };
+    const prompt = buildScoringPrompt(profileData, job);
+    expect(prompt).toContain('Lead a team of 20 engineers building distributed systems.');
+  });
+
+  it('Given a job with a null description, When buildScoringPrompt is called, Then prompt omits the description line', () => {
+    const db = makeDb();
+    const base = seedJob(db);
+    const job = { ...base, description: null };
+    const prompt = buildScoringPrompt(profileData, job);
+    expect(prompt).not.toContain('Description:');
+  });
+
+  it('Given a job with a description, When buildScoringPrompt is called, Then description appears inside the job-data block', () => {
+    const db = makeDb();
+    const base = seedJob(db);
+    const job = { ...base, description: 'Manage engineering org.' };
+    const prompt = buildScoringPrompt(profileData, job);
+    const jobDataStart = prompt.indexOf('<job-data>');
+    const jobDataEnd = prompt.indexOf('</job-data>');
+    const jobSection = prompt.slice(jobDataStart, jobDataEnd);
+    expect(jobSection).toContain('Description:');
+    expect(jobSection).toContain('Manage engineering org.');
+  });
+
   it('Given a profile and job, When buildScoringPrompt is called, Then prompt requests JSON response format', () => {
     const db = makeDb();
     const job = seedJob(db);
