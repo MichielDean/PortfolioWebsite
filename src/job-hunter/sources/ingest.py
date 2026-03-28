@@ -131,12 +131,13 @@ def ingest(db_path: str) -> tuple[int, int]:
                     skipped += 1
                     continue
 
-                # Skip if this (source, external_id) is blacklisted
-                existing = conn.execute(
-                    'SELECT blacklisted FROM jobs WHERE source = ? AND external_id = ?',
-                    (source, external_id),
-                ).fetchone()
-                if existing is not None and existing[0] == 1:
+                company_val = row.get('company')
+                company_str = '' if pd.isna(company_val) else str(company_val)
+
+                if conn.execute(
+                    'SELECT 1 FROM jobs WHERE company = ? AND blacklisted = 1 LIMIT 1',
+                    (company_str,),
+                ).fetchone() is not None:
                     skipped += 1
                     continue
 
@@ -149,17 +150,6 @@ def ingest(db_path: str) -> tuple[int, int]:
 
                 title_val = row.get('title')
                 title_str = '' if pd.isna(title_val) else str(title_val)
-                company_val = row.get('company')
-                company_str = '' if pd.isna(company_val) else str(company_val)
-
-                # Skip if company is blacklisted
-                company_bl = conn.execute(
-                    'SELECT 1 FROM jobs WHERE company = ? AND blacklisted = 1 LIMIT 1',
-                    (company_str,),
-                ).fetchone()
-                if company_bl is not None:
-                    skipped += 1
-                    continue
 
                 cur = conn.execute(
                     insert_stmt,
