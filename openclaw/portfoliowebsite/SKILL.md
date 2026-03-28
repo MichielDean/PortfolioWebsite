@@ -64,7 +64,7 @@ npx tsc --project src/resume/tsconfig.json
 ## Job Hunter Pipeline
 
 **Repo location:** `src/job-hunter/`
-**Source:** Python ingest.py script using jobspy (Indeed, LinkedIn, ZipRecruiter, Google)
+**Source:** Python ingest.py script using jobspy (LinkedIn, ZipRecruiter)
 **Target roles:** Director of Engineering, Senior Engineering Manager, VP of Engineering, VP of QA
 
 The pipeline runs on lobsterdog (not Netlify — that's a static site). Required env vars for full pipeline: `ANTHROPIC_API_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
