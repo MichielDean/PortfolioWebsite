@@ -83,14 +83,9 @@ export async function ingestJobs(
 }
 
 /**
- * Returns the Python interpreter to use for running ingest.py.
- * Resolution order:
- *   1. INGEST_PYTHON env var (if set)
- *   2. ~/.venv/jobhunter-sys/bin/python3 (if present on disk)
- *   3. 'python3' system fallback
- *
- * The venv is preferred because jobspy's regex wheel fails to build on
- * Python 3.14+; the venv is expected to use Python 3.13.
+ * Resolves the Python interpreter for ingest.py: INGEST_PYTHON env var,
+ * then ~/.venv/jobhunter-sys/bin/python3, then 'python3' system fallback.
+ * The venv is preferred because jobspy's regex wheel fails on Python 3.14+.
  */
 export function resolveInterpreter(): string {
   if (process.env.INGEST_PYTHON) {
