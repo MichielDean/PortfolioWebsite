@@ -1,4 +1,4 @@
-export type AtsType = 'indeed' | 'linkedin' | 'zip_recruiter' | 'google' | 'unknown';
+export type AtsType = 'linkedin' | 'zip_recruiter' | 'unknown';
 export type ApprovalStatus = 'pending' | 'approved' | 'denied';
 export type ApplicationMethod = 'greenhouse' | 'lever' | 'manual';
 

@@ -110,7 +110,7 @@ A backend subsystem for automating remote job discovery, scoring, and applicatio
 ### Features
 - **Job Discovery**: Scrapes jobs for 4 target roles (Director of Engineering, Senior Engineering Manager, VP of Engineering, VP of QA)
 - **Remote Job Filtering**: Automatically filters for remote positions only
-- **Multi-Source Scraping**: Searches across Indeed, LinkedIn, ZipRecruiter, and Google simultaneously
+- **Multi-Source Scraping**: Searches across LinkedIn and ZipRecruiter
 - **SQLite Database**: Persistent storage for jobs, scores, approvals, and application tracking
 - **AI-Powered Scoring**: Claude API integration for fit-scoring each job
 - **Telegram Notifications**: Sends new high-scoring jobs to Telegram with approve/deny buttons
@@ -142,7 +142,7 @@ python3 src/job-hunter/sources/ingest.py
 
 The script:
 
-Alternatively, use the Python script to scrape jobs directly from jobspy-supported job boards (Indeed, LinkedIn, ZipRecruiter, Google):
+Alternatively, use the Python script to scrape jobs directly from jobspy-supported job boards (LinkedIn, ZipRecruiter):
 
 ```bash
 # Install Python dependencies (one-time setup)
@@ -158,8 +158,8 @@ python3 src/job-hunter/sources/ingest.py
 
 The script:
 - Scrapes jobs for 4 target roles: Director of Engineering, Senior Engineering Manager, VP of Engineering, VP of QA
-- Searches across Indeed, LinkedIn, ZipRecruiter, and Google
-- Filters for remote positions posted in the last 48 hours with 25 results per source per role
+- Searches across LinkedIn and ZipRecruiter
+- Filters for remote positions posted in the last 48 hours with 40 results per role
 - Writes one line to stdout on completion: `Inserted X, skipped Y`
 - Per-source errors are logged to stderr and don't halt the script — continues with other sources
 - Skips blacklisted jobs and duplicate (source, external_id) pairs

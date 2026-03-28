@@ -46,7 +46,7 @@ const jobA = {
 
 const jobB = {
   source: 'indeed',
-  ats_type: 'indeed' as const,
+  ats_type: 'unknown' as const,
   external_id: 'job-002',
   title: 'Senior Engineer',
   company: 'Globex',

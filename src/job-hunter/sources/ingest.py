@@ -110,10 +110,10 @@ def ingest(db_path: str) -> tuple[int, int]:
         for role in ROLES:
             try:
                 df = scrape_jobs(
-                    site_name=['indeed', 'linkedin', 'zip_recruiter', 'google'],
+                    site_name=['linkedin', 'zip_recruiter'],
                     search_term=role,
                     location='United States',
-                    results_wanted=25,
+                    results_wanted=40,
                     hours_old=48,
                     is_remote=True,
                     linkedin_fetch_description=True,
