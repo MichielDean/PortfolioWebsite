@@ -36,7 +36,6 @@ module.exports = {
         // JOB_HUNTER_DB: '/home/lobsterdog/.local/share/job-hunter/jobs.db',
         // TELEGRAM_BOT_TOKEN: 'set in /etc/environment or systemd unit',
         // TELEGRAM_CHAT_ID: 'set in /etc/environment or systemd unit',
-        // THEIRSTACK_API_KEY: 'set in /etc/environment or systemd unit',
       },
     },
   ],
