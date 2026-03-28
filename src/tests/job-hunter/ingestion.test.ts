@@ -2,8 +2,7 @@
  * Tests for the job ingestion layer.
  *
  * Uses an in-memory SQLite DB for fast, isolated, deterministic tests.
- * External source functions (fetchTheirStackJobs, fetchGreenhouseJobs) are
- * mocked for runIngestion() tests.
+ * External source function (fetchGreenhouseJobs) is mocked for runIngestion() tests.
  *
  * Structure follows Given / When / Then:
  *   Given: DB state and input jobs
@@ -11,7 +10,6 @@
  *   Then:  returned counts and DB state match expectations
  */
 
-jest.mock('../../job-hunter/sources/theirstack');
 jest.mock('../../job-hunter/sources/greenhouse');
 
 import Database from 'better-sqlite3';
@@ -19,10 +17,8 @@ import { runMigrations } from '../../job-hunter/db/migrations';
 import { blacklistJob, listJobs } from '../../job-hunter/db/repository';
 import { ingestJobs, runIngestion } from '../../job-hunter/ingestion';
 import type { NormalizedJob } from '../../job-hunter/ingestion';
-import { fetchTheirStackJobs } from '../../job-hunter/sources/theirstack';
 import { fetchGreenhouseJobs } from '../../job-hunter/sources/greenhouse';
 
-const mockFetchTheirStack = fetchTheirStackJobs as jest.MockedFunction<typeof fetchTheirStackJobs>;
 const mockFetchGreenhouse = fetchGreenhouseJobs as jest.MockedFunction<typeof fetchGreenhouseJobs>;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -34,12 +30,12 @@ function makeDb(): Database.Database {
 }
 
 const jobA: NormalizedJob = {
-  source: 'theirstack',
-  ats_type: 'unknown',
-  external_id: 'ts-001',
+  source: 'greenhouse',
+  ats_type: 'greenhouse',
+  external_id: 'gh-001',
   title: 'VP of Engineering',
   company: 'Acme Corp',
-  url: 'https://acme.com/jobs/001',
+  url: 'https://boards.greenhouse.io/acme/jobs/001',
   salary_raw: '200000-250000',
   posted_at: '2025-03-20T00:00:00.000Z',
 };
@@ -56,12 +52,12 @@ const jobB: NormalizedJob = {
 };
 
 const jobC: NormalizedJob = {
-  source: 'theirstack',
-  ats_type: 'unknown',
-  external_id: 'ts-002',
+  source: 'greenhouse',
+  ats_type: 'greenhouse',
+  external_id: 'gh-002',
   title: 'Director of Engineering',
   company: 'Initech',
-  url: 'https://initech.com/jobs/002',
+  url: 'https://boards.greenhouse.io/initech/jobs/002',
   salary_raw: null,
   posted_at: null,
 };
@@ -139,7 +135,7 @@ describe('ingestJobs()', () => {
 
     it('Given same external_id from different sources, When ingested, Then both are inserted', async () => {
       const db = makeDb();
-      const sameIdDifferentSource: NormalizedJob = { ...jobA, source: 'greenhouse' };
+      const sameIdDifferentSource: NormalizedJob = { ...jobA, source: 'lever' };
       const result = await ingestJobs(db, [jobA, sameIdDifferentSource]);
       expect(result).toEqual({ inserted: 2, skipped: 0 });
       expect(listJobs(db)).toHaveLength(2);
@@ -155,7 +151,7 @@ describe('ingestJobs()', () => {
 
       const newAcmeJob: NormalizedJob = {
         ...jobA,
-        external_id: 'ts-999',
+        external_id: 'gh-999',
         title: 'VP of Engineering II',
       };
       const result = await ingestJobs(db, [newAcmeJob]);
@@ -169,7 +165,7 @@ describe('ingestJobs()', () => {
       const [existing] = listJobs(db);
       blacklistJob(db, existing.id);
 
-      const newAcmeJob: NormalizedJob = { ...jobA, external_id: 'ts-999' };
+      const newAcmeJob: NormalizedJob = { ...jobA, external_id: 'gh-999' };
       const result = await ingestJobs(db, [newAcmeJob, jobB]);
       expect(result).toEqual({ inserted: 1, skipped: 1 });
     });
@@ -186,7 +182,7 @@ describe('ingestJobs()', () => {
 
     it('Given a non-blacklisted company with multiple jobs, When ingested, Then all are inserted', async () => {
       const db = makeDb();
-      const acmeJob2: NormalizedJob = { ...jobA, external_id: 'ts-002' };
+      const acmeJob2: NormalizedJob = { ...jobA, external_id: 'gh-002' };
       const result = await ingestJobs(db, [jobA, acmeJob2]);
       expect(result).toEqual({ inserted: 2, skipped: 0 });
     });
@@ -197,14 +193,12 @@ describe('ingestJobs()', () => {
 
 describe('runIngestion()', () => {
   beforeEach(() => {
-    mockFetchTheirStack.mockReset();
     mockFetchGreenhouse.mockReset();
   });
 
-  it('Given both sources return jobs, When runIngestion is called, Then all are ingested', async () => {
+  it('Given Greenhouse returns jobs, When runIngestion is called, Then all are ingested', async () => {
     const db = makeDb();
-    mockFetchTheirStack.mockResolvedValue([jobA]);
-    mockFetchGreenhouse.mockResolvedValue([jobB]);
+    mockFetchGreenhouse.mockResolvedValue([jobA, jobB]);
 
     const result = await runIngestion(db);
 
@@ -212,21 +206,18 @@ describe('runIngestion()', () => {
     expect(listJobs(db)).toHaveLength(2);
   });
 
-  it('Given runIngestion is called, Then both TheirStack and Greenhouse sources are queried', async () => {
+  it('Given runIngestion is called, Then Greenhouse source is queried', async () => {
     const db = makeDb();
-    mockFetchTheirStack.mockResolvedValue([]);
     mockFetchGreenhouse.mockResolvedValue([]);
 
     await runIngestion(db);
 
-    expect(mockFetchTheirStack).toHaveBeenCalledTimes(1);
     expect(mockFetchGreenhouse).toHaveBeenCalledTimes(1);
   });
 
   it('Given a duplicate run, When runIngestion is called twice with same data, Then second run inserts 0 rows', async () => {
     const db = makeDb();
-    mockFetchTheirStack.mockResolvedValue([jobA]);
-    mockFetchGreenhouse.mockResolvedValue([jobB]);
+    mockFetchGreenhouse.mockResolvedValue([jobA, jobB]);
 
     await runIngestion(db);
     const second = await runIngestion(db);
@@ -234,78 +225,16 @@ describe('runIngestion()', () => {
     expect(second).toEqual({ inserted: 0, skipped: 2 });
   });
 
-  it('Given empty sources, When runIngestion is called, Then returns zero counts', async () => {
+  it('Given empty source, When runIngestion is called, Then returns zero counts', async () => {
     const db = makeDb();
-    mockFetchTheirStack.mockResolvedValue([]);
     mockFetchGreenhouse.mockResolvedValue([]);
 
     const result = await runIngestion(db);
     expect(result).toEqual({ inserted: 0, skipped: 0 });
   });
 
-  it('Given both sources return overlapping jobs, When runIngestion is called, Then duplicates are skipped', async () => {
+  it('Given Greenhouse throws, When runIngestion is called, Then returns zero counts', async () => {
     const db = makeDb();
-    mockFetchTheirStack.mockResolvedValue([jobA]);
-    mockFetchGreenhouse.mockResolvedValue([jobA]); // same job from both sources
-
-    const result = await runIngestion(db);
-    expect(result).toEqual({ inserted: 1, skipped: 1 });
-    expect(listJobs(db)).toHaveLength(1);
-  });
-
-  it('Given TheirStack throws, When runIngestion is called, Then Greenhouse jobs are still ingested', async () => {
-    const db = makeDb();
-    mockFetchTheirStack.mockRejectedValue(new Error('TheirStack API unavailable'));
-    mockFetchGreenhouse.mockResolvedValue([jobB]);
-
-    const result = await runIngestion(db);
-
-    expect(result).toEqual({ inserted: 1, skipped: 0 });
-    expect(listJobs(db)).toHaveLength(1);
-    expect(listJobs(db)[0].source).toBe('greenhouse');
-  });
-
-  it('Given TheirStack throws, When runIngestion is called, Then the error is logged via console.warn', async () => {
-    const db = makeDb();
-    const error = new Error('TheirStack API unavailable');
-    mockFetchTheirStack.mockRejectedValue(error);
-    mockFetchGreenhouse.mockResolvedValue([]);
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    await runIngestion(db);
-
-    expect(warnSpy).toHaveBeenCalledWith('Job source fetch failed:', error);
-    warnSpy.mockRestore();
-  });
-
-  it('Given Greenhouse throws, When runIngestion is called, Then TheirStack jobs are still ingested', async () => {
-    const db = makeDb();
-    mockFetchTheirStack.mockResolvedValue([jobA]);
-    mockFetchGreenhouse.mockRejectedValue(new Error('Greenhouse API unavailable'));
-
-    const result = await runIngestion(db);
-
-    expect(result).toEqual({ inserted: 1, skipped: 0 });
-    expect(listJobs(db)).toHaveLength(1);
-    expect(listJobs(db)[0].source).toBe('theirstack');
-  });
-
-  it('Given Greenhouse throws, When runIngestion is called, Then the error is logged via console.warn', async () => {
-    const db = makeDb();
-    const error = new Error('Greenhouse API unavailable');
-    mockFetchTheirStack.mockResolvedValue([]);
-    mockFetchGreenhouse.mockRejectedValue(error);
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    await runIngestion(db);
-
-    expect(warnSpy).toHaveBeenCalledWith('Job source fetch failed:', error);
-    warnSpy.mockRestore();
-  });
-
-  it('Given both sources throw, When runIngestion is called, Then returns zero counts', async () => {
-    const db = makeDb();
-    mockFetchTheirStack.mockRejectedValue(new Error('TheirStack API unavailable'));
     mockFetchGreenhouse.mockRejectedValue(new Error('Greenhouse API unavailable'));
 
     const result = await runIngestion(db);
@@ -314,19 +243,15 @@ describe('runIngestion()', () => {
     expect(listJobs(db)).toHaveLength(0);
   });
 
-  it('Given both sources throw, When runIngestion is called, Then both errors are logged via console.warn', async () => {
+  it('Given Greenhouse throws, When runIngestion is called, Then the error is logged via console.warn', async () => {
     const db = makeDb();
-    const tsError = new Error('TheirStack API unavailable');
-    const ghError = new Error('Greenhouse API unavailable');
-    mockFetchTheirStack.mockRejectedValue(tsError);
-    mockFetchGreenhouse.mockRejectedValue(ghError);
+    const error = new Error('Greenhouse API unavailable');
+    mockFetchGreenhouse.mockRejectedValue(error);
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     await runIngestion(db);
 
-    expect(warnSpy).toHaveBeenCalledTimes(2);
-    expect(warnSpy).toHaveBeenCalledWith('Job source fetch failed:', tsError);
-    expect(warnSpy).toHaveBeenCalledWith('Job source fetch failed:', ghError);
+    expect(warnSpy).toHaveBeenCalledWith('Job source fetch failed:', error);
     warnSpy.mockRestore();
   });
 });

@@ -54,9 +54,9 @@ function seedJob(
   overrides: Partial<JobInput> = {}
 ): Job {
   return upsertJob(db, {
-    source: 'theirstack',
-    ats_type: 'unknown',
-    external_id: `ts-${Math.random()}`,
+    source: 'greenhouse',
+    ats_type: 'greenhouse',
+    external_id: `gh-${Math.random()}`,
     title: 'VP of Engineering',
     company: 'Acme Corp',
     url: 'https://acme.com/jobs/1',
