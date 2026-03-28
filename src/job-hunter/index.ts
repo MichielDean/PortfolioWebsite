@@ -118,8 +118,11 @@ export async function startProcess(options: StartOptions = {}): Promise<void> {
   console.log('[job-hunter] Scheduled daily pipeline at 08:00 UTC. Telegram poller running.');
 }
 
-// Run when invoked directly (not when imported as a module in tests)
-if (require.main === module) {
+// Run when invoked directly (not when imported as a module in tests).
+// In ESM (tsx runtime): `require` is not a global, so typeof require === 'undefined' is
+// true and short-circuit prevents the ReferenceError that `module` would throw.
+// In CJS (jest/ts-jest): require.main !== module when imported, so startProcess() is not called.
+if (typeof require === 'undefined' || require.main === module) {
   startProcess().catch((err) => {
     console.error('[job-hunter] Fatal error:', err);
     process.exit(1);

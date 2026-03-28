@@ -116,6 +116,7 @@ export async function fetchLeverJobs(
 
         hasNext = page.hasNext ?? false;
         cursor = page.next;
+        if (hasNext && !cursor) break;
       }
     } catch (err) {
       console.warn(`Lever: skipping ${company} — ${(err as Error).message}`);

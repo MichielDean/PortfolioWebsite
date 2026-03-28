@@ -380,6 +380,25 @@ describe('fetchLeverJobs() — pagination', () => {
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
+  it('breaks out of the pagination loop when hasNext is true but next cursor is absent', async () => {
+    let callCount = 0;
+    jest.spyOn(global, 'fetch').mockImplementation(async () => {
+      callCount++;
+      if (callCount > 2) throw new Error('Infinite loop detected: too many fetch calls');
+      return {
+        ok: true,
+        json: async () => ({ data: [remoteJob], hasNext: true }),  // hasNext=true but no next cursor
+      } as Response;
+    });
+
+    const jobs = await fetchLeverJobs(['acme']);
+
+    // The loop must break after the first page — hasNext=true with no cursor is a broken API
+    // response; continuing would re-fetch the same page forever.
+    expect(callCount).toBe(1);
+    expect(jobs).toHaveLength(1);
+  });
+
   it('sends the cursor from the previous page as offset on the next request', async () => {
     const spy = jest.spyOn(global, 'fetch').mockImplementation(async (url) => {
       const hasOffset = String(url).includes('offset=next-cursor');
