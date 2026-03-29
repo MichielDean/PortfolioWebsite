@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { execFile } from 'child_process';
 import type Database from 'better-sqlite3';
 import { profileData, type Profile } from '@/data/profileData';
 import type { Job } from './db/types';
@@ -93,26 +93,29 @@ export function buildScoringPrompt(profile: Profile, job: Job): string {
 export async function scoreJob(
   db: Database.Database,
   job: Job,
-  anthropic: Anthropic
 ): Promise<ClaudeScoreResponse> {
   const prompt = buildScoringPrompt(profileData, job);
 
-  const message = await anthropic.messages.create({
-    model: SCORING_MODEL,
-    max_tokens: 256,
-    messages: [{ role: 'user', content: prompt }],
+  const stdout = await new Promise<string>((resolve, reject) => {
+    execFile(
+      'claude',
+      ['--dangerously-skip-permissions', '-p', prompt, '--output-format', 'text'],
+      { timeout: 60_000 },
+      (err, out, stderr) => {
+        if (err) reject(new Error(`claude CLI failed: ${err.message}\n${stderr}`));
+        else resolve(out.trim());
+      }
+    );
   });
 
-  const block = message.content[0];
-  if (!block || block.type !== 'text') {
-    throw new Error(`Unexpected response type from Claude: ${block?.type}`);
-  }
+  const jsonMatch = stdout.match(/\{[\s\S]*?\}/);
+  if (!jsonMatch) throw new Error(`No JSON in response: ${stdout.slice(0, 200)}`);
 
   let parsed: ClaudeScoreResponse;
   try {
-    parsed = JSON.parse(block.text) as ClaudeScoreResponse;
+    parsed = JSON.parse(jsonMatch[0]) as ClaudeScoreResponse;
   } catch {
-    throw new Error(`Claude returned non-JSON response: ${block.text}`);
+    throw new Error(`Claude returned non-JSON response: ${stdout.slice(0, 200)}`);
   }
 
   if (
@@ -142,13 +145,10 @@ export async function scoreJob(
  * avoid API rate limits. Returns the count of successfully scored jobs and
  * those eligible for Telegram notification (score >= MIN_ELIGIBLE_SCORE).
  *
- * If `anthropic` is not supplied a default Anthropic client is created.
  */
 export async function runScoring(
   db: Database.Database,
-  anthropic?: Anthropic
 ): Promise<ScoringResult> {
-  const client = anthropic ?? new Anthropic();
   const unscoredJobs = getUnscoredJobs(db);
   const eligible: Job[] = [];
   let scored = 0;
@@ -160,7 +160,7 @@ export async function runScoring(
 
     const batch = unscoredJobs.slice(i, i + BATCH_SIZE);
     const results = await Promise.allSettled(
-      batch.map((job) => scoreJob(db, job, client))
+      batch.map((job) => scoreJob(db, job))
     );
 
     for (const [j, result] of results.entries()) {
