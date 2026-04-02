@@ -27,10 +27,7 @@
     "test:coverage": "jest --coverage",
     "test:e2e": "jest --config jest.e2e.config.ts",
     "prebuild": "npm test",
-    "test:resume": "jest --config jest.resume.config.cjs",
-    "test:job-hunter": "jest --config jest.job-hunter.config.cjs",
-    "job-hunter": "tsx src/job-hunter/index.ts",
-    "job-hunter:now": "tsx src/job-hunter/index.ts --run-now"
+    "test:resume": "jest --config jest.resume.config.cjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

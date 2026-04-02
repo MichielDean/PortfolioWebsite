@@ -61,14 +61,4 @@ npx tsc --project src/resume/tsconfig.json
 - **SDET III** — Scentsy, Inc. (Jun 2011–May 2018): led SDET team, test dashboard
 - **Software Test Engineer** — Lionbridge (May 2007–Jun 2011): HP, Microsoft, Palm
 
-## Job Hunter Pipeline
 
-**Repo location:** `src/job-hunter/`
-**Source:** Python ingest.py script using jobspy (LinkedIn, ZipRecruiter)
-**Target roles:** Director of Engineering, Senior Engineering Manager, VP of Engineering, VP of QA
-
-The pipeline runs on lobsterdog (not Netlify — that's a static site). Required env vars for full pipeline: `ANTHROPIC_API_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
-
-### Status
-- ingest.py: primary ingestion method (droplet po-54o85) ✅ deployed
-- Greenhouse, Lever, Ashby sources: retired (replaced by jobspy)
