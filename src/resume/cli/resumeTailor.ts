@@ -28,6 +28,7 @@ interface CLIOptions {
   jobTitle?: string;
   company?: string;
   output?: string;
+  outputDir?: string;
   coverLetterOnly?: boolean;
   noCoverLetter?: boolean;
   tone?: 'professional' | 'enthusiastic' | 'conversational';
@@ -167,6 +168,10 @@ class ResumeCLI {
         case '-o':
           options.output = args[++i];
           break;
+        case '--output-dir':
+        case '-d':
+          options.outputDir = args[++i];
+          break;
         case '--cover-letter-only':
           options.coverLetterOnly = true;
           break;
@@ -205,10 +210,10 @@ class ResumeCLI {
     try {
       console.log(`${colors.bright}Processing...${colors.reset}\n`);
 
-      // Ensure generated folder exists
-      const generatedDir = './generated';
-      if (!fs.existsSync(generatedDir)) {
-        fs.mkdirSync(generatedDir, { recursive: true });
+      // Ensure output folder exists
+      const outputDir = options.outputDir || './generated';
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
       }
 
       // Get profile from single source of truth
@@ -221,7 +226,11 @@ class ResumeCLI {
 
       // Handle cover letter only mode
       if (options.coverLetterOnly) {
-        await this.generateCoverLetter(profile, jobPosting, options);
+        const coverDir = options.outputDir || './generated';
+        if (!fs.existsSync(coverDir)) {
+          fs.mkdirSync(coverDir, { recursive: true });
+        }
+        await this.generateCoverLetter(profile, jobPosting, options, coverDir);
         return;
       }
 
@@ -263,14 +272,14 @@ class ResumeCLI {
       console.log(`${colors.cyan}→ Generating HTML...${colors.reset}`);
       const html = this.generateHTML(profile, tailored, options);
 
-      // Save to generated folder — named by company unless overridden
+      // Save to output folder — named by company unless overridden
       const companySuffix = sanitizeCompanyName(options.company!);
-      const outputFile = options.output || `./generated/resume_${companySuffix}.html`;
+      const outputFile = options.output || `${outputDir}/resume_${companySuffix}.html`;
       fs.writeFileSync(outputFile, html);
 
       // Generate PDF automatically
       console.log(`${colors.cyan}→ Generating PDF...${colors.reset}`);
-      const pdfFile = options.output?.replace('.html', '.pdf') || `./generated/resume_${companySuffix}.pdf`;
+      const pdfFile = options.output?.replace('.html', '.pdf') || `${outputDir}/resume_${companySuffix}.pdf`;
       await this.generatePDF(html, pdfFile);
 
       console.log(`\n${colors.green}${colors.bright}✓ Resume Generated!${colors.reset}\n`);
@@ -283,7 +292,7 @@ class ResumeCLI {
       // Generate cover letter (unless disabled)
       if (!options.noCoverLetter) {
         console.log(`${colors.cyan}→ Generating cover letter...${colors.reset}`);
-        await this.generateCoverLetter(profile, jobPosting, options);
+        await this.generateCoverLetter(profile, jobPosting, options, outputDir);
       }
       
     } catch (error) {
@@ -292,7 +301,7 @@ class ResumeCLI {
     }
   }
 
-  private async generateCoverLetter(profile: any, jobPosting: string, options: CLIOptions): Promise<void> {
+  private async generateCoverLetter(profile: any, jobPosting: string, options: CLIOptions, outputDir?: string): Promise<void> {
     const coverLetterResult = await this.coverLetter!.generateCoverLetter(
       profile,
       jobPosting,
@@ -314,15 +323,16 @@ class ResumeCLI {
     );
 
     const companySuffix = sanitizeCompanyName(options.company!);
-    const htmlFile = `./generated/cover-letter_${companySuffix}.html`;
+    const outDir = outputDir || './generated';
+    const htmlFile = `${outDir}/cover-letter_${companySuffix}.html`;
     fs.writeFileSync(htmlFile, coverLetterHTML);
 
     // Generate PDF
-    const pdfFile = `./generated/cover-letter_${companySuffix}.pdf`;
+    const pdfFile = `${outDir}/cover-letter_${companySuffix}.pdf`;
     await this.generatePDF(coverLetterHTML, pdfFile);
 
     // Save text version
-    const textFile = `./generated/cover-letter_${companySuffix}.txt`;
+    const textFile = `${outDir}/cover-letter_${companySuffix}.txt`;
     fs.writeFileSync(textFile, coverLetterResult.fullLetter);
 
     console.log(`\n${colors.green}${colors.bright}✓ Cover Letter Generated!${colors.reset}\n`);
@@ -490,6 +500,7 @@ ${colors.bright}Options:${colors.reset}
   -t, --job-title <title>   Job title (required)
   -c, --company <name>      Company name (required)
   -o, --output <file>       Output filename (default: generated/resume_<company>.html)
+  -d, --output-dir <dir>    Output directory for all generated files (default: generated)
   --cover-letter-only       Generate only a cover letter (no resume)
   --no-cover-letter         Skip cover letter generation
   --tone <tone>             Cover letter tone: professional, enthusiastic, conversational (default: professional)
@@ -512,7 +523,7 @@ ${colors.bright}Examples:${colors.reset}
   node dist/resume-cli/resume/cli/resumeTailor.js --job-file job.txt --job-title "Staff Engineer" --company "ClickUp" --tone enthusiastic
 
 ${colors.bright}Note:${colors.reset}
-  All generated files are saved to the ${colors.cyan}generated/${colors.reset} folder.
+  All generated files are saved to the ${colors.cyan}generated/${colors.reset} folder by default, or the directory specified by --output-dir.
   Generated files: resume_<company>.html, resume_<company>.pdf, cover-letter_<company>.html, cover-letter_<company>.pdf, cover-letter_<company>.txt
 `);
   }
