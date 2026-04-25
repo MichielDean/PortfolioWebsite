@@ -6,15 +6,6 @@ dist/
 build/
 *.tsbuildinfo
 
-# Generated files (resumes, discovered skills, etc.)
-generated/*
-!generated/.gitkeep
-
-# Resume tool outputs (legacy - moved to generated/)
-resume*.html
-resumes/
-*.pdf
-
 # Test coverage
 coverage/
 
@@ -30,15 +21,6 @@ build-log.txt
 .env.local
 .env.production.local
 .env.development.local
-
-# Contact information (sensitive data)
-contact.json
-
-# Python
-__pycache__/
-*.pyc
-*.pyo
-.venv/
 
 # Editor directories and files
 .vscode/*
