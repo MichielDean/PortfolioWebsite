@@ -14,7 +14,7 @@ module.exports = {
       '<rootDir>/__mocks__/fileMock.js',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  testPathIgnorePatterns: ['node_modules', 'dist', 'src/tests/e2e', 'src/tests/resume'],
+  testPathIgnorePatterns: ['node_modules', 'dist', 'src/tests/e2e'],
   transformIgnorePatterns: ['node_modules/'],
   setupFilesAfterEnv: ['<rootDir>/setup-test-env.js'],
   moduleDirectories: ['node_modules', '<rootDir>/src']
