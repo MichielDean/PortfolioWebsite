@@ -22,7 +22,6 @@ npm run dev       # start Vite dev server at http://localhost:5173
 npm test                          # all unit tests
 npm run test:watch                # watch mode
 npm run test:coverage             # with coverage report
-npm run test:resume               # resume-module tests only
 npm run test:e2e                  # end-to-end tests (requires built site)
 ```
 

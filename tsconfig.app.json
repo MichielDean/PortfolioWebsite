@@ -25,6 +25,5 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*", "vite.config.ts"],
-  "exclude": ["src/resume/**/*", "src/tests/resume/**/*"]
+  "include": ["src/**/*", "vite.config.ts"]
 }
