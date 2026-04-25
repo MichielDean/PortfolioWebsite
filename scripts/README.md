@@ -1,3 +1,3 @@
 # Scripts Folder
 
-Utility scripts for the project.
+Placeholder for project utility scripts.
