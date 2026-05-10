@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+# Sync profile data from PortfolioWebsite (source of truth) to lobresume profile.json.
+#
+# Reads:  ~/source/PortfolioWebsite/src/data/profileData.ts
+# Writes: ~/.config/llmem/resume/profile.json
+#
+# The PortfolioWebsite profileData.ts is the single source of truth.
+# Run this script after editing profileData.ts to update the resume pipeline.
+
+set -euo pipefail
+
+PORTFOLIO_DIR="$(cd ~/source/PortfolioWebsite && pwd)"
+OUTPUT_FILE="$(cd ~ && pwd)/.config/llmem/resume/profile.json"
+
+if [ ! -f "$PORTFOLIO_DIR/src/data/profileData.ts" ]; then
+    echo "Error: profileData.ts not found at $PORTFOLIO_DIR/src/data/profileData.ts"
+    exit 1
+fi
+
+cd "$PORTFOLIO_DIR"
+
+# Use Node.js to import the TypeScript data and output as JSON
+# This avoids regex-based TS->JSON conversion issues
+node -e "
+const ts = require('typescript');
+const path = require('path');
+const fs = require('fs');
+
+// Read the TS file
+const tsPath = path.join('$PORTFOLIO_DIR', 'src/data/profileData.ts');
+const tsContent = fs.readFileSync(tsPath, 'utf-8');
+
+// Transpile TS to JS
+const jsContent = ts.transpileModule(tsContent, {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 }
+}).outputText;
+
+// Write to temp file and require it
+const tmpFile = path.join('/tmp', '_profile_sync.js');
+fs.writeFileSync(tmpFile, jsContent);
+
+// Clear require cache and load
+delete require.cache[require.resolve(tmpFile)];
+const mod = require(tmpFile);
+const data = mod.profileData;
+
+if (!data) {
+  console.error('Error: profileData not found in module export');
+  process.exit(1);
+}
+
+// Convert PortfolioWebsite format to lobresume format
+const result = {
+  name: data.name || '',
+  email: data.email || '',
+  phone: data.phone || '',
+  location: data.location || '',
+  linkedin: data.linkedin || '',
+  website: data.website || '',
+  summary: data.summary || '',
+  skills: data.skills || [],
+  work_history: (data.workHistory || []).map(entry => {
+    const bullets = [];
+    const descriptionParts = [];
+    for (const descObj of (entry.description || [])) {
+      descriptionParts.push(descObj.description || '');
+      for (const info of (descObj.moreInfo || [])) {
+        bullets.push(info);
+      }
+    }
+    const duration = entry.duration || '';
+    let startDate = '';
+    let endDate = '';
+    if (duration.includes(' - ')) {
+      const parts = duration.split(' - ', 2);
+      startDate = parts[0].trim();
+      endDate = parts[1].trim();
+    } else if (duration) {
+      startDate = duration;
+    }
+    return {
+      company: entry.company || '',
+      title: entry.role || '',
+      start_date: startDate,
+      end_date: endDate,
+      description: descriptionParts.join(', '),
+      bullets: bullets,
+    };
+  }),
+  education: data.education || [],
+  certifications: data.certifications || [],
+};
+
+// Validate
+if (!result.name) { console.error('Error: no name'); process.exit(1); }
+if (!result.email) { console.error('Error: no email'); process.exit(1); }
+
+// Write output
+const outDir = path.dirname('$OUTPUT_FILE');
+fs.mkdirSync(outDir, { recursive: true });
+fs.writeFileSync('$OUTPUT_FILE', JSON.stringify(result, null, 2) + '\n', 'utf-8');
+
+console.log('Synced profile: profileData.ts -> profile.json');
+console.log('  Name: ' + result.name);
+console.log('  Skills: ' + result.skills.length);
+console.log('  Work history: ' + result.work_history.length + ' entries');
+console.log('  Education: ' + result.education.length + ' entries');
+
+// Cleanup
+fs.unlinkSync(tmpFile);
+"

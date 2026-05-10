@@ -20,6 +20,12 @@ export interface Profile {
   name: string;
   title: string;
   description: string;
+  email: string;
+  phone: string;
+  location: string;
+  website: string;
+  summary: string;
+  skills: string[];
   linkedin: string;
   github: string;
   stackOverflow: string;
@@ -28,7 +34,59 @@ export interface Profile {
 }
 
 export const profileData: Profile = {
-        "workHistory": [
+  name: "Michiel Bugher",
+  title: "Director of Software Engineering",
+  description: "",
+  email: "miyike@gmail.com",
+  phone: "208-284-9187",
+  location: "Boise, Idaho",
+  website: "www.michielbugher.com",
+  summary: "Engineering leader with 18+ years of experience in software quality, test automation, and team management. Currently directing three engineering teams and org-wide QA at Triton Digital, driving AI tool adoption, establishing test architecture standards, and building high-performing teams. Track record of transforming QA organizations, implementing automation from the ground up, and progressing from individual contributor to director through demonstrated technical leadership and strategic execution.",
+  skills: [
+    "Engineering Leadership",
+    "Agile/Scrum",
+    "Cross-functional Collaboration",
+    "Mentorship",
+    "Strategic Planning",
+    "Test Automation",
+    "Performance Testing",
+    "API Testing",
+    "Security Testing",
+    "Distributed Systems Testing",
+    "C#/.NET",
+    "Java",
+    "TypeScript",
+    "Python",
+    "Selenium",
+    "Playwright",
+    "Cypress",
+    "Jest",
+    "AWS",
+    "CI/CD",
+    "Jenkins",
+    "TeamCity",
+    "Linux Systems",
+    "Relational Databases (SQL Server, Oracle, MySQL, PostgreSQL)",
+    "Puppeteer",
+    "GitHub Copilot",
+    "LLM-assisted Development",
+    "MCP Integration",
+    "AI Governance",
+    "Enterprise QE Strategy & Governance",
+    "Automation-First Testing & CI/CD Integration",
+    "Quality Metrics, Dashboards & Reporting",
+    "Shift-Left Quality Practices",
+    "QE Team Building & Scaling",
+    "End-to-End Test Architecture",
+    "Data-Driven Engineering & Analytics",
+    "Enterprise Software Testing (UI, API, Integration, Regression)",
+    "SDLC Quality Integration"
+  ],
+  linkedin: "https://www.linkedin.com/in/michielbugher/",
+  github: "https://github.com/MichielDean",
+  stackOverflow: "https://stackoverflow.com/users/2027382/michiel-bugher",
+  projects: [],
+  "workHistory": [
           {
             "role": "Director of Software Engineering",
             "company": "Triton Digital",
@@ -275,11 +333,4 @@ export const profileData: Profile = {
             ]
           }
         ],
-    name: "",
-    title: "",
-    description: "",
-    linkedin: "https://www.linkedin.com/in/michielbugher/",
-    github: "https://github.com/MichielDean",
-    stackOverflow: "https://stackoverflow.com/users/2027382/michiel-bugher",
-    projects: []
 }

@@ -17,6 +17,12 @@ export interface Profile {
     name: string;
     title: string;
     description: string;
+    email: string;
+    phone: string;
+    location: string;
+    website: string;
+    summary: string;
+    skills: string[];
     linkedin: string;
     github: string;
     stackOverflow: string;
