@@ -80,7 +80,8 @@ export const profileData: Profile = {
     "End-to-End Test Architecture",
     "Data-Driven Engineering & Analytics",
     "Enterprise Software Testing (UI, API, Integration, Regression)",
-    "SDLC Quality Integration"
+    "SDLC Quality Integration",
+    "REST APIs"
   ],
   linkedin: "https://www.linkedin.com/in/michielbugher/",
   github: "https://github.com/MichielDean",
