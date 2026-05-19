@@ -191,10 +191,18 @@ def convert_to_profile_json(profile_data: dict) -> dict:
         "website": profile_data.get("website", ""),
         "summary": profile_data.get("summary", ""),
         "skills": profile_data.get("skills", []),
+        "skill_categories": {},
         "work_history": [],
         "education": profile_data.get("education", []),
         "certifications": profile_data.get("certifications", []),
     }
+
+    for cat_entry in profile_data.get("skillCategories", []):
+        if isinstance(cat_entry, dict):
+            cat_name = cat_entry.get("category", "")
+            cat_skills = cat_entry.get("skills", [])
+            if cat_name and cat_skills:
+                result["skill_categories"][cat_name] = cat_skills
 
     for entry in profile_data.get("workHistory", []):
         # Convert description array format to flat bullets

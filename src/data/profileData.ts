@@ -1,3 +1,8 @@
+export interface SkillCategory {
+  category: string;
+  skills: string[];
+}
+
 export interface WorkHistory {
   company: string;
   role: string;
@@ -26,6 +31,7 @@ export interface Profile {
   website: string;
   summary: string;
   skills: string[];
+  skillCategories: SkillCategory[];
   linkedin: string;
   github: string;
   stackOverflow: string;
@@ -81,6 +87,16 @@ export const profileData: Profile = {
     "Data-Driven Engineering & Analytics",
     "Enterprise Software Testing (UI, API, Integration, Regression)",
     "SDLC Quality Integration"
+  ],
+  skillCategories: [
+    { category: "Leadership & Strategy", skills: ["Engineering Leadership", "Agile/Scrum", "Cross-functional Collaboration", "Mentorship", "Strategic Planning"] },
+    { category: "Testing & QA", skills: ["Test Automation", "Performance Testing", "API Testing", "Security Testing", "Distributed Systems Testing", "Enterprise Software Testing (UI, API, Integration, Regression)", "Shift-Left Quality Practices", "End-to-End Test Architecture"] },
+    { category: "Programming Languages", skills: ["C#/.NET", "Java", "TypeScript", "Python"] },
+    { category: "Test Frameworks & Tools", skills: ["Selenium", "Playwright", "Cypress", "Jest", "Puppeteer"] },
+    { category: "Cloud & DevOps", skills: ["AWS", "CI/CD", "Jenkins", "TeamCity", "Linux Systems"] },
+    { category: "Data & Databases", skills: ["Relational Databases (SQL Server, Oracle, MySQL, PostgreSQL)", "Data-Driven Engineering & Analytics"] },
+    { category: "AI & Developer Tooling", skills: ["GitHub Copilot", "LLM-assisted Development", "MCP Integration", "AI Governance"] },
+    { category: "QE Strategy & Governance", skills: ["Enterprise QE Strategy & Governance", "Automation-First Testing & CI/CD Integration", "Quality Metrics, Dashboards & Reporting", "QE Team Building & Scaling", "SDLC Quality Integration"] },
   ],
   linkedin: "https://www.linkedin.com/in/michielbugher/",
   github: "https://github.com/MichielDean",
