@@ -86,7 +86,14 @@ export const profileData: Profile = {
     "End-to-End Test Architecture",
     "Data-Driven Engineering & Analytics",
     "Enterprise Software Testing (UI, API, Integration, Regression)",
-    "SDLC Quality Integration"
+    "SDLC Quality Integration",
+    "Kubernetes",
+    "Docker",
+    "Terraform",
+    "GitHub Actions",
+    "Azure",
+    "GCP",
+    "TestNG"
   ],
   skillCategories: [
     { category: "Leadership & Strategy", skills: ["Engineering Leadership", "Agile/Scrum", "Cross-functional Collaboration", "Mentorship", "Strategic Planning"] },
