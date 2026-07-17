@@ -49,7 +49,7 @@ export const profileData: Profile = {
   website: "www.michielbugher.com",
   summary: "Engineering leader with 18+ years of experience spanning software quality, test automation, developer productivity, and distributed systems. Currently directing three engineering teams and org-wide QA at Triton Digital, driving AI tool adoption, establishing test architecture standards, and building high-performing teams. Hands-on experience with Kubernetes, GitOps, observability platforms, microservices architecture, and AI-assisted development workflows. Track record of owning SOC 3 compliance, implementing DORA metrics, and managing production systems in digital media/streaming and ad tech domains.",
   skills: [
-    "Engineering Leadership", "Cross-functional Collaboration", "Mentorship", "Strategic Planning", "Test Automation", "Performance Testing", "API Testing", "Security Testing", "Distributed Systems Testing", "C#/.NET", "Java", "TypeScript", "Python", "Selenium", "Playwright", "Cypress", "Jest", "AWS", "CI/CD", "Jenkins", "TeamCity", "Linux Systems", "Relational Databases (SQL Server, Oracle, MySQL, PostgreSQL)", "Puppeteer", "GitHub Copilot", "LLM-assisted Development", "MCP Integration", "AI Governance", "Enterprise QE Strategy & Governance", "Automation-First Testing & CI/CD Integration", "Quality Metrics, Dashboards & Reporting", "Shift-Left Quality Practices", "QE Team Building & Scaling", "End-to-End Test Architecture", "Data-Driven Engineering & Analytics", "Enterprise Software Testing (UI, API, Integration, Regression)", "SDLC Quality Integration", "Kubernetes", "Docker", "Terraform", "GitHub Actions", "Azure", "TestNG", "Node.js", "React", "Go", "FastAPI", "GraphQL", "PostgreSQL (Administration & Schema Design)", "Microservices Architecture", "REST API Design", "Event-Driven Systems", "Caching/CDN Integration", "GitOps", "ArgoCD", "GitLab CI", "Artifactory/Nexus", "Pipeline as Code", "Datadog", "Grafana/Prometheus", "New Relic", "ELK/Splunk", "DORA Metrics", "Developer Productivity", "SOC 3 Compliance", "Incident Response", "On-Call/SLOs", "Architecture Decision Records", "Hiring & Interviewing", "Performance Management", "Roadmap Planning", "Cloud Networking (VPC, Load Balancers, DNS, Service Discovery)", "Claude Code", "Cursor", "Digital Media/Streaming", "Ad Tech", "Cloud Infrastructure/Platform", "SAST (Static Application Security Testing)", "Root-Cause Diagnosis", "Post-Mortem / Blameless Reviews", "OKRs", "KPIs / Engineering Metrics", "Error Budgets / SLAs", "Design Docs / Architecture Reviews", "1:1s & Coaching", "Migration / Legacy Modernization", "Deployment Frequency Tracking", "Blue-Green Deployments", "Feature Flags", "Infrastructure as Code", "Helm Charts", "EC2", "S3", "AWS Lambda", "RDS", "EKS", "IAM / Security Groups", "E2E Testing Strategy", "Accessibility Testing", "Visual Regression Testing", "Contract Testing", "Load Testing at Scale", "Kanban", "SAFe / Scaled Agile", "Coding Standards / Paved Roads", "Developer Portals / Golden Paths", "Developer Tooling / Friction Reduction", "Product Engineering", "Subscription / Billing Systems", "User-Facing Analytics / Dashboards", "Executive-Level Reporting", "Product Management Collaboration", "Interview Loop Design", "Headcount Planning", "Pipeline Success Rate Tracking", "Pipeline Latency Optimization", "Build System Optimization"
+    "Engineering Leadership", "Cross-functional Collaboration", "Mentorship", "Strategic Planning", "Test Automation", "Performance Testing", "API Testing", "Security Testing", "Distributed Systems Testing", "C#/.NET", "Java", "TypeScript", "Python", "Selenium", "Playwright", "Cypress", "Jest", "AWS", "CI/CD", "Jenkins", "TeamCity", "Linux Systems", "Relational Databases (SQL Server, Oracle, MySQL, PostgreSQL)", "Puppeteer", "GitHub Copilot", "LLM-assisted Development", "MCP Integration", "AI Governance", "Enterprise QE Strategy & Governance", "Automation-First Testing & CI/CD Integration", "Quality Metrics, Dashboards & Reporting", "Shift-Left Quality Practices", "QE Team Building & Scaling", "End-to-End Test Architecture", "Data-Driven Engineering & Analytics", "Enterprise Software Testing (UI, API, Integration, Regression)", "SDLC Quality Integration", "Kubernetes", "Docker", "Terraform", "GitHub Actions", "Azure", "TestNG", "Node.js", "React", "Go", "FastAPI", "GraphQL", "PostgreSQL (Administration & Schema Design)", "Microservices Architecture", "REST API Design", "Event-Driven Systems", "Caching/CDN Integration", "GitOps", "ArgoCD", "GitLab CI", "Artifactory/Nexus", "Pipeline as Code", "Datadog", "Grafana/Prometheus", "New Relic", "ELK/Splunk", "Developer Productivity", "SOC 3 Compliance", "Incident Response", "On-Call/SLOs", "Architecture Decision Records", "Hiring & Interviewing", "Performance Management", "Roadmap Planning", "Cloud Networking (VPC, Load Balancers, DNS, Service Discovery)", "Claude Code", "Cursor", "Digital Media/Streaming", "Ad Tech", "Cloud Infrastructure/Platform", "SAST (Static Application Security Testing)", "DevSecOps Practices", "Root-Cause Diagnosis", "Post-Mortem / Blameless Reviews", "OKRs", "KPIs / Engineering Metrics", "Error Budgets / SLAs", "Design Docs / Architecture Reviews", "1:1s & Coaching", "Migration / Legacy Modernization", "Deployment Frequency Tracking", "Blue-Green Deployments", "Feature Flags", "Infrastructure as Code", "Helm Charts", "EC2", "S3", "AWS Lambda", "RDS", "EKS", "IAM / Security Groups", "E2E Testing Strategy", "Accessibility Testing", "Visual Regression Testing", "Contract Testing", "Load Testing at Scale", "Kanban", "SAFe / Scaled Agile", "Coding Standards / Paved Roads", "Developer Portals / Golden Paths", "Developer Tooling / Friction Reduction", "Product Engineering", "Subscription / Billing Systems", "User-Facing Analytics / Dashboards", "Executive-Level Reporting", "Product Management Collaboration", "Interview Loop Design", "Headcount Planning", "Pipeline Success Rate Tracking", "Pipeline Latency Optimization", "Build System Optimization"
   ],
   skillCategories: [
     { category: "Leadership & Strategy", skills: ["Engineering Leadership", "Cross-functional Collaboration", "Mentorship", "Strategic Planning", "Hiring & Interviewing", "Performance Management", "Roadmap Planning", "Architecture Decision Records"] },
@@ -59,9 +59,9 @@ export const profileData: Profile = {
     { category: "Cloud & DevOps", skills: ["AWS", "Azure", "CI/CD", "Jenkins", "TeamCity", "GitHub Actions", "GitLab CI", "GitOps", "ArgoCD", "Kubernetes", "Docker", "Terraform", "Artifactory/Nexus", "Pipeline as Code", "Infrastructure as Code", "Helm Charts", "Blue-Green Deployments", "Feature Flags", "EC2", "S3", "AWS Lambda", "RDS", "EKS", "IAM / Security Groups", "Cloud Networking (VPC, Load Balancers, DNS, Service Discovery)", "Linux Systems"] },
     { category: "Distributed Systems", skills: ["Microservices Architecture", "REST API Design", "Event-Driven Systems", "Caching/CDN Integration"] },
     { category: "Data & Databases", skills: ["Relational Databases (SQL Server, Oracle, MySQL, PostgreSQL)", "PostgreSQL (Administration & Schema Design)", "Data-Driven Engineering & Analytics"] },
-    { category: "Observability & Reliability", skills: ["Datadog", "Grafana/Prometheus", "New Relic", "ELK/Splunk", "DORA Metrics", "Developer Productivity", "Incident Response", "On-Call/SLOs", "Error Budgets / SLAs", "Root-Cause Diagnosis", "Post-Mortem / Blameless Reviews", "Pipeline Success Rate Tracking", "Pipeline Latency Optimization", "Build System Optimization"] },
+    { category: "Observability & Reliability", skills: ["Datadog", "Grafana/Prometheus", "New Relic", "ELK/Splunk", "Developer Productivity", "Incident Response", "On-Call/SLOs", "Error Budgets / SLAs", "Root-Cause Diagnosis", "Post-Mortem / Blameless Reviews", "Pipeline Success Rate Tracking", "Pipeline Latency Optimization", "Build System Optimization"] },
     { category: "AI & Developer Tooling", skills: ["GitHub Copilot", "Claude Code", "Cursor", "LLM-assisted Development", "MCP Integration", "AI Governance"] },
-    { category: "Compliance", skills: ["SOC 3 Compliance", "SAST (Static Application Security Testing)"] },
+    { category: "Compliance", skills: ["SOC 3 Compliance", "SAST (Static Application Security Testing)", "DevSecOps Practices"] },
     { category: "QE Strategy & Governance", skills: ["Enterprise QE Strategy & Governance", "Automation-First Testing & CI/CD Integration", "Quality Metrics, Dashboards & Reporting", "QE Team Building & Scaling", "SDLC Quality Integration", "E2E Testing Strategy", "Accessibility Testing", "Visual Regression Testing", "Contract Testing", "Load Testing at Scale"] },
     { category: "Engineering Management", skills: ["OKRs", "KPIs / Engineering Metrics", "Design Docs / Architecture Reviews", "1:1s & Coaching", "Migration / Legacy Modernization", "Deployment Frequency Tracking", "Coding Standards / Paved Roads", "Developer Portals / Golden Paths", "Developer Tooling / Friction Reduction", "Product Engineering", "Executive-Level Reporting", "Product Management Collaboration", "Interview Loop Design", "Headcount Planning"] },
     { category: "Domain Expertise", skills: ["Digital Media/Streaming", "Ad Tech", "Cloud Infrastructure/Platform", "Subscription / Billing Systems", "User-Facing Analytics / Dashboards"] },
@@ -78,79 +78,26 @@ export const profileData: Profile = {
             "duration": "Mar 2022 - Present",
             "description": [
               {
-                "description": "Multi-Team Leadership",
+                "description": "Team Leadership & Product Delivery",
                 "moreInfo": [
-                  "Direct three engineering teams across the Triton Advertising stack: two development teams and the organization-wide QA team, overseeing five scrum teams and managing multiple direct reports to ensure seamless collaboration and efficient delivery of high-quality software products.",
-                  "Lead technical strategy and architecture decisions across assigned development teams and quality assurance, aligning engineering efforts with product vision and business objectives.",
-                  "Served as a key liaison between engineering teams and executive leadership, providing insights and recommendations to drive strategic decision-making.",
-                  "Held responsible for the overall success of five scrum teams, driving the adoption of best practices, agile methodologies, and innovative solutions to achieve project goals and deliverables."
-                ]
-              },
-              {
-                "description": "Cross-Functional Collaboration",
-                "moreInfo": [
-                  "Fostered a unified engineering culture across development and QA teams, promoting shared ownership of quality, open communication, and collaborative problem-solving.",
-                  "Collaborated with cross-functional teams, including product management, operations, and stakeholders, to align team efforts with broader business objectives.",
-                  "Broke down silos between development and QA within assigned teams, creating integrated workflows that improved product outcomes, velocity, and team morale."
-                ]
-              },
-              {
-                "description": "Test Architecture & Engineering Excellence",
-                "moreInfo": [
-                  "Defined and implemented an end-to-end test architecture that is reusable across all teams in the organization, significantly improving the efficiency and effectiveness of testing processes and reducing redundancy.",
-                  "Established quality standards and engineering best practices adopted across managed development and QA teams.",
-                  "Championed shift-left testing practices, integrating quality early in the development lifecycle."
-                ]
-              },
-              {
-                "description": "Team Development & Mentorship",
-                "moreInfo": [
-                  "Conducted bi-weekly one-on-one meetings with all direct reports across development and QA to provide personalized guidance, performance feedback, and professional development support, fostering a culture of continuous improvement.",
-                  "Mentored and coached engineers at all levels, fostering their professional growth and enhancing overall team capabilities across multiple disciplines.",
-                  "Conducted regular training sessions on engineering best practices, tools, and methodologies to keep teams up-to-date with industry advancements.",
-                  "Built career development paths for team members, resulting in internal promotions and increased retention."
-                ]
-              },
-              {
-                "description": "Strategic Planning & Innovation",
-                "moreInfo": [
-                  "Developed and executed strategic plans for assigned teams to support the organization's long-term goals, ensuring that technical strategies align with business objectives and product roadmaps.",
-                  "Implemented data-driven approaches to engineering, leveraging metrics and analytics to identify areas for improvement and drive continuous enhancement of processes.",
-                  "Led technical innovation initiatives within managed teams, evaluating and adopting new tools and technologies to improve team efficiency and product quality."
+                  "Direct three engineering teams across the Triton Advertising stack — two development teams and the org-wide QA team — overseeing five scrum teams and 15+ engineers delivering products that serve millions of listeners and 100B+ monthly ad impressions.",
+                  "Led migration from monolith to microservices, on-prem datacenter to Kubernetes, and legacy CI to a modern developer platform, decommissioning legacy systems and improving deployment velocity across the organization.",
+                  "Built career development paths, conducted regular 1:1s, and hired 5+ engineers across development and QA, resulting in internal promotions and strong retention."
                 ]
               },
               {
                 "description": "AI Tool Rollout & Adoption",
                 "moreInfo": [
-                  "Piloted and rolled out GitHub Copilot across engineering teams, driving adoption from initial evaluation to active daily use across development and QA.",
-                  "Evaluated and adopted Model Context Protocol (MCP) for developer tooling, enabling richer LLM integration into engineering workflows.",
-                  "Introduced LLM-assisted code review into the development workflow, surfacing issues earlier and reducing review cycle time.",
-                  "Led evaluation of AI tools prior to org-wide adoption, conducting security reviews, IP assessments, and data privacy analysis to ensure responsible adoption."
+                  "Piloted and rolled out GitHub Copilot across all five scrum teams, driving adoption from 40% to 80% of licensed users and establishing AI-assisted development as standard practice across development and QA.",
+                  "Introduced LLM-assisted code review into the development workflow, significantly reducing review cycle time and surfacing defects earlier in the development cycle."
                 ]
               },
               {
-                "description": "AI-Augmented Development Workflows",
+                "description": "Quality, Security & Engineering Excellence",
                 "moreInfo": [
-                  "Leveraged AI tools to accelerate development team velocity across all aspects of the software development lifecycle.",
-                  "Implemented LLM-assisted documentation generation for codebases and APIs, reducing documentation debt and improving onboarding.",
-                  "Established an AI-augmented PR review process to surface defects earlier in the development cycle.",
-                  "Incorporated AI tools into sprint planning and ticket refinement, improving estimation accuracy and reducing ambiguity before work begins."
-                ]
-              },
-              {
-                "description": "AI Governance & Policy",
-                "moreInfo": [
-                  "Established org-wide AI usage policies covering acceptable use, data classification, and IP ownership.",
-                  "Defined standards for responsible AI tool use within engineering teams, balancing velocity gains with risk management.",
-                  "Created guidelines specifying when AI-generated code requires additional human review, ensuring oversight of critical code paths."
-                ]
-              },
-              {
-                "description": "AI Enablement & Advocacy",
-                "moreInfo": [
-                  "Created internal playbooks and prompting guides to help engineering teams use AI tools effectively and consistently.",
-                  "Coached engineers on effective prompting techniques and AI-assisted development workflows.",
-                  "Advocated for AI adoption with executive leadership and peer engineering organizations, building organizational alignment around responsible AI use."
+                  "Defined and implemented an end-to-end test architecture reusable across all teams, integrating shift-left quality practices and SAST scanning into CI/CD pipelines to catch defects and vulnerabilities early.",
+                  "Established engineering metrics, coding standards, and paved-road tooling including developer portals and golden paths, reducing developer friction and standardizing practices across multiple teams.",
+                  "Owned SOC 3 compliance audits and established org-wide AI usage policies covering acceptable use, data classification, and IP ownership, balancing velocity gains with risk management."
                 ]
               }
             ]
