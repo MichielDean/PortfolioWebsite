@@ -37,6 +37,7 @@ export interface Profile {
   stackOverflow: string;
   projects: Project[];
   workHistory: WorkHistory[];
+  doNotClaim: string[];
 }
 
 export const profileData: Profile = {
@@ -265,4 +266,39 @@ export const profileData: Profile = {
             ]
           }
         ],
+  doNotClaim: [
+    "DAST",
+    "GCP",
+    "Canary deployments",
+    "Chaos engineering",
+    "Service mesh",
+    "Ansible",
+    "Pulumi",
+    "MRPM",
+    "Budget ownership",
+    "managed budget",
+    "managed a budget",
+    "owned budget",
+    "Contractor budget management",
+    "Vendor management",
+    "Customer-facing communication",
+    "Ruby on Rails",
+    "Agency management",
+    "agency partner",
+    "Outsourced development",
+    "Fintech",
+    "Payments",
+    "Healthcare",
+    "HIPAA",
+    "Pharma",
+    "GMP",
+    "Data engineering",
+    "Airflow",
+    "dbt",
+    "Snowflake",
+    "Dagster",
+    "DORA Metrics",
+    "P&L",
+    "profit and loss"
+  ],
 }

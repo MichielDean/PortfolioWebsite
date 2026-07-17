@@ -195,6 +195,7 @@ def convert_to_profile_json(profile_data: dict) -> dict:
         "work_history": [],
         "education": profile_data.get("education", []),
         "certifications": profile_data.get("certifications", []),
+        "do_not_claim": profile_data.get("doNotClaim", []),
     }
 
     for cat_entry in profile_data.get("skillCategories", []):
