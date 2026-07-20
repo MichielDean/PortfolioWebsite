@@ -48,9 +48,14 @@ export const profileData: Profile = {
   phone: "208-284-9187",
   location: "Boise, Idaho",
   website: "www.michielbugher.com",
-  summary: "Engineering leader with 18+ years of experience spanning software quality, test automation, developer productivity, and distributed systems. Currently directing three engineering teams and org-wide QA at Triton Digital, driving AI tool adoption, establishing test architecture standards, and building high-performing teams. Hands-on experience with Kubernetes, GitOps, observability platforms, microservices architecture, and AI-assisted development workflows. Track record of owning SOC 3 compliance, implementing DORA metrics, and managing production systems in digital media/streaming and ad tech domains.",
+  summary: "AI-enablement engineering leader with 18+ years building developer tooling, agent systems, and quality platforms. Currently directing three engineering teams and org-wide QA at Triton Digital while independently building production agentic systems — an opencode agent harness with 32+ skills and session-introspection hooks, a SQLite-backed agent memory system with semantic search and embeddings (published as pip-installable LLMem), a multi-agent AIDLC pipeline orchestrator, and an autonomous job-application agent that has submitted 65+ applications across Greenhouse, Ashby, and Lever. Hands-on with coding agents, MCP server authoring, RAG/retrieval, prompt engineering, and LLM application patterns. Proven track record driving AI tool adoption (Copilot 40% to 80% of licensed users), establishing org-wide AI governance, and shipping paved-road workflows and developer portals that engineers actually adopt.",
   skills: [
-    "Engineering Leadership", "Cross-functional Collaboration", "Mentorship", "Strategic Planning", "Test Automation", "Performance Testing", "API Testing", "Security Testing", "Distributed Systems Testing", "C#/.NET", "Java", "TypeScript", "Python", "Selenium", "Playwright", "Cypress", "Jest", "AWS", "CI/CD", "Jenkins", "TeamCity", "Linux Systems", "Relational Databases (SQL Server, Oracle, MySQL, PostgreSQL)", "Puppeteer", "GitHub Copilot", "LLM-assisted Development", "MCP Integration", "AI Governance", "Enterprise QE Strategy & Governance", "Automation-First Testing & CI/CD Integration", "Quality Metrics, Dashboards & Reporting", "Shift-Left Quality Practices", "QE Team Building & Scaling", "End-to-End Test Architecture", "Data-Driven Engineering & Analytics", "Enterprise Software Testing (UI, API, Integration, Regression)", "SDLC Quality Integration", "Kubernetes", "Docker", "Terraform", "GitHub Actions", "Azure", "TestNG", "Node.js", "React", "Go", "FastAPI", "GraphQL", "PostgreSQL (Administration & Schema Design)", "Microservices Architecture", "REST API Design", "Event-Driven Systems", "Caching/CDN Integration", "GitOps", "ArgoCD", "GitLab CI", "Artifactory/Nexus", "Pipeline as Code", "Datadog", "Grafana/Prometheus", "New Relic", "ELK/Splunk", "Developer Productivity", "SOC 3 Compliance", "Incident Response", "On-Call/SLOs", "Architecture Decision Records", "Hiring & Interviewing", "Performance Management", "Roadmap Planning", "Cloud Networking (VPC, Load Balancers, DNS, Service Discovery)", "Claude Code", "Cursor", "Digital Media/Streaming", "Ad Tech", "Cloud Infrastructure/Platform", "SAST (Static Application Security Testing)", "DevSecOps Practices", "Root-Cause Diagnosis", "Post-Mortem / Blameless Reviews", "OKRs", "KPIs / Engineering Metrics", "Error Budgets / SLAs", "Design Docs / Architecture Reviews", "1:1s & Coaching", "Migration / Legacy Modernization", "Deployment Frequency Tracking", "Blue-Green Deployments", "Feature Flags", "Infrastructure as Code", "Helm Charts", "EC2", "S3", "AWS Lambda", "RDS", "EKS", "IAM / Security Groups", "E2E Testing Strategy", "Accessibility Testing", "Visual Regression Testing", "Contract Testing", "Load Testing at Scale", "Kanban", "SAFe / Scaled Agile", "Coding Standards / Paved Roads", "Developer Portals / Golden Paths", "Developer Tooling / Friction Reduction", "Product Engineering", "Subscription / Billing Systems", "User-Facing Analytics / Dashboards", "Executive-Level Reporting", "Product Management Collaboration", "Interview Loop Design", "Headcount Planning", "Pipeline Success Rate Tracking", "Pipeline Latency Optimization", "Build System Optimization"
+    "Engineering Leadership", "Cross-functional Collaboration", "Mentorship", "Strategic Planning", "Test Automation", "Performance Testing", "API Testing", "Security Testing", "Distributed Systems Testing", "C#/.NET", "Java", "TypeScript", "Python", "Selenium", "Playwright", "Cypress", "Jest", "AWS", "CI/CD", "Jenkins", "TeamCity", "Linux Systems", "Relational Databases (SQL Server, Oracle, MySQL, PostgreSQL)", "Puppeteer", "GitHub Copilot", "LLM-assisted Development", "MCP Integration", "AI Governance", "Enterprise QE Strategy & Governance", "Automation-First Testing & CI/CD Integration", "Quality Metrics, Dashboards & Reporting", "Shift-Left Quality Practices", "QE Team Building & Scaling", "End-to-End Test Architecture", "Data-Driven Engineering & Analytics", "Enterprise Software Testing (UI, API, Integration, Regression)", "SDLC Quality Integration", "Kubernetes", "Docker", "Terraform", "GitHub Actions", "Azure", "TestNG", "Node.js", "React", "Go", "FastAPI", "GraphQL", "PostgreSQL (Administration & Schema Design)", "Microservices Architecture", "REST API Design", "Event-Driven Systems", "Caching/CDN Integration", "GitOps", "ArgoCD", "GitLab CI", "Artifactory/Nexus", "Pipeline as Code", "Datadog", "Grafana/Prometheus", "New Relic", "ELK/Splunk", "Developer Productivity", "SOC 3 Compliance", "Incident Response", "On-Call/SLOs", "Architecture Decision Records", "Hiring & Interviewing", "Performance Management", "Roadmap Planning", "Cloud Networking (VPC, Load Balancers, DNS, Service Discovery)", "Claude Code", "Cursor", "Digital Media/Streaming", "Ad Tech", "Cloud Infrastructure/Platform", "SAST (Static Application Security Testing)", "DevSecOps Practices", "Root-Cause Diagnosis", "Post-Mortem / Blameless Reviews", "OKRs", "KPIs / Engineering Metrics", "Error Budgets / SLAs", "Design Docs / Architecture Reviews", "1:1s & Coaching", "Migration / Legacy Modernization", "Deployment Frequency Tracking", "Blue-Green Deployments", "Feature Flags", "Infrastructure as Code", "Helm Charts", "EC2", "S3", "AWS Lambda", "RDS", "EKS", "IAM / Security Groups", "E2E Testing Strategy", "Accessibility Testing", "Visual Regression Testing", "Contract Testing", "Load Testing at Scale", "Kanban", "SAFe / Scaled Agile", "Coding Standards / Paved Roads", "Developer Portals / Golden Paths", "Developer Tooling / Friction Reduction", "Product Engineering", "Subscription / Billing Systems", "User-Facing Analytics / Dashboards", "Executive-Level Reporting", "Product Management Collaboration", "Interview Loop Design", "Headcount Planning", "Pipeline Success Rate Tracking", "Pipeline Latency Optimization", "Build System Optimization",
+    "MCP Server Authoring", "Agent Orchestration", "Prompt Engineering", "RAG / Retrieval-Augmented Generation",
+    "LLM Application Patterns", "Embeddings & Vector Search", "SQLite FTS5 / BM25", "Semantic Search",
+    "Agent Memory Systems", "Autonomous Agents", "CDP / Browser Automation", "Playwright",
+    "OpenAI / Anthropic / Ollama APIs", "Developer Enablement", "Champions Network",
+    "Voice AI / Speech Processing", "AI-native Onboarding"
   ],
   skillCategories: [
     { category: "Leadership & Strategy", skills: ["Engineering Leadership", "Cross-functional Collaboration", "Mentorship", "Strategic Planning", "Hiring & Interviewing", "Performance Management", "Roadmap Planning", "Architecture Decision Records"] },
@@ -61,7 +66,7 @@ export const profileData: Profile = {
     { category: "Distributed Systems", skills: ["Microservices Architecture", "REST API Design", "Event-Driven Systems", "Caching/CDN Integration"] },
     { category: "Data & Databases", skills: ["Relational Databases (SQL Server, Oracle, MySQL, PostgreSQL)", "PostgreSQL (Administration & Schema Design)", "Data-Driven Engineering & Analytics"] },
     { category: "Observability & Reliability", skills: ["Datadog", "Grafana/Prometheus", "New Relic", "ELK/Splunk", "Developer Productivity", "Incident Response", "On-Call/SLOs", "Error Budgets / SLAs", "Root-Cause Diagnosis", "Post-Mortem / Blameless Reviews", "Pipeline Success Rate Tracking", "Pipeline Latency Optimization", "Build System Optimization"] },
-    { category: "AI & Developer Tooling", skills: ["GitHub Copilot", "Claude Code", "Cursor", "LLM-assisted Development", "MCP Integration", "AI Governance"] },
+    { category: "AI & Developer Tooling", skills: ["GitHub Copilot", "Claude Code", "Cursor", "LLM-assisted Development", "MCP Integration", "MCP Server Authoring", "Agent Orchestration", "Prompt Engineering", "RAG / Retrieval-Augmented Generation", "LLM Application Patterns", "Embeddings & Vector Search", "SQLite FTS5 / BM25", "Semantic Search", "Agent Memory Systems", "Autonomous Agents", "CDP / Browser Automation", "OpenAI / Anthropic / Ollama APIs", "AI Governance", "Developer Enablement", "Champions Network", "AI-native Onboarding", "Voice AI / Speech Processing"] },
     { category: "Compliance", skills: ["SOC 3 Compliance", "SAST (Static Application Security Testing)", "DevSecOps Practices"] },
     { category: "QE Strategy & Governance", skills: ["Enterprise QE Strategy & Governance", "Automation-First Testing & CI/CD Integration", "Quality Metrics, Dashboards & Reporting", "QE Team Building & Scaling", "SDLC Quality Integration", "E2E Testing Strategy", "Accessibility Testing", "Visual Regression Testing", "Contract Testing", "Load Testing at Scale"] },
     { category: "Engineering Management", skills: ["OKRs", "KPIs / Engineering Metrics", "Design Docs / Architecture Reviews", "1:1s & Coaching", "Migration / Legacy Modernization", "Deployment Frequency Tracking", "Coding Standards / Paved Roads", "Developer Portals / Golden Paths", "Developer Tooling / Friction Reduction", "Product Engineering", "Executive-Level Reporting", "Product Management Collaboration", "Interview Loop Design", "Headcount Planning"] },
@@ -261,6 +266,53 @@ export const profileData: Profile = {
                 "description": "Client Satisfaction",
                 "moreInfo": [
                   "Managed independent testing contracts with high client satisfaction, demonstrating strong project management and communication skills."
+                ]
+              }
+            ]
+          },
+          {
+            "role": "Independent R&D — Agentic Systems & Open Source",
+            "company": "Personal Projects",
+            "duration": "2024 - Present",
+            "description": [
+              {
+                "description": "Agent Harness & Skills Platform (Lobsterdog)",
+                "moreInfo": [
+                  "Built an opencode-based agent harness in production daily use: 32+ skills (git-worktree, cistern, scaledtest, job-search, lobresume, critical-code-reviewer, execution-path-analyst, visual-explainer), session-idle introspection hooks, custom tools, provider abstraction across Ollama/OpenAI/Anthropic, identity layer, RTK token-compression and Caveman ruleset extensions, declarative install/deploy pipeline with systemd timers.",
+                  "Authored MCP-style skills consumed by the agent at decision points: memory search before filesystem reads, mandatory worktree workflow, branch-strategy enforcement, pre-PR adversarial review via isolated subagents, test-and-verify quality gates."
+                ]
+              },
+              {
+                "description": "Agent Memory System (LLMem)",
+                "moreInfo": [
+                  "Designed and published a SQLite-backed agent memory system with semantic search, vector embeddings, FTS5 BM25 keyword search, ANN vector index, confidence scoring, a typed 7-category schema (fact/decision/preference/event/project_state/procedure/self_assessment), and background dreaming (decay/boost/promote/merge). Pip-installable and published to GitHub (MichielDean/LLMem).",
+                  "Currently in active use with 1023 memories (640 active) powering this resume tailoring session, demonstrating RAG/retrieval, embeddings, and graph-traversal relations in a real agent workflow."
+                ]
+              },
+              {
+                "description": "AIDLC Pipeline Orchestrator (Cistern)",
+                "moreInfo": [
+                  "Built a multi-agent software-delivery pipeline orchestrator routing work units (droplets) through LLM-powered phases: architect cataractae producing design briefs, implementation, adversarial code review, QA with 4-level testing mandate, security, docs, and delivery — each with proof-of-work requirements and phase-specific quality gates.",
+                  "Used to run the lobsterdog PR pipeline; integrated with git worktrees, branch strategy, and automerge for autonomous PR delivery."
+                ]
+              },
+              {
+                "description": "Autonomous Job-Application Agent (career-ops)",
+                "moreInfo": [
+                  "Built an autonomous job-discovery and application pipeline that scans 100+ ATS boards (Greenhouse, Ashby, Lever), filters by title/location/freshness, scores fit against a candidate profile, tailors resumes via LLM, fills application forms (Playwright + CDP + React-props injection for Ashby reCAPTCHA v3), and submits — 65+ applications submitted to date.",
+                  "Reverse-engineered Ashby reCAPTCHA v3 bypass via headed Chrome over CDP, Greenhouse React onClick invocation via __reactProps, and Greenhouse email-verification code entry across security-input frames; committed fixes upstream."
+                ]
+              },
+              {
+                "description": "Triton Digital — Internal Agent Tooling",
+                "moreInfo": [
+                  "Beyond Copilot rollout, built internal paved-road tooling, agent harnesses, and chat assistants used inside Triton engineering: developer portal and golden-path workflows, CI/CD pipeline-as-code consumed org-wide, and AI-augmented PR review automation surfacing defects earlier in the development cycle."
+                ]
+              },
+              {
+                "description": "Voice AI / Speech Processing (Personal)",
+                "moreInfo": [
+                  "Built local dictation agents and audio-processing tooling for personal notes applications, including speech-to-text pipelines and transcription workflow automation."
                 ]
               }
             ]
