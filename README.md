@@ -64,3 +64,24 @@ The site is configured for Netlify deployment:
 - Node version: 20
 
 The build automatically runs tests before creating the production bundle.
+
+## 🔄 Profile Sync
+
+This repo is the single source of truth for resume profile data (`src/data/profileData.ts`). A post-commit hook automatically syncs changes to downstream targets (lobresume, career-ops) when `profileData.ts` is committed.
+
+### Setup
+
+After cloning, enable the git hooks:
+
+```sh
+git config core.hooksPath .git-hooks
+```
+
+### Manual sync
+
+```sh
+python3 scripts/sync-career-ops.py          # sync all targets
+python3 scripts/sync-career-ops.py --check  # dry run
+```
+
+See [`.git-hooks/README.md`](.git-hooks/README.md) for details.

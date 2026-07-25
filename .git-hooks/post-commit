@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Post-commit hook: sync profile data to all downstream targets when profileData.ts changes.
+#
+# Triggers sync-career-ops.py which updates:
+#   - ~/.config/llmem/resume/profile.json (lobresume)
+#   - ~/source/career-ops/config/profile.yml (career-ops candidate info)
+#   - ~/source/career-ops/modes/_profile.md (archetypes + framing)
+#
+# Only runs when src/data/profileData.ts is in the commit diff.
+# Silent on success — no output unless something changes or fails.
+
+set -euo pipefail
+
+# Check if profileData.ts was in the commit
+changed_files=$(git diff-tree --no-commit-id --name-only -r HEAD)
+if ! echo "$changed_files" | grep -q "^src/data/profileData\.ts$"; then
+    exit 0
+fi
+
+PORTFOLIO_DIR="$(cd "$(git rev-parse --show-toplevel)" && pwd)"
+SYNC_SCRIPT="$PORTFOLIO_DIR/scripts/sync-career-ops.py"
+
+if [ ! -f "$SYNC_SCRIPT" ]; then
+    echo "post-commit: sync-career-ops.py not found — skipping profile sync" >&2
+    exit 0
+fi
+
+echo "post-commit: profileData.ts changed — syncing to lobresume + career-ops..."
+python3 "$SYNC_SCRIPT" || {
+    echo "post-commit: profile sync FAILED — run manually: python3 $SYNC_SCRIPT" >&2
+    exit 1
+}
+echo "post-commit: profile sync complete."
