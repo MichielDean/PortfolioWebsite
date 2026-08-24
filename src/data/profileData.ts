@@ -48,7 +48,7 @@ export const profileData: Profile = {
   phone: "208-284-9187",
   location: "Boise, Idaho",
   website: "www.michielbugher.com",
-  summary: "Engineering leader with 18+ years across three complementary facets: (1) AI-enablement builder — personally authors production agents, MCP servers/skills, RAG/retrieval pipelines, and agent memory systems (lobsterdog agent harness with 32+ skills, LLMem published as pip-installable, Cistern multi-agent AIDLC orchestrator, career-ops autonomous application agent with 65+ submissions); (2) Engineering leader — directs three teams and org-wide QA at Triton Digital (15+ engineers, 5 scrum teams, 100B+ monthly ad impressions), led monolith→microservices and on-prem→Kubernetes migrations, shipped paved-road workflows and developer portals; (3) QE leader — 18 years in quality engineering, automation-first testing, E2E test architecture, shift-left practices, and SOC 3 compliance ownership. Drove GitHub Copilot adoption from 40% to 80% of licensed users and established org-wide AI governance policies. Tailor emphasis to the role at hand.",
+  summary: "AI engineering leader who builds production agent systems — personally authors MCP servers, RAG/retrieval pipelines, agent memory systems, and multi-agent orchestration platforms in production daily use. At Triton Digital, directs three engineering teams (15+ engineers, 100B+ monthly ad impressions) and drove org-wide AI adoption: piloted GitHub Copilot from 40% to 80% uptake, established AI governance policies, and built internal agent tooling for developer productivity. 18 years of engineering leadership depth — platform migrations (monolith→microservices, on-prem→K8s), CI/CD transformation, developer portals, and quality engineering at scale. Side projects shipped: LLMem (published, pip-installable agent memory with vector search), Cistern (multi-agent AIDLC orchestrator), lobsterdog (32+ skill agent harness). Tailor emphasis to the role at hand.",
   skills: [
     "Engineering Leadership",
     "Cross-functional Collaboration",
@@ -216,7 +216,15 @@ export const profileData: Profile = {
             "duration": "Mar 2022 - Present",
             "description": [
               {
-                "description": "Team Leadership & Product Delivery",
+                "description": "AI Tool Rollout & Adoption",
+                "moreInfo": [
+                  "Piloted and rolled out GitHub Copilot across all five scrum teams, driving adoption from 40% to 80% of licensed users and establishing AI-assisted development as standard practice across development and QA.",
+                  "Introduced LLM-assisted code review into the development workflow, significantly reducing review cycle time and surfacing defects earlier in the development cycle.",
+                  "Established org-wide AI usage policies covering acceptable use, data classification, and IP ownership, balancing velocity gains with risk management."
+                ]
+              },
+              {
+                "description": "Platform Engineering & Team Leadership",
                 "moreInfo": [
                   "Direct three engineering teams across the Triton Advertising stack — two development teams and the org-wide QA team — overseeing five scrum teams and 15+ engineers delivering products that serve millions of listeners and 100B+ monthly ad impressions.",
                   "Led migration from monolith to microservices, on-prem datacenter to Kubernetes, and legacy CI to a modern developer platform, decommissioning legacy systems and improving deployment velocity across the organization.",
@@ -224,18 +232,58 @@ export const profileData: Profile = {
                 ]
               },
               {
-                "description": "AI Tool Rollout & Adoption",
-                "moreInfo": [
-                  "Piloted and rolled out GitHub Copilot across all five scrum teams, driving adoption from 40% to 80% of licensed users and establishing AI-assisted development as standard practice across development and QA.",
-                  "Introduced LLM-assisted code review into the development workflow, significantly reducing review cycle time and surfacing defects earlier in the development cycle."
-                ]
-              },
-              {
                 "description": "Quality, Security & Engineering Excellence",
                 "moreInfo": [
                   "Defined and implemented an end-to-end test architecture reusable across all teams, integrating shift-left quality practices and SAST scanning into CI/CD pipelines to catch defects and vulnerabilities early.",
                   "Established engineering metrics, coding standards, and paved-road tooling including developer portals and golden paths, reducing developer friction and standardizing practices across multiple teams.",
-                  "Owned SOC 3 compliance audits and established org-wide AI usage policies covering acceptable use, data classification, and IP ownership, balancing velocity gains with risk management."
+                  "Owned SOC 3 compliance audits, balancing velocity gains with risk management."
+                ]
+              }
+            ]
+          },
+          {
+            "role": "Independent R&D — Agentic Systems & Open Source",
+            "company": "Personal Projects",
+            "duration": "2024 - Present",
+            "description": [
+              {
+                "description": "Agent Harness & Skills Platform (Lobsterdog)",
+                "moreInfo": [
+                  "Built an opencode-based agent harness in production daily use: 32+ skills (git-worktree, cistern, scaledtest, job-search, lobresume, critical-code-reviewer, execution-path-analyst, visual-explainer), session-idle introspection hooks, custom tools, provider abstraction across Ollama/OpenAI/Anthropic, identity layer, RTK token-compression and Caveman ruleset extensions, declarative install/deploy pipeline with systemd timers.",
+                  "Authored MCP-style skills consumed by the agent at decision points: memory search before filesystem reads, mandatory worktree workflow, branch-strategy enforcement, pre-PR adversarial review via isolated subagents, test-and-verify quality gates."
+                ]
+              },
+              {
+                "description": "Agent Memory System (LLMem)",
+                "moreInfo": [
+                  "Designed and published a SQLite-backed agent memory system with semantic search, vector embeddings, FTS5 BM25 keyword search, ANN vector index, confidence scoring, a typed 7-category schema (fact/decision/preference/event/project_state/procedure/self_assessment), and background dreaming (decay/boost/promote/merge). Pip-installable and published to GitHub (MichielDean/LLMem).",
+                  "Currently in active use with 1023 memories (640 active) powering this resume tailoring session, demonstrating RAG/retrieval, embeddings, and graph-traversal relations in a real agent workflow."
+                ]
+              },
+              {
+                "description": "AIDLC Pipeline Orchestrator (Cistern)",
+                "moreInfo": [
+                  "Built a multi-agent software-delivery pipeline orchestrator routing work units (droplets) through LLM-powered phases: architect cataractae producing design briefs, implementation, adversarial code review, QA with 4-level testing mandate, security, docs, and delivery — each with proof-of-work requirements and phase-specific quality gates.",
+                  "Used to run the lobsterdog PR pipeline; integrated with git worktrees, branch strategy, and automerge for autonomous PR delivery."
+                ]
+              },
+              {
+                "description": "Autonomous Job-Application Agent (career-ops)",
+                "moreInfo": [
+                  "Built an autonomous job-discovery and application pipeline that scans 100+ ATS boards (Greenhouse, Ashby, Lever), filters by title/location/freshness, scores fit against a candidate profile, tailors resumes via LLM, fills application forms (Playwright + CDP + React-props injection for Ashby reCAPTCHA v3), and submits — 65+ applications submitted to date.",
+                  "Reverse-engineered Ashby reCAPTCHA v3 bypass via headed Chrome over CDP, Greenhouse React onClick invocation via __reactProps, and Greenhouse email-verification code entry across security-input frames; committed fixes upstream."
+                ]
+              },
+              {
+                "description": "Triton Digital — Internal Agent Tooling",
+                "moreInfo": [
+                  "Beyond Copilot rollout, built internal paved-road tooling, agent harnesses, and chat assistants used inside Triton engineering: developer portal and golden-path workflows, CI/CD pipeline-as-code consumed org-wide, and AI-augmented PR review automation surfacing defects earlier in the development cycle."
+                ]
+              },
+              {
+                "description": "Voice AI / Speech Processing (Personal)",
+                "moreInfo": [
+                  "Built local dictation agents and audio-processing tooling for personal notes applications, including speech-to-text pipelines and transcription workflow automation."
                 ]
               }
             ]
@@ -398,53 +446,6 @@ export const profileData: Profile = {
                 "description": "Client Satisfaction",
                 "moreInfo": [
                   "Managed independent testing contracts with high client satisfaction, demonstrating strong project management and communication skills."
-                ]
-              }
-            ]
-          },
-          {
-            "role": "Independent R&D — Agentic Systems & Open Source",
-            "company": "Personal Projects",
-            "duration": "2024 - Present",
-            "description": [
-              {
-                "description": "Agent Harness & Skills Platform (Lobsterdog)",
-                "moreInfo": [
-                  "Built an opencode-based agent harness in production daily use: 32+ skills (git-worktree, cistern, scaledtest, job-search, lobresume, critical-code-reviewer, execution-path-analyst, visual-explainer), session-idle introspection hooks, custom tools, provider abstraction across Ollama/OpenAI/Anthropic, identity layer, RTK token-compression and Caveman ruleset extensions, declarative install/deploy pipeline with systemd timers.",
-                  "Authored MCP-style skills consumed by the agent at decision points: memory search before filesystem reads, mandatory worktree workflow, branch-strategy enforcement, pre-PR adversarial review via isolated subagents, test-and-verify quality gates."
-                ]
-              },
-              {
-                "description": "Agent Memory System (LLMem)",
-                "moreInfo": [
-                  "Designed and published a SQLite-backed agent memory system with semantic search, vector embeddings, FTS5 BM25 keyword search, ANN vector index, confidence scoring, a typed 7-category schema (fact/decision/preference/event/project_state/procedure/self_assessment), and background dreaming (decay/boost/promote/merge). Pip-installable and published to GitHub (MichielDean/LLMem).",
-                  "Currently in active use with 1023 memories (640 active) powering this resume tailoring session, demonstrating RAG/retrieval, embeddings, and graph-traversal relations in a real agent workflow."
-                ]
-              },
-              {
-                "description": "AIDLC Pipeline Orchestrator (Cistern)",
-                "moreInfo": [
-                  "Built a multi-agent software-delivery pipeline orchestrator routing work units (droplets) through LLM-powered phases: architect cataractae producing design briefs, implementation, adversarial code review, QA with 4-level testing mandate, security, docs, and delivery — each with proof-of-work requirements and phase-specific quality gates.",
-                  "Used to run the lobsterdog PR pipeline; integrated with git worktrees, branch strategy, and automerge for autonomous PR delivery."
-                ]
-              },
-              {
-                "description": "Autonomous Job-Application Agent (career-ops)",
-                "moreInfo": [
-                  "Built an autonomous job-discovery and application pipeline that scans 100+ ATS boards (Greenhouse, Ashby, Lever), filters by title/location/freshness, scores fit against a candidate profile, tailors resumes via LLM, fills application forms (Playwright + CDP + React-props injection for Ashby reCAPTCHA v3), and submits — 65+ applications submitted to date.",
-                  "Reverse-engineered Ashby reCAPTCHA v3 bypass via headed Chrome over CDP, Greenhouse React onClick invocation via __reactProps, and Greenhouse email-verification code entry across security-input frames; committed fixes upstream."
-                ]
-              },
-              {
-                "description": "Triton Digital — Internal Agent Tooling",
-                "moreInfo": [
-                  "Beyond Copilot rollout, built internal paved-road tooling, agent harnesses, and chat assistants used inside Triton engineering: developer portal and golden-path workflows, CI/CD pipeline-as-code consumed org-wide, and AI-augmented PR review automation surfacing defects earlier in the development cycle."
-                ]
-              },
-              {
-                "description": "Voice AI / Speech Processing (Personal)",
-                "moreInfo": [
-                  "Built local dictation agents and audio-processing tooling for personal notes applications, including speech-to-text pipelines and transcription workflow automation."
                 ]
               }
             ]
