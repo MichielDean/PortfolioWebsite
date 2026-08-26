@@ -21,6 +21,25 @@ export interface Project {
   link: string;
 }
 
+export interface JobPreferences {
+  work_mode: "remote_only" | "remote_or_hybrid" | "any";
+  relocation: boolean;
+  salary_min: number;
+  salary_max: number;
+  references: string;
+  auto_submit: boolean;
+  demographics: "decline_all" | "self_identify";
+  ee_race?: string;
+  ee_gender?: string;
+  ee_veteran?: string;
+  ee_disability?: string;
+  ai_agent_disclosure: "word" | "blank";
+  ai_agent_word?: string;
+  visa_sponsorship: boolean;
+  work_authorized: boolean;
+  application_email: string;
+}
+
 export interface Profile {
   name: string;
   title: string;
@@ -38,6 +57,7 @@ export interface Profile {
   projects: Project[];
   workHistory: WorkHistory[];
   doNotClaim: string[];
+  jobPreferences: JobPreferences;
 }
 
 export const profileData: Profile = {
@@ -484,6 +504,20 @@ export const profileData: Profile = {
     "Dagster",
     "DORA Metrics",
     "P&L",
-    "profit and loss"
+    "profit and loss",
   ],
+  jobPreferences: {
+    work_mode: "remote_only",
+    relocation: false,
+    salary_min: 200000,
+    salary_max: 260000,
+    references: "Available upon request",
+    auto_submit: true,
+    demographics: "decline_all",
+    ai_agent_disclosure: "word",
+    ai_agent_word: "Catalyst",
+    visa_sponsorship: false,
+    work_authorized: true,
+    application_email: "michiel.bugher.jobs@gmail.com",
+  },
 }

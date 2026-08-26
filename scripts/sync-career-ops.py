@@ -2,8 +2,7 @@
 """Sync career config from PortfolioWebsite (source of truth) to all downstream targets.
 
 Source of truth:
-  - ~/source/PortfolioWebsite/src/data/profileData.ts  (who you are)
-  - ~/.config/lobsterdog/job-preferences.yaml           (what you want — gates, salary, work mode)
+  - ~/source/PortfolioWebsite/src/data/profileData.ts  (who you are + what you want — gates, salary, work mode)
 
 Targets synced by this script:
   1. ~/.config/llmem/resume/profile.json                (lobresume — for resume tailoring)
@@ -44,7 +43,6 @@ from datetime import datetime
 # === Paths ===
 PORTFOLIO_DIR = Path("~/source/PortfolioWebsite").expanduser()
 PROFILE_DATA_FILE = PORTFOLIO_DIR / "src/data/profileData.ts"
-JOB_PREFS_FILE = Path("~/.config/lobsterdog/job-preferences.yaml").expanduser()
 
 LOBRESUME_PROFILE = Path("~/.config/llmem/resume/profile.json").expanduser()
 CAREER_OPS_DIR = Path("~/source/career-ops").expanduser()
@@ -173,6 +171,7 @@ def convert_to_lobresume_json(profile_data: dict) -> dict:
         "education": profile_data.get("education", []),
         "certifications": profile_data.get("certifications", []),
         "do_not_claim": profile_data.get("doNotClaim", []),
+        "job_preferences": profile_data.get("jobPreferences", {}),
     }
     for cat_entry in profile_data.get("skillCategories", []):
         if isinstance(cat_entry, dict):
@@ -211,13 +210,9 @@ def convert_to_lobresume_json(profile_data: dict) -> dict:
         })
     return result
 
-def load_job_prefs() -> dict:
-    """Load job-preferences.yaml."""
-    if not JOB_PREFS_FILE.exists():
-        print(f"Warning: {JOB_PREFS_FILE} not found — using defaults")
-        return {}
-    with open(JOB_PREFS_FILE, 'r') as f:
-        return yaml.safe_load(f) or {}
+def load_job_prefs(profile_data: dict) -> dict:
+    """Extract job preferences from parsed profileData.ts."""
+    return profile_data.get("jobPreferences", {})
 
 def derive_archetypes(profile_data: dict) -> list[dict]:
     """Derive career archetypes from profileData skills + title + summary."""
@@ -319,7 +314,7 @@ def generate_profile_md(profile_data: dict, archetypes: list[dict], job_prefs: d
             cat_skills = cat.get("skills", [])
             cat_lines.append(f"  - **{cat_name}**: {', '.join(cat_skills[:8])}{'...' if len(cat_skills) > 8 else ''}")
 
-    # Salary from job-preferences
+    # Salary from profileData jobPreferences
     salary_min = job_prefs.get("salary_min", 0)
     salary_max = job_prefs.get("salary_max", 0)
     salary_min_k = salary_min // 1000 if isinstance(salary_min, int) else salary_min
@@ -388,7 +383,7 @@ These skills/topics must NEVER appear in generated content:
 **General guidance:**
 - Use WebSearch for current market data (Glassdoor, Levels.fyi, Blind)
 - Frame by role title, not by skills
-- Target range from job-preferences.yaml: ${salary_min_k}K-${salary_max_k}K
+- Target range from profileData jobPreferences: ${salary_min_k}K-${salary_max_k}K
 
 **Salary expectations:**
 > "Based on market data for this role, I'm targeting ${salary_min_k}K-${salary_max_k}K. I'm flexible on structure -- what matters is the total package and the opportunity."
@@ -445,7 +440,7 @@ def sync_profile_yml(profile_data: dict, existing: dict, job_prefs: dict) -> dic
     narrative["superpowers"] = superpowers if superpowers else narrative.get("superpowers", [])
     out["narrative"] = narrative
 
-    # Sync compensation from job-preferences
+    # Sync compensation from profileData jobPreferences
     comp = out.get("compensation", {})
     salary_min = job_prefs.get("salary_min", 0)
     salary_max = job_prefs.get("salary_max", 0)
@@ -483,7 +478,7 @@ def sync_profile_yml(profile_data: dict, existing: dict, job_prefs: dict) -> dic
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="Sync career-ops configs from PortfolioWebsite + job-preferences")
+    parser = argparse.ArgumentParser(description="Sync career-ops configs from PortfolioWebsite profileData.ts")
     parser.add_argument("--check", action="store_true", help="Dry run — show what would change, don't write")
     parser.add_argument("--reset-roles", action="store_true", help="Also regenerate target_roles from portals.yml")
     parser.add_argument("--force", action="store_true", help="Overwrite _profile.md even if no auto-gen marker")
@@ -500,7 +495,7 @@ def main():
         print(f"Error parsing profileData.ts: {e}")
         sys.exit(1)
 
-    job_prefs = load_job_prefs()
+    job_prefs = load_job_prefs(profile_data)
 
     changes = []
 
