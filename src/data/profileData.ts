@@ -64,7 +64,7 @@ export const profileData: Profile = {
   name: "Michiel Bugher",
   title: "Director of Software Engineering",
   description: "",
-  email: "miyike@gmail.com",
+  email: "michiel.bugher.jobs@gmail.com",
   phone: "208-284-9187",
   location: "Boise, Idaho",
   website: "www.michielbugher.com",
