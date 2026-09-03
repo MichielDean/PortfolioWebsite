@@ -194,6 +194,7 @@ def convert_to_profile_json(profile_data: dict) -> dict:
         "skill_categories": {},
         "work_history": [],
         "education": profile_data.get("education", []),
+        "professional_development": profile_data.get("professionalDevelopment", {}),
         "certifications": profile_data.get("certifications", []),
         "do_not_claim": profile_data.get("doNotClaim", []),
         "job_preferences": profile_data.get("jobPreferences", {}),
@@ -277,6 +278,9 @@ def main():
     print(f"  Skills: {len(profile_json.get('skills', []))}")
     print(f"  Work history entries: {len(profile_json.get('work_history', []))}")
     print(f"  Education entries: {len(profile_json.get('education', []))}")
+    pd = profile_json.get('professional_development', {})
+    if pd:
+        print(f"  Professional development: {len(pd.get('items', []))} items")
 
 
 if __name__ == "__main__":

@@ -21,6 +21,18 @@ export interface Project {
   link: string;
 }
 
+export interface Education {
+  institution: string;
+  program: string;
+  location: string;
+  duration: string;
+}
+
+export interface ProfessionalDevelopment {
+  title: string;
+  items: string[];
+}
+
 export interface JobPreferences {
   work_mode: "remote_only" | "remote_or_hybrid" | "any";
   relocation: boolean;
@@ -56,6 +68,8 @@ export interface Profile {
   stackOverflow: string;
   projects: Project[];
   workHistory: WorkHistory[];
+  education: Education[];
+  professionalDevelopment: ProfessionalDevelopment;
   doNotClaim: string[];
   jobPreferences: JobPreferences;
 }
@@ -229,6 +243,23 @@ export const profileData: Profile = {
   github: "https://github.com/MichielDean",
   stackOverflow: "https://stackoverflow.com/users/2027382/michiel-bugher",
   projects: [],
+  education: [
+    {
+      institution: "Boise State University",
+      program: "Coursework in Computer Science",
+      location: "Boise, Idaho",
+      duration: "2004 - 2006",
+    },
+  ],
+  professionalDevelopment: {
+    title: "Self-Directed Learning Across 18-Year Engineering Career",
+    items: [
+      "Progressed from manual QA to Director of Software Engineering through demonstrated competence and continuous skill acquisition",
+      "Mastered modern stack independently: TypeScript, Python, C#/.NET, AWS, Kubernetes, CI/CD, distributed systems",
+      "Built production AI/agent systems: MCP servers, RAG pipelines, agent memory systems, multi-agent orchestration platforms",
+      "Drove org-wide AI adoption at Triton Digital (GitHub Copilot 40% to 80% uptake, AI governance policies, agent tooling)",
+    ],
+  },
   "workHistory": [
           {
             "role": "Director of Software Engineering",
