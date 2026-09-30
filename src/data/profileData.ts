@@ -246,7 +246,7 @@ export const profileData: Profile = {
   education: [
     {
       institution: "Boise State University",
-      program: "Bachelor of Science in Computer Science (equivalent practical experience)",
+      program: "Computer Science coursework (no degree — self-taught, 18-year engineering career)",
       location: "Boise, Idaho",
       duration: "2004 - 2006",
     },
