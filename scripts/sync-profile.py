@@ -283,5 +283,44 @@ def main():
         print(f"  Professional development: {len(pd.get('items', []))} items")
 
 
+def check_sync():
+    """Check if profile.json is in sync with profileData.ts. Exit 1 if drifted."""
+    if not OUTPUT_FILE.exists():
+        print("DRIFT: profile.json does not exist — run sync-profile.py first")
+        sys.exit(1)
+
+    try:
+        ts_content = PROFILE_DATA_FILE.read_text(encoding="utf-8")
+        profile_data = extract_profile_data(ts_content)
+        expected_json = convert_to_profile_json(profile_data)
+    except Exception as e:
+        print(f"ERROR: could not parse profileData.ts: {e}")
+        sys.exit(1)
+
+    try:
+        current_json = json.loads(OUTPUT_FILE.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"ERROR: could not parse profile.json: {e}")
+        sys.exit(1)
+
+    # Compare key fields
+    drift_fields = []
+    for key in ["name", "email", "phone", "skills", "work_history", "do_not_claim", "job_preferences"]:
+        if expected_json.get(key) != current_json.get(key):
+            drift_fields.append(key)
+
+    if drift_fields:
+        print(f"DRIFT: profile.json is out of sync with profileData.ts")
+        print(f"  Drifted fields: {', '.join(drift_fields)}")
+        print(f"  Run: python3 {__file__} to sync")
+        sys.exit(1)
+    else:
+        print("OK: profile.json is in sync with profileData.ts")
+        sys.exit(0)
+
+
 if __name__ == "__main__":
-    main()
+    if "--check" in sys.argv:
+        check_sync()
+    else:
+        main()

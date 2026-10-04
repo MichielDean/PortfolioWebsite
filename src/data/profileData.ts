@@ -522,8 +522,6 @@ export const profileData: Profile = {
     "Agency management",
     "agency partner",
     "Outsourced development",
-    "Fintech",
-    "Payments",
     "Healthcare",
     "HIPAA",
     "Pharma",
