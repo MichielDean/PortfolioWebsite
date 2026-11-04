@@ -162,6 +162,10 @@ def convert_to_lobresume_json(profile_data: dict) -> dict:
         "email": profile_data.get("email", ""),
         "phone": profile_data.get("phone", ""),
         "location": profile_data.get("location", ""),
+        "streetAddress": profile_data.get("streetAddress", ""),
+        "city": profile_data.get("city", ""),
+        "state": profile_data.get("state", ""),
+        "postalCode": profile_data.get("postalCode", ""),
         "linkedin": profile_data.get("linkedin", ""),
         "website": profile_data.get("website", ""),
         "summary": profile_data.get("summary", ""),
@@ -418,6 +422,10 @@ def sync_profile_yml(profile_data: dict, existing: dict, job_prefs: dict) -> dic
     candidate["email"] = profile_data.get("email", candidate.get("email", ""))
     candidate["phone"] = profile_data.get("phone", candidate.get("phone", ""))
     candidate["location"] = profile_data.get("location", candidate.get("location", ""))
+    candidate["street_address"] = profile_data.get("streetAddress", candidate.get("street_address", ""))
+    candidate["city"] = profile_data.get("city", candidate.get("city", ""))
+    candidate["state"] = profile_data.get("state", candidate.get("state", ""))
+    candidate["postal_code"] = profile_data.get("postalCode", candidate.get("postal_code", ""))
     candidate["linkedin"] = profile_data.get("linkedin", candidate.get("linkedin", ""))
     candidate["portfolio_url"] = profile_data.get("website", candidate.get("portfolio_url", ""))
     candidate["github"] = profile_data.get("github", candidate.get("github", ""))
@@ -454,7 +462,10 @@ def sync_profile_yml(profile_data: dict, existing: dict, job_prefs: dict) -> dic
     # Sync location
     location = out.get("location", {})
     location["country"] = "United States"
-    location["city"] = profile_data.get("location", location.get("city", ""))
+    location["city"] = profile_data.get("city", location.get("city", ""))
+    location["state"] = profile_data.get("state", location.get("state", ""))
+    location["street_address"] = profile_data.get("streetAddress", location.get("street_address", ""))
+    location["postal_code"] = profile_data.get("postalCode", location.get("postal_code", ""))
     location["timezone"] = "MST"
     location["visa_status"] = "No sponsorship needed (US citizen)" if not job_prefs.get("visa_sponsorship", False) else "Requires visa sponsorship"
     out["location"] = location
