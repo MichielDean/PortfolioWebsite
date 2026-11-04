@@ -59,6 +59,10 @@ export interface Profile {
   email: string;
   phone: string;
   location: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  postalCode: string;
   website: string;
   summary: string;
   skills: string[];
@@ -81,6 +85,10 @@ export const profileData: Profile = {
   email: "michiel.bugher.jobs@gmail.com",
   phone: "208-284-9187",
   location: "Boise, Idaho",
+  streetAddress: "5035 N Bluegrass Ave",
+  city: "Boise",
+  state: "Idaho",
+  postalCode: "83703",
   website: "www.michielbugher.com",
   summary: "AI engineering leader who builds production agent systems — personally authors MCP servers, RAG/retrieval pipelines, agent memory systems, and multi-agent orchestration platforms in production daily use. At Triton Digital, directs three engineering teams (15+ engineers, 100B+ monthly ad impressions) and drove org-wide AI adoption: piloted GitHub Copilot from 40% to 80% uptake, established AI governance policies, and built internal agent tooling for developer productivity. 18 years of engineering leadership depth — platform migrations (monolith→microservices, on-prem→K8s), CI/CD transformation, developer portals, and quality engineering at scale. Side projects shipped: LLMem (published, pip-installable agent memory with vector search), Cistern (multi-agent AIDLC orchestrator), lobsterdog (32+ skill agent harness). Tailor emphasis to the role at hand.",
   skills: [

@@ -20,6 +20,10 @@ export interface Profile {
     email: string;
     phone: string;
     location: string;
+    streetAddress: string;
+    city: string;
+    state: string;
+    postalCode: string;
     website: string;
     summary: string;
     skills: string[];
