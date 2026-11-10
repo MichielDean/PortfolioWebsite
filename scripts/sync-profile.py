@@ -196,7 +196,6 @@ def convert_to_profile_json(profile_data: dict) -> dict:
         "education": profile_data.get("education", []),
         "professional_development": profile_data.get("professionalDevelopment", {}),
         "certifications": profile_data.get("certifications", []),
-        "do_not_claim": profile_data.get("doNotClaim", []),
         "job_preferences": profile_data.get("jobPreferences", {}),
     }
 
@@ -305,7 +304,7 @@ def check_sync():
 
     # Compare key fields
     drift_fields = []
-    for key in ["name", "email", "phone", "skills", "work_history", "do_not_claim", "job_preferences"]:
+    for key in ["name", "email", "phone", "skills", "work_history", "job_preferences"]:
         if expected_json.get(key) != current_json.get(key):
             drift_fields.append(key)
 

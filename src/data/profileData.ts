@@ -74,7 +74,6 @@ export interface Profile {
   workHistory: WorkHistory[];
   education: Education[];
   professionalDevelopment: ProfessionalDevelopment;
-  doNotClaim: string[];
   jobPreferences: JobPreferences;
 }
 
@@ -510,39 +509,6 @@ export const profileData: Profile = {
             ]
           }
         ],
-  doNotClaim: [
-    "DAST",
-    "GCP",
-    "Canary deployments",
-    "Chaos engineering",
-    "Service mesh",
-    "Ansible",
-    "Pulumi",
-    "MRPM",
-    "Budget ownership",
-    "managed budget",
-    "managed a budget",
-    "owned budget",
-    "Contractor budget management",
-    "Vendor management",
-    "Customer-facing communication",
-    "Ruby on Rails",
-    "Agency management",
-    "agency partner",
-    "Outsourced development",
-    "Healthcare",
-    "HIPAA",
-    "Pharma",
-    "GMP",
-    "Data engineering",
-    "Airflow",
-    "dbt",
-    "Snowflake",
-    "Dagster",
-    "DORA Metrics",
-    "P&L",
-    "profit and loss",
-  ],
   jobPreferences: {
     work_mode: "remote_only",
     relocation: false,

@@ -174,7 +174,6 @@ def convert_to_lobresume_json(profile_data: dict) -> dict:
         "work_history": [],
         "education": profile_data.get("education", []),
         "certifications": profile_data.get("certifications", []),
-        "do_not_claim": profile_data.get("doNotClaim", []),
         "job_preferences": profile_data.get("jobPreferences", {}),
     }
     for cat_entry in profile_data.get("skillCategories", []):
@@ -291,7 +290,6 @@ def generate_profile_md(profile_data: dict, archetypes: list[dict], job_prefs: d
     title = profile_data.get("title", "")
     summary = profile_data.get("summary", "")
     skill_cats = profile_data.get("skillCategories", [])
-    do_not_claim = profile_data.get("doNotClaim", [])
 
     # Build archetypes table
     arch_rows = []
@@ -306,9 +304,6 @@ def generate_profile_md(profile_data: dict, archetypes: list[dict], job_prefs: d
         frame_rows.append(
             f"| {a['name']} | {a['evidence']} | cv.md + article-digest.md |"
         )
-
-    # Build do_not_claim list
-    dnc_items = "\n".join(f"- **{item}**" for item in do_not_claim) if do_not_claim else "(none)"
 
     # Build skill category summary
     cat_lines = []
@@ -376,11 +371,9 @@ Engineering leader with 18+ years in quality engineering, now directing multi-te
 
 {chr(10).join(cat_lines)}
 
-## Do Not Claim (HARD EXCLUSION)
+## Evidence Discipline
 
-These skills/topics must NEVER appear in generated content:
-
-{dnc_items}
+Every claim in generated content must trace to a real item in the work history or skills above. When a job or audience calls for something the profile doesn't show, describe the closest real capability and say plainly that the gap exists.
 
 ## Your Comp Targets
 
