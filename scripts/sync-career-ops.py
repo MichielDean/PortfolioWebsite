@@ -175,6 +175,7 @@ def convert_to_lobresume_json(profile_data: dict) -> dict:
         "education": profile_data.get("education", []),
         "certifications": profile_data.get("certifications", []),
         "job_preferences": profile_data.get("jobPreferences", {}),
+        "professional_development": profile_data.get("professionalDevelopment", {}),
     }
     for cat_entry in profile_data.get("skillCategories", []):
         if isinstance(cat_entry, dict):
